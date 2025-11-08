@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
@@ -22,8 +22,25 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
   const [articleIconError, setArticleIconError] = useState(false);
   const [categoryIconError, setCategoryIconError] = useState(false);
   const [tagIconError, setTagIconError] = useState(false);
+  const [userLogoUrl, setUserLogoUrl] = useState<string>('');
 
   const isSuperAdmin = userRole === 'super_admin';
+
+  // ユーザーのロゴURLを取得
+  useEffect(() => {
+    if (user?.uid) {
+      fetch(`/api/admin/users/${user.uid}`)
+        .then(res => res.json())
+        .then(data => {
+          if (data.logoUrl) {
+            setUserLogoUrl(data.logoUrl);
+          }
+        })
+        .catch(error => {
+          console.error('Error fetching user logo:', error);
+        });
+    }
+  }, [user?.uid]);
 
   const handleSignOut = async () => {
     try {
@@ -198,14 +215,14 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
         {/* サービス選択プルダウン（super_adminのみ） */}
         {isSuperAdmin && tenants.length > 0 && (
           <div className="px-3 py-4 border-b">
-            <div className="relative">
+            <div className="flex">
               <select
                 value={currentTenant?.id || ''}
                 onChange={(e) => {
                   const tenant = tenants.find(t => t.id === e.target.value);
                   if (tenant) setCurrentTenant(tenant);
                 }}
-                className="w-full px-3 py-2.5 text-sm text-gray-700 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 font-medium appearance-none"
+                className="flex-1 px-3 py-2.5 text-sm text-gray-700 bg-white border border-gray-300 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-blue-500 font-medium appearance-none"
                 style={{
                   backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%234b5563' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e")`,
                   backgroundPosition: 'right 0.5rem center',
@@ -220,6 +237,19 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                   </option>
                 ))}
               </select>
+              
+              {/* サイトビューボタン */}
+              <a
+                href={`https://${currentTenant?.slug}.pixseo.cloud`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="px-3 py-2.5 text-sm font-bold text-white bg-blue-600 rounded-r-lg hover:bg-blue-700 transition-colors flex items-center justify-center border border-l-0 border-blue-600"
+                title="サイトを表示"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                </svg>
+              </a>
             </div>
           </div>
         )}
@@ -296,7 +326,18 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
         {/* フッター（ログイン情報・ログアウトボタン） */}
         <div className="border-t p-4 space-y-3">
           {/* ログイン情報 */}
-          <div className="text-sm text-gray-600 truncate">{user?.email}</div>
+          <div className="flex items-center gap-3">
+            {userLogoUrl ? (
+              <img 
+                src={userLogoUrl} 
+                alt="User"
+                className="w-10 h-10 rounded-full object-cover"
+              />
+            ) : (
+              <div className="w-10 h-10 rounded-full bg-gray-300"></div>
+            )}
+            <div className="text-sm text-gray-600 truncate flex-1">{user?.email}</div>
+          </div>
           
           {/* ログアウトボタン */}
           <button
