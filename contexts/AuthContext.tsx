@@ -42,20 +42,40 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       console.log('[AuthProvider] Auth state changed:', firebaseUser ? 'Logged in' : 'Not logged in');
       setUser(firebaseUser);
       
-      // ユーザーのロール情報を取得
+      // ユーザーのロール情報を取得（キャッシュを優先）
       if (firebaseUser) {
-        try {
-          const response = await fetch(`/api/admin/users/${firebaseUser.uid}`);
-          if (response.ok) {
-            const userData = await response.json();
-            setUserRole(userData.role || 'admin');
-          } else {
-            // ユーザードキュメントが存在しない場合はデフォルトで admin
+        // ローカルストレージからキャッシュを確認
+        const cachedRole = typeof window !== 'undefined' 
+          ? localStorage.getItem(`userRole_${firebaseUser.uid}`) 
+          : null;
+        
+        if (cachedRole) {
+          // キャッシュがあればそれを使用
+          setUserRole(cachedRole as UserRole);
+          console.log('[AuthProvider] Using cached role:', cachedRole);
+        } else {
+          // キャッシュがなければAPIから取得
+          try {
+            const response = await fetch(`/api/admin/users/${firebaseUser.uid}`);
+            if (response.ok) {
+              const userData = await response.json();
+              const role = userData.role || 'admin';
+              setUserRole(role);
+              // ローカルストレージにキャッシュ
+              if (typeof window !== 'undefined') {
+                localStorage.setItem(`userRole_${firebaseUser.uid}`, role);
+              }
+              console.log('[AuthProvider] Fetched and cached role:', role);
+            } else {
+              setUserRole('admin');
+              if (typeof window !== 'undefined') {
+                localStorage.setItem(`userRole_${firebaseUser.uid}`, 'admin');
+              }
+            }
+          } catch (error) {
+            console.error('[AuthProvider] Error fetching user role:', error);
             setUserRole('admin');
           }
-        } catch (error) {
-          console.error('[AuthProvider] Error fetching user role:', error);
-          setUserRole('admin');
         }
       } else {
         setUserRole(null);

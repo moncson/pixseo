@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
-import { adminAuth } from '@/lib/firebase/admin';
+import { adminAuth, adminDb } from '@/lib/firebase/admin';
+import { FieldValue } from 'firebase-admin/firestore';
 
 export const dynamic = 'force-dynamic';
 
@@ -25,16 +26,27 @@ export async function PUT(request: Request, { params }: { params: { uid: string 
     console.log('[API Account Update] 更新開始:', params.uid);
     
     const body = await request.json();
-    const { email, password, displayName } = body;
+    const { email, password, displayName, logoUrl } = body;
 
-    const updateData: any = {};
-    if (email) updateData.email = email;
-    if (password) updateData.password = password;
-    if (displayName !== undefined) updateData.displayName = displayName;
+    // Firebase Authenticationを更新
+    const authUpdateData: any = {};
+    if (email) authUpdateData.email = email;
+    if (password) authUpdateData.password = password;
+    if (displayName !== undefined) authUpdateData.displayName = displayName;
 
-    await adminAuth.updateUser(params.uid, updateData);
-    
-    console.log('[API Account Update] 更新成功');
+    await adminAuth.updateUser(params.uid, authUpdateData);
+    console.log('[API Account Update] Firebase Auth更新成功');
+
+    // Firestoreのusersコレクションを更新
+    const firestoreUpdateData: any = {
+      updatedAt: FieldValue.serverTimestamp(),
+    };
+    if (email) firestoreUpdateData.email = email;
+    if (displayName !== undefined) firestoreUpdateData.displayName = displayName;
+    if (logoUrl !== undefined) firestoreUpdateData.logoUrl = logoUrl;
+
+    await adminDb.collection('users').doc(params.uid).set(firestoreUpdateData, { merge: true });
+    console.log('[API Account Update] Firestore更新成功');
     
     return NextResponse.json({ success: true });
   } catch (error: any) {
@@ -50,10 +62,15 @@ export async function GET(request: Request, { params }: { params: { uid: string 
     
     const userRecord = await adminAuth.getUser(params.uid);
     
+    // Firestoreからlogoを取得
+    const userDoc = await adminDb.collection('users').doc(params.uid).get();
+    const userData = userDoc.exists ? userDoc.data() : {};
+    
     const user = {
       uid: userRecord.uid,
       email: userRecord.email,
       displayName: userRecord.displayName,
+      logoUrl: userData?.logoUrl || '',
       createdAt: userRecord.metadata.creationTime,
       lastSignInTime: userRecord.metadata.lastSignInTime,
     };

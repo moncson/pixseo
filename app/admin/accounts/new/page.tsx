@@ -5,27 +5,35 @@ import { useRouter } from 'next/navigation';
 import AuthGuard from '@/components/admin/AuthGuard';
 import AdminLayout from '@/components/admin/AdminLayout';
 import FloatingInput from '@/components/admin/FloatingInput';
+import FeaturedImageUpload from '@/components/admin/FeaturedImageUpload';
+import { useMediaTenant } from '@/contexts/MediaTenantContext';
 
 export default function NewAccountPage() {
   const router = useRouter();
+  const { currentTenant } = useMediaTenant();
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
+    logoUrl: '',
     email: '',
     password: '',
-    passwordConfirm: '',
     displayName: '',
   });
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
 
-    if (formData.password !== formData.passwordConfirm) {
-      alert('パスワードが一致しません');
+    if (!formData.email || !formData.password || !formData.displayName) {
+      alert('メールアドレス、パスワード、表示名は必須です');
       return;
     }
 
     if (formData.password.length < 6) {
       alert('パスワードは6文字以上で入力してください');
+      return;
+    }
+
+    if (!currentTenant) {
+      alert('サービスが選択されていません');
       return;
     }
 
@@ -40,7 +48,9 @@ export default function NewAccountPage() {
         body: JSON.stringify({
           email: formData.email,
           password: formData.password,
-          displayName: formData.displayName || undefined,
+          displayName: formData.displayName,
+          logoUrl: formData.logoUrl,
+          mediaId: currentTenant.id,
         }),
       });
 
@@ -53,7 +63,7 @@ export default function NewAccountPage() {
       }
     } catch (error: any) {
       console.error('Error creating account:', error);
-      alert(error.message || 'アカウント作成に失敗しました');
+      alert(error.message || 'アカウントの作成に失敗しました');
     } finally {
       setLoading(false);
     }
@@ -62,44 +72,40 @@ export default function NewAccountPage() {
   return (
     <AuthGuard>
       <AdminLayout>
-        <div className="max-w-2xl pb-32">
+        <div className="max-w-4xl pb-32">
           <form onSubmit={handleSubmit}>
             <div className="bg-white rounded-lg p-6 space-y-6">
-              <h2 className="text-xl font-bold text-gray-900">新規アカウント作成</h2>
+              {/* ロゴ */}
+              <FeaturedImageUpload
+                value={formData.logoUrl}
+                onChange={(url) => setFormData({ ...formData, logoUrl: url })}
+              />
 
+              {/* メールアドレス */}
               <FloatingInput
-                label="メールアドレス"
+                label="メールアドレス *"
+                type="email"
                 value={formData.email}
                 onChange={(value) => setFormData({ ...formData, email: value })}
-                type="email"
                 required
               />
 
+              {/* パスワード */}
               <FloatingInput
-                label="表示名（任意）"
-                value={formData.displayName}
-                onChange={(value) => setFormData({ ...formData, displayName: value })}
-              />
-
-              <FloatingInput
-                label="パスワード"
+                label="パスワード *"
+                type="password"
                 value={formData.password}
                 onChange={(value) => setFormData({ ...formData, password: value })}
-                type="password"
                 required
               />
 
+              {/* 表示名 */}
               <FloatingInput
-                label="パスワード（確認）"
-                value={formData.passwordConfirm}
-                onChange={(value) => setFormData({ ...formData, passwordConfirm: value })}
-                type="password"
+                label="表示名 *"
+                value={formData.displayName}
+                onChange={(value) => setFormData({ ...formData, displayName: value })}
                 required
               />
-
-              <div className="text-sm text-gray-500">
-                ※ パスワードは6文字以上で入力してください
-              </div>
             </div>
           </form>
 
@@ -109,7 +115,7 @@ export default function NewAccountPage() {
             <button
               type="button"
               onClick={() => router.back()}
-              className="bg-gray-500 text-white w-14 h-14 rounded-full hover:bg-gray-600 transition-all hover:scale-110 flex items-center justify-center"
+              className="bg-gray-500 text-white w-14 h-14 rounded-full hover:bg-gray-600 transition-all hover:scale-110 flex items-center justify-center shadow-lg"
               title="キャンセル"
             >
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -122,12 +128,16 @@ export default function NewAccountPage() {
               type="submit"
               disabled={loading}
               onClick={handleSubmit}
-              className="bg-blue-600 text-white w-14 h-14 rounded-full hover:bg-blue-700 transition-all hover:scale-110 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
+              className="bg-blue-600 text-white w-14 h-14 rounded-full hover:bg-blue-700 transition-all hover:scale-110 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
               title="アカウント作成"
             >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-              </svg>
+              {loading ? (
+                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-white"></div>
+              ) : (
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
+              )}
             </button>
           </div>
         </div>
@@ -135,4 +145,3 @@ export default function NewAccountPage() {
     </AuthGuard>
   );
 }
-

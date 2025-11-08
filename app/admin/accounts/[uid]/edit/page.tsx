@@ -5,15 +5,16 @@ import { useRouter } from 'next/navigation';
 import AuthGuard from '@/components/admin/AuthGuard';
 import AdminLayout from '@/components/admin/AdminLayout';
 import FloatingInput from '@/components/admin/FloatingInput';
+import FeaturedImageUpload from '@/components/admin/FeaturedImageUpload';
 
 export default function EditAccountPage({ params }: { params: { uid: string } }) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [fetchLoading, setFetchLoading] = useState(true);
   const [formData, setFormData] = useState({
+    logoUrl: '',
     email: '',
     password: '',
-    passwordConfirm: '',
     displayName: '',
   });
 
@@ -24,9 +25,9 @@ export default function EditAccountPage({ params }: { params: { uid: string } })
         if (response.ok) {
           const data = await response.json();
           setFormData({
+            logoUrl: data.logoUrl || '',
             email: data.email || '',
-            password: '',
-            passwordConfirm: '',
+            password: '', // パスワードは空にする
             displayName: data.displayName || '',
           });
         }
@@ -44,8 +45,8 @@ export default function EditAccountPage({ params }: { params: { uid: string } })
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
 
-    if (formData.password && formData.password !== formData.passwordConfirm) {
-      alert('パスワードが一致しません');
+    if (!formData.email || !formData.displayName) {
+      alert('メールアドレス、表示名は必須です');
       return;
     }
 
@@ -57,21 +58,17 @@ export default function EditAccountPage({ params }: { params: { uid: string } })
     setLoading(true);
 
     try {
-      const updateData: any = {
-        email: formData.email,
-        displayName: formData.displayName || undefined,
-      };
-
-      if (formData.password) {
-        updateData.password = formData.password;
-      }
-
       const response = await fetch(`/api/admin/accounts/${params.uid}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(updateData),
+        body: JSON.stringify({
+          email: formData.email,
+          password: formData.password || undefined,
+          displayName: formData.displayName,
+          logoUrl: formData.logoUrl,
+        }),
       });
 
       if (response.ok) {
@@ -83,7 +80,7 @@ export default function EditAccountPage({ params }: { params: { uid: string } })
       }
     } catch (error: any) {
       console.error('Error updating account:', error);
-      alert(error.message || 'アカウント更新に失敗しました');
+      alert(error.message || 'アカウントの更新に失敗しました');
     } finally {
       setLoading(false);
     }
@@ -107,50 +104,44 @@ export default function EditAccountPage({ params }: { params: { uid: string } })
   return (
     <AuthGuard>
       <AdminLayout>
-        <div className="max-w-2xl pb-32">
+        <div className="max-w-4xl pb-32">
           <form onSubmit={handleSubmit}>
             <div className="bg-white rounded-lg p-6 space-y-6">
-              <h2 className="text-xl font-bold text-gray-900">アカウント編集</h2>
+              {/* ロゴ */}
+              <FeaturedImageUpload
+                value={formData.logoUrl}
+                onChange={(url) => setFormData({ ...formData, logoUrl: url })}
+              />
 
+              {/* メールアドレス */}
               <FloatingInput
-                label="メールアドレス"
+                label="メールアドレス *"
+                type="email"
                 value={formData.email}
                 onChange={(value) => setFormData({ ...formData, email: value })}
-                type="email"
                 required
               />
 
+              {/* パスワード */}
+              <div>
+                <FloatingInput
+                  label="パスワード（変更する場合のみ入力）"
+                  type="password"
+                  value={formData.password}
+                  onChange={(value) => setFormData({ ...formData, password: value })}
+                />
+                <p className="text-xs text-gray-500 mt-1">
+                  ※ 空欄の場合、パスワードは変更されません
+                </p>
+              </div>
+
+              {/* 表示名 */}
               <FloatingInput
-                label="表示名（任意）"
+                label="表示名 *"
                 value={formData.displayName}
                 onChange={(value) => setFormData({ ...formData, displayName: value })}
+                required
               />
-
-              <div className="border-t pt-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">パスワード変更（任意）</h3>
-
-                <div className="space-y-6">
-                  <FloatingInput
-                    label="新しいパスワード"
-                    value={formData.password}
-                    onChange={(value) => setFormData({ ...formData, password: value })}
-                    type="password"
-                  />
-
-                  <FloatingInput
-                    label="新しいパスワード（確認）"
-                    value={formData.passwordConfirm}
-                    onChange={(value) => setFormData({ ...formData, passwordConfirm: value })}
-                    type="password"
-                  />
-
-                  <div className="text-sm text-gray-500">
-                    ※ パスワードを変更する場合は6文字以上で入力してください
-                    <br />
-                    ※ 変更しない場合は空欄のままにしてください
-                  </div>
-                </div>
-              </div>
             </div>
           </form>
 
@@ -160,7 +151,7 @@ export default function EditAccountPage({ params }: { params: { uid: string } })
             <button
               type="button"
               onClick={() => router.back()}
-              className="bg-gray-500 text-white w-14 h-14 rounded-full hover:bg-gray-600 transition-all hover:scale-110 flex items-center justify-center"
+              className="bg-gray-500 text-white w-14 h-14 rounded-full hover:bg-gray-600 transition-all hover:scale-110 flex items-center justify-center shadow-lg"
               title="キャンセル"
             >
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -173,12 +164,16 @@ export default function EditAccountPage({ params }: { params: { uid: string } })
               type="submit"
               disabled={loading}
               onClick={handleSubmit}
-              className="bg-blue-600 text-white w-14 h-14 rounded-full hover:bg-blue-700 transition-all hover:scale-110 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
+              className="bg-blue-600 text-white w-14 h-14 rounded-full hover:bg-blue-700 transition-all hover:scale-110 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
               title="アカウント更新"
             >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-              </svg>
+              {loading ? (
+                <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-white"></div>
+              ) : (
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
+              )}
             </button>
           </div>
         </div>
@@ -186,4 +181,3 @@ export default function EditAccountPage({ params }: { params: { uid: string } })
     </AuthGuard>
   );
 }
-

@@ -74,9 +74,9 @@ export default function FeaturedImageUpload({ value, onChange }: FeaturedImageUp
 
   if (!preview) {
     return (
-      <div className="bg-white rounded-lg p-6">
+      <div className="bg-white rounded-lg p-6 flex justify-center">
         <div
-          className="flex justify-center items-center px-6 pt-12 pb-12 border-2 border-gray-300 border-dashed rounded-lg hover:border-blue-500 transition-colors cursor-pointer"
+          className="aspect-square w-full max-w-sm flex justify-center items-center border-2 border-gray-300 border-dashed rounded-lg hover:border-blue-500 transition-colors cursor-pointer"
           onClick={handleChange}
         >
           <div className="space-y-1 text-center">
@@ -93,12 +93,11 @@ export default function FeaturedImageUpload({ value, onChange }: FeaturedImageUp
                 strokeLinejoin="round"
               />
             </svg>
-            <div className="flex text-sm text-gray-600">
-              <span className="font-medium text-blue-600 hover:text-blue-500">
-                画像を選択
+            <div className="flex justify-center text-sm">
+              <span className="font-medium text-gray-900">
+                ロゴ画像を選択
               </span>
             </div>
-            <p className="text-xs text-gray-500">PNG, JPG, GIF up to 10MB</p>
           </div>
         </div>
         <input

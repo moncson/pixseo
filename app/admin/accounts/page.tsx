@@ -181,10 +181,20 @@ export default function AccountsPage() {
 
           <div className="mt-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
             <p className="text-sm text-blue-800">
-              <strong>注意:</strong> このページには、選択中のサービスに紐づくアカウントのみが表示されます。<br />
-              アカウントの追加・削除は「クライアント管理」から行ってください。
+              <strong>注意:</strong> このページには、選択中のサービスに紐づくアカウントのみが表示されます。
             </p>
           </div>
+
+          {/* フローティング追加ボタン */}
+          <Link
+            href="/admin/accounts/new"
+            className="fixed bottom-8 right-8 bg-blue-600 text-white w-14 h-14 rounded-full hover:bg-blue-700 transition-all hover:scale-110 flex items-center justify-center z-50 shadow-lg"
+            title="新規アカウント作成"
+          >
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+            </svg>
+          </Link>
         </div>
       </AdminLayout>
     </AuthGuard>

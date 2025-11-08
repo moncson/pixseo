@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
-import { adminAuth } from '@/lib/firebase/admin';
+import { adminAuth, adminDb } from '@/lib/firebase/admin';
+import { FieldValue } from 'firebase-admin/firestore';
 
 export const dynamic = 'force-dynamic';
 
@@ -33,19 +34,45 @@ export async function POST(request: Request) {
     console.log('[API Accounts] アカウント作成開始');
     
     const body = await request.json();
-    const { email, password, displayName } = body;
+    const { email, password, displayName, logoUrl, mediaId } = body;
 
     if (!email || !password) {
       return NextResponse.json({ error: 'Email and password are required' }, { status: 400 });
     }
 
+    // Firebase Authenticationにユーザーを作成
     const userRecord = await adminAuth.createUser({
       email,
       password,
       displayName,
     });
 
-    console.log('[API Accounts] アカウント作成成功:', userRecord.uid);
+    console.log('[API Accounts] Firebase Auth作成成功:', userRecord.uid);
+
+    // Firestoreのusersコレクションに保存
+    await adminDb.collection('users').doc(userRecord.uid).set({
+      uid: userRecord.uid,
+      email,
+      displayName: displayName || '',
+      logoUrl: logoUrl || '',
+      role: 'admin',
+      mediaIds: mediaId ? [mediaId] : [],
+      createdAt: FieldValue.serverTimestamp(),
+      updatedAt: FieldValue.serverTimestamp(),
+    });
+
+    console.log('[API Accounts] Firestore users作成成功');
+
+    // mediaIdが指定されている場合、tenantsコレクションのmemberIdsに追加
+    if (mediaId) {
+      await adminDb.collection('tenants').doc(mediaId).update({
+        memberIds: FieldValue.arrayUnion(userRecord.uid),
+        updatedAt: FieldValue.serverTimestamp(),
+      });
+      console.log('[API Accounts] tenant memberIds更新成功');
+    }
+
+    console.log('[API Accounts] アカウント作成完了:', userRecord.uid);
     
     return NextResponse.json({ uid: userRecord.uid, email: userRecord.email });
   } catch (error: any) {
