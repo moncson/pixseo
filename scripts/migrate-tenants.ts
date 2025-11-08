@@ -3,10 +3,39 @@
  * tenants → mediaTenants
  * 
  * 実行方法:
- * npx ts-node scripts/migrate-tenants.ts
+ * 1. Firebase Consoleからサービスアカウントキーをダウンロード
+ * 2. プロジェクトルートに serviceAccountKey.json として配置
+ * 3. npm run migrate:tenants を実行
  */
 
-import { adminDb } from '../lib/firebase/admin';
+import * as admin from 'firebase-admin';
+import * as path from 'path';
+import * as fs from 'fs';
+
+// Firebase Admin SDKの初期化
+const serviceAccountPath = path.join(process.cwd(), 'serviceAccountKey.json');
+
+if (!fs.existsSync(serviceAccountPath)) {
+  console.error('❌ エラー: serviceAccountKey.json が見つかりません');
+  console.error('');
+  console.error('以下の手順でサービスアカウントキーを取得してください：');
+  console.error('1. Firebase Console → プロジェクト設定 → サービスアカウント');
+  console.error('2. 「新しい秘密鍵の生成」をクリック');
+  console.error('3. ダウンロードしたJSONファイルを以下に配置：');
+  console.error(`   ${serviceAccountPath}`);
+  console.error('');
+  process.exit(1);
+}
+
+// Firebase Admin SDK初期化
+if (!admin.apps.length) {
+  const serviceAccount = require(serviceAccountPath);
+  admin.initializeApp({
+    credential: admin.credential.cert(serviceAccount),
+  });
+}
+
+const adminDb = admin.firestore();
 
 async function migrateTenants() {
   console.log('='.repeat(60));
