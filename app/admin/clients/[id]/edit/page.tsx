@@ -102,17 +102,10 @@ export default function EditClientPage({ params }: { params: { id: string } }) {
           <form onSubmit={handleSubmit}>
             <div className="bg-white rounded-lg p-6 space-y-6">
               {/* ロゴ */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-3">
-                  ロゴ画像（正方形）
-                </label>
-                <div className="w-48">
-                  <FeaturedImageUpload
-                    value={formData.logoUrl}
-                    onChange={(url) => setFormData({ ...formData, logoUrl: url })}
-                  />
-                </div>
-              </div>
+              <FeaturedImageUpload
+                value={formData.logoUrl}
+                onChange={(url) => setFormData({ ...formData, logoUrl: url })}
+              />
 
               {/* メールアドレス */}
               <FloatingInput
@@ -124,17 +117,12 @@ export default function EditClientPage({ params }: { params: { id: string } }) {
               />
 
               {/* パスワード */}
-              <div>
-                <FloatingInput
-                  label="パスワード（変更する場合のみ入力）"
-                  type="password"
-                  value={formData.password}
-                  onChange={(value) => setFormData({ ...formData, password: value })}
-                />
-                <p className="text-xs text-gray-500 mt-1">
-                  ※ 空欄の場合、パスワードは変更されません
-                </p>
-              </div>
+              <FloatingInput
+                label="パスワード（変更する場合のみ入力）"
+                type="password"
+                value={formData.password}
+                onChange={(value) => setFormData({ ...formData, password: value })}
+              />
 
               {/* クライアント名 */}
               <FloatingInput

@@ -123,17 +123,12 @@ export default function EditAccountPage({ params }: { params: { uid: string } })
               />
 
               {/* パスワード */}
-              <div>
-                <FloatingInput
-                  label="パスワード（変更する場合のみ入力）"
-                  type="password"
-                  value={formData.password}
-                  onChange={(value) => setFormData({ ...formData, password: value })}
-                />
-                <p className="text-xs text-gray-500 mt-1">
-                  ※ 空欄の場合、パスワードは変更されません
-                </p>
-              </div>
+              <FloatingInput
+                label="パスワード（変更する場合のみ入力）"
+                type="password"
+                value={formData.password}
+                onChange={(value) => setFormData({ ...formData, password: value })}
+              />
 
               {/* 表示名 */}
               <FloatingInput

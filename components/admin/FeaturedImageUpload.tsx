@@ -118,17 +118,16 @@ export default function FeaturedImageUpload({ value, onChange }: FeaturedImageUp
   }
 
   return (
-    <div className="bg-white rounded-lg p-6">
+    <div className="bg-white rounded-lg p-6 flex justify-center">
       <div
-        className="relative w-full rounded-lg overflow-hidden"
+        className="relative aspect-square w-full max-w-sm rounded-lg overflow-hidden"
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
         <img
           src={preview}
           alt="Featured"
-          className="w-full h-auto object-cover"
-          style={{ maxHeight: '400px' }}
+          className="w-full h-full object-cover"
         />
         
         {/* ホバー時のオーバーレイ */}

@@ -12,6 +12,7 @@ interface AdminUser {
   uid: string;
   email: string;
   displayName?: string;
+  logoUrl?: string;
   role?: string;
   mediaIds?: string[];
   createdAt: string;
@@ -119,6 +120,9 @@ export default function AccountsPage() {
                   <thead className="bg-gray-50">
                     <tr>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        ロゴ
+                      </th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                         メールアドレス
                       </th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -135,6 +139,17 @@ export default function AccountsPage() {
                   <tbody className="bg-white divide-y divide-gray-200">
                     {accounts.map((account) => (
                       <tr key={account.uid} className="hover:bg-gray-50">
+                        <td className="px-6 py-4">
+                          {account.logoUrl ? (
+                            <img 
+                              src={account.logoUrl} 
+                              alt={account.displayName || account.email}
+                              className="w-10 h-10 rounded-full object-cover"
+                            />
+                          ) : (
+                            <div className="w-10 h-10 rounded-full bg-gray-300"></div>
+                          )}
+                        </td>
                         <td className="px-6 py-4">
                           <div className="text-sm font-medium text-gray-900">{account.email}</div>
                         </td>
@@ -178,12 +193,6 @@ export default function AccountsPage() {
               )}
             </div>
           )}
-
-          <div className="mt-6 bg-blue-50 border border-blue-200 rounded-lg p-4">
-            <p className="text-sm text-blue-800">
-              <strong>注意:</strong> このページには、選択中のサービスに紐づくアカウントのみが表示されます。
-            </p>
-          </div>
 
           {/* フローティング追加ボタン */}
           <Link

@@ -11,13 +11,24 @@ export async function GET() {
     
     const listUsersResult = await adminAuth.listUsers(1000); // 最大1000件
     
-    const users = listUsersResult.users.map((user) => ({
-      uid: user.uid,
-      email: user.email,
-      displayName: user.displayName,
-      createdAt: user.metadata.creationTime,
-      lastSignInTime: user.metadata.lastSignInTime,
-    }));
+    // FirestoreからlogoUrlを取得
+    const usersPromises = listUsersResult.users.map(async (user) => {
+      const userDoc = await adminDb.collection('users').doc(user.uid).get();
+      const userData = userDoc.exists ? userDoc.data() : {};
+      
+      return {
+        uid: user.uid,
+        email: user.email,
+        displayName: user.displayName,
+        logoUrl: userData?.logoUrl || '',
+        role: userData?.role || 'admin',
+        mediaIds: userData?.mediaIds || [],
+        createdAt: user.metadata.creationTime,
+        lastSignInTime: user.metadata.lastSignInTime,
+      };
+    });
+
+    const users = await Promise.all(usersPromises);
 
     console.log('[API Accounts] 取得したアカウント数:', users.length);
     
