@@ -110,6 +110,12 @@ export default function EditArticlePage({ params }: { params: { id: string } }) 
       return;
     }
 
+    if (!article) {
+      console.error('[handleSubmit] 記事データが存在しません');
+      alert('記事データの読み込みに失敗しました');
+      return;
+    }
+
     setLoading(true);
     console.log('[handleSubmit] ローディング開始');
     
@@ -120,7 +126,10 @@ export default function EditArticlePage({ params }: { params: { id: string } }) 
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({
+          ...formData,
+          mediaId: article.mediaId, // 既存記事のmediaIdを保持
+        }),
       });
 
       console.log('[handleSubmit] APIレスポンス:', response.status);

@@ -10,9 +10,11 @@ import FloatingInput from '@/components/admin/FloatingInput';
 import { createArticle } from '@/lib/firebase/articles-admin';
 import { Category, Tag } from '@/types/article';
 import { useEffect } from 'react';
+import { useMediaTenant } from '@/contexts/MediaTenantContext';
 
 export default function NewArticlePage() {
   const router = useRouter();
+  const { currentTenant } = useMediaTenant();
   const [loading, setLoading] = useState(false);
   const [fetchLoading, setFetchLoading] = useState(true);
   const [categories, setCategories] = useState<Category[]>([]);
@@ -74,11 +76,17 @@ export default function NewArticlePage() {
       return;
     }
 
+    if (!currentTenant) {
+      alert('メディアテナントが選択されていません');
+      return;
+    }
+
     setLoading(true);
     try {
       await createArticle({
         ...formData,
         authorId: 'admin', // TODO: 実際のユーザーIDを使用
+        mediaId: currentTenant.id,
       });
       
       alert('記事を作成しました');
