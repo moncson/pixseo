@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import AuthGuard from '@/components/admin/AuthGuard';
 import AdminLayout from '@/components/admin/AdminLayout';
 import FloatingInput from '@/components/admin/FloatingInput';
+import FloatingSelect from '@/components/admin/FloatingSelect';
 import FeaturedImageUpload from '@/components/admin/FeaturedImageUpload';
 import { useMediaTenant } from '@/contexts/MediaTenantContext';
 import { Client } from '@/types/client';
@@ -193,30 +194,24 @@ export default function EditServicePage({ params }: { params: { id: string } }) 
               />
 
               {/* クライアント選択 */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  クライアント選択
-                </label>
-                <select
-                  value={formData.clientId}
-                  onChange={(e) => setFormData({ ...formData, clientId: e.target.value })}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                >
-                  <option value="">-- クライアントを選択 --</option>
-                  {clients.map((client) => (
-                    <option key={client.id} value={client.id}>
-                      {client.clientName}
-                    </option>
-                  ))}
-                </select>
-              </div>
+              <FloatingSelect
+                label="クライアント選択"
+                value={formData.clientId}
+                onChange={(value) => setFormData({ ...formData, clientId: value })}
+                options={[
+                  { value: '', label: '-- クライアントを選択 --' },
+                  ...clients.map((client) => ({
+                    value: client.id,
+                    label: client.clientName,
+                  })),
+                ]}
+              />
 
               {/* カスタムドメイン */}
               <FloatingInput
                 label="カスタムドメイン"
                 value={formData.customDomain}
                 onChange={(value) => setFormData({ ...formData, customDomain: value })}
-                placeholder="example.com"
               />
 
               {/* サイトの説明 */}

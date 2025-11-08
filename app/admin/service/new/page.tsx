@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import AuthGuard from '@/components/admin/AuthGuard';
 import AdminLayout from '@/components/admin/AdminLayout';
 import FloatingInput from '@/components/admin/FloatingInput';
+import FloatingSelect from '@/components/admin/FloatingSelect';
 import FeaturedImageUpload from '@/components/admin/FeaturedImageUpload';
 import { useAuth } from '@/contexts/AuthContext';
 import { useMediaTenant } from '@/contexts/MediaTenantContext';
@@ -140,80 +141,50 @@ export default function NewServicePage() {
               </div>
 
               {/* サービス名 */}
-              <div>
-                <FloatingInput
-                  label="サービス名 *"
-                  value={formData.name}
-                  onChange={(value) => setFormData({ ...formData, name: value })}
-                  required
-                />
-                <p className="text-xs text-gray-500 mt-1">
-                  例：「ふらっと。」「グルメ王」
-                </p>
-              </div>
+              <FloatingInput
+                label="サービス名 *"
+                value={formData.name}
+                onChange={(value) => setFormData({ ...formData, name: value })}
+                required
+              />
 
               {/* スラッグ（サブドメイン） */}
-              <div>
-                <FloatingInput
-                  label="スラッグ（英数字とハイフンのみ）*"
-                  value={formData.slug}
-                  onChange={(value) => setFormData({ ...formData, slug: value.toLowerCase().replace(/[^a-z0-9-]/g, '') })}
-                  required
-                />
-                <p className="text-xs text-gray-500 mt-1">
-                  例：<code className="bg-gray-100 px-1 rounded">furatto</code> → <code className="bg-blue-100 px-1 rounded">furatto.pixseo.cloud</code><br />
-                  <span className="text-gray-400">※ スラッグがそのままサブドメインになります</span>
-                </p>
-              </div>
+              <FloatingInput
+                label="スラッグ（英数字とハイフンのみ）*"
+                value={formData.slug}
+                onChange={(value) => setFormData({ ...formData, slug: value.toLowerCase().replace(/[^a-z0-9-]/g, '') })}
+                required
+              />
 
               {/* クライアント選択 */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  クライアント選択
-                </label>
-                <select
-                  value={formData.clientId}
-                  onChange={(e) => setFormData({ ...formData, clientId: e.target.value })}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                >
-                  <option value="">-- クライアントを選択 --</option>
-                  {clients.map((client) => (
-                    <option key={client.id} value={client.id}>
-                      {client.clientName}
-                    </option>
-                  ))}
-                </select>
-                <p className="text-xs text-gray-500 mt-1">
-                  このサービスに紐づくクライアントを選択してください
-                </p>
-              </div>
+              <FloatingSelect
+                label="クライアント選択"
+                value={formData.clientId}
+                onChange={(value) => setFormData({ ...formData, clientId: value })}
+                options={[
+                  { value: '', label: '-- クライアントを選択 --' },
+                  ...clients.map((client) => ({
+                    value: client.id,
+                    label: client.clientName,
+                  })),
+                ]}
+              />
 
               {/* カスタムドメイン */}
-              <div>
-                <FloatingInput
-                  label="カスタムドメイン"
-                  value={formData.customDomain}
-                  onChange={(value) => setFormData({ ...formData, customDomain: value })}
-                  placeholder="example.com"
-                />
-                <p className="text-xs text-gray-500 mt-1">
-                  <span className="text-gray-400">※ 枠のみ（機能は今後実装予定）</span>
-                </p>
-              </div>
+              <FloatingInput
+                label="カスタムドメイン"
+                value={formData.customDomain}
+                onChange={(value) => setFormData({ ...formData, customDomain: value })}
+              />
 
               {/* サイトの説明 */}
-              <div>
-                <FloatingInput
-                  label="サイトの説明（SEO用メタディスクリプション）"
-                  value={formData.siteDescription}
-                  onChange={(value) => setFormData({ ...formData, siteDescription: value })}
-                  multiline
-                  rows={5}
-                />
-                <p className="text-xs text-gray-500 mt-1">
-                  例：「国内外の旅行情報を発信するメディアサイト」
-                </p>
-              </div>
+              <FloatingInput
+                label="サイトの説明（SEO用メタディスクリプション）"
+                value={formData.siteDescription}
+                onChange={(value) => setFormData({ ...formData, siteDescription: value })}
+                multiline
+                rows={5}
+              />
             </div>
           </form>
 
