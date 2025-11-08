@@ -126,11 +126,17 @@ export const getAllArticles = async (): Promise<Article[]> => {
 
   try {
     console.log('[getAllArticles] Fetching all articles from Firestore...');
+    console.log('[getAllArticles] DB instance:', db);
+    console.log('[getAllArticles] Collection path: articles');
+    
     const articlesRef = collection(db, 'articles');
+    console.log('[getAllArticles] Collection ref:', articlesRef);
+    
     // インデックス不要: 全件取得してクライアント側でソート
     const querySnapshot = await getDocs(articlesRef);
 
     console.log(`[getAllArticles] Found ${querySnapshot.docs.length} articles`);
+    console.log('[getAllArticles] Docs:', querySnapshot.docs.map(d => ({ id: d.id, data: d.data() })));
 
     return querySnapshot.docs.map((doc) => {
       const data = doc.data();
@@ -142,7 +148,12 @@ export const getAllArticles = async (): Promise<Article[]> => {
       } as Article;
     });
   } catch (error) {
-    console.error('Error getting all articles:', error);
+    console.error('[getAllArticles] Error getting all articles:', error);
+    console.error('[getAllArticles] Error details:', {
+      name: error instanceof Error ? error.name : 'Unknown',
+      message: error instanceof Error ? error.message : String(error),
+      stack: error instanceof Error ? error.stack : undefined,
+    });
     throw error;
   }
 };
