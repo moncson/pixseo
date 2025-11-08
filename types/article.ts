@@ -8,7 +8,8 @@ export interface Article {
   publishedAt: Date;
   updatedAt: Date;
   authorId: string;
-  authorName: string;
+  authorName: string;        // 後方互換性のため残す
+  writerId?: string;         // ライターID（新規）
   categoryIds: string[];
   tagIds: string[];
   featuredImage?: string;

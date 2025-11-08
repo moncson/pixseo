@@ -72,6 +72,12 @@ service cloud.firestore {
       allow read: if request.auth != null;
       allow write: if request.auth != null;
     }
+    
+    // ライター（公開読み取り、認証済みユーザーのみ書き込み）
+    match /writers/{writerId} {
+      allow read: if true;
+      allow write: if request.auth != null;
+    }
   }
 }
 

@@ -5,12 +5,14 @@ import { useRouter } from 'next/navigation';
 import AuthGuard from '@/components/admin/AuthGuard';
 import AdminLayout from '@/components/admin/AdminLayout';
 import RichTextEditor from '@/components/admin/RichTextEditor';
-import FeaturedImageUpload from '@/components/admin/FeaturedImageUpload';
 import FloatingInput from '@/components/admin/FloatingInput';
+import FloatingSelect from '@/components/admin/FloatingSelect';
 import { createArticle } from '@/lib/firebase/articles-admin';
 import { Category, Tag } from '@/types/article';
+import { Writer } from '@/types/writer';
 import { useEffect } from 'react';
 import { useMediaTenant } from '@/contexts/MediaTenantContext';
+import { apiGet } from '@/lib/api-client';
 
 export default function NewArticlePage() {
   const router = useRouter();
@@ -19,16 +21,17 @@ export default function NewArticlePage() {
   const [fetchLoading, setFetchLoading] = useState(true);
   const [categories, setCategories] = useState<Category[]>([]);
   const [tags, setTags] = useState<Tag[]>([]);
+  const [writers, setWriters] = useState<Writer[]>([]);
+  const [featuredImageUrl, setFeaturedImageUrl] = useState('');
   
   const [formData, setFormData] = useState({
     title: '',
     content: '',
     excerpt: '',
     slug: '',
-    authorName: '',
+    writerId: '',
     categoryIds: [] as string[],
     tagIds: [] as string[],
-    featuredImage: '',
     isPublished: false,
     isFeatured: false,
     metaTitle: '',
@@ -40,27 +43,20 @@ export default function NewArticlePage() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        console.log('[NewArticlePage] Fetching categories and tags...');
+        console.log('[NewArticlePage] Fetching categories, tags, and writers...');
         
-        const [categoriesResponse, tagsResponse] = await Promise.all([
-          fetch('/api/admin/categories'),
-          fetch('/api/admin/tags'),
-        ]);
-        
-        if (!categoriesResponse.ok || !tagsResponse.ok) {
-          throw new Error('Failed to fetch categories or tags');
-        }
-        
-        const [categoriesData, tagsData] = await Promise.all([
-          categoriesResponse.json(),
-          tagsResponse.json(),
+        const [categoriesData, tagsData, writersData] = await Promise.all([
+          apiGet<Category[]>('/api/admin/categories'),
+          apiGet<Tag[]>('/api/admin/tags'),
+          apiGet<Writer[]>('/api/admin/writers'),
         ]);
         
         setCategories(categoriesData);
         setTags(tagsData);
+        setWriters(writersData);
       } catch (error) {
         console.error('Error fetching data:', error);
-        alert('カテゴリーとタグの読み込みに失敗しました');
+        alert('カテゴリー・タグ・ライターの読み込みに失敗しました');
       } finally {
         setFetchLoading(false);
       }
@@ -71,8 +67,8 @@ export default function NewArticlePage() {
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     
-    if (!formData.title || !formData.content || !formData.slug || !formData.authorName) {
-      alert('タイトル、本文、スラッグ、著者名は必須です');
+    if (!formData.title || !formData.content || !formData.slug || !formData.writerId) {
+      alert('タイトル、本文、スラッグ、ライターは必須です');
       return;
     }
 
@@ -81,11 +77,20 @@ export default function NewArticlePage() {
       return;
     }
 
+    // ライター名を取得
+    const selectedWriter = writers.find(w => w.id === formData.writerId);
+    if (!selectedWriter) {
+      alert('選択されたライターが見つかりません');
+      return;
+    }
+
     setLoading(true);
     try {
       await createArticle({
         ...formData,
         authorId: 'admin', // TODO: 実際のユーザーIDを使用
+        authorName: selectedWriter.handleName,
+        featuredImage: featuredImageUrl,
         mediaId: currentTenant.id,
       });
       
@@ -113,7 +118,7 @@ export default function NewArticlePage() {
         <AdminLayout>
           <div className="text-center py-8">
             <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mx-auto"></div>
-            <p className="mt-2 text-gray-600">カテゴリーとタグを読み込み中...</p>
+            <p className="mt-2 text-gray-600">データを読み込み中...</p>
           </div>
         </AdminLayout>
       </AuthGuard>
@@ -125,16 +130,110 @@ export default function NewArticlePage() {
       <AdminLayout>
         <div className="max-w-4xl pb-32">
           <form id="article-new-form" onSubmit={handleSubmit}>
-            {/* アイキャッチ画像（一番上） */}
+            {/* アイキャッチ画像（一番上・横長いっぱい） */}
             <div className="mb-6">
-              <FeaturedImageUpload
-                value={formData.featuredImage}
-                onChange={(url) => setFormData({ ...formData, featuredImage: url })}
-              />
+              <div className="relative w-full h-64 bg-white rounded-xl overflow-hidden border-2 border-dashed border-gray-300 hover:border-blue-500 transition-colors">
+                {featuredImageUrl ? (
+                  <div className="relative w-full h-full group">
+                    <img 
+                      src={featuredImageUrl} 
+                      alt="Featured" 
+                      className="w-full h-full object-cover"
+                    />
+                    {/* ホバー時のオーバーレイ */}
+                    <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-50 transition-all flex items-center justify-center gap-4">
+                      {/* 変更ボタン */}
+                      <label className="opacity-0 group-hover:opacity-100 transition-opacity bg-white text-gray-900 w-12 h-12 rounded-full flex items-center justify-center hover:bg-gray-100 cursor-pointer">
+                        <input
+                          type="file"
+                          className="sr-only"
+                          accept="image/*"
+                          onChange={async (e) => {
+                            const file = e.target.files?.[0];
+                            if (!file) return;
+                            
+                            const formDataUpload = new FormData();
+                            formDataUpload.append('file', file);
+                            
+                            try {
+                              const response = await fetch('/api/admin/upload-image', {
+                                method: 'POST',
+                                body: formDataUpload,
+                                headers: {
+                                  'x-media-id': currentTenant?.id || '',
+                                },
+                              });
+                              
+                              if (response.ok) {
+                                const data = await response.json();
+                                setFeaturedImageUrl(data.url);
+                              }
+                            } catch (error) {
+                              console.error('Error uploading image:', error);
+                              alert('画像のアップロードに失敗しました');
+                            }
+                          }}
+                        />
+                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                        </svg>
+                      </label>
+
+                      {/* 削除ボタン */}
+                      <button
+                        type="button"
+                        onClick={() => setFeaturedImageUrl('')}
+                        className="opacity-0 group-hover:opacity-100 transition-opacity bg-white text-red-600 w-12 h-12 rounded-full flex items-center justify-center hover:bg-red-50"
+                      >
+                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <label className="w-full h-full flex flex-col items-center justify-center cursor-pointer">
+                    <svg className="w-16 h-16 text-gray-400 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                    <span className="text-sm font-medium text-gray-700">アイキャッチ画像を選択</span>
+                    <input
+                      type="file"
+                      className="sr-only"
+                      accept="image/*"
+                      onChange={async (e) => {
+                        const file = e.target.files?.[0];
+                        if (!file) return;
+                        
+                        const formDataUpload = new FormData();
+                        formDataUpload.append('file', file);
+                        
+                        try {
+                          const response = await fetch('/api/admin/upload-image', {
+                            method: 'POST',
+                            body: formDataUpload,
+                            headers: {
+                              'x-media-id': currentTenant?.id || '',
+                            },
+                          });
+                          
+                          if (response.ok) {
+                            const data = await response.json();
+                            setFeaturedImageUrl(data.url);
+                          }
+                        } catch (error) {
+                          console.error('Error uploading image:', error);
+                          alert('画像のアップロードに失敗しました');
+                        }
+                      }}
+                    />
+                  </label>
+                )}
+              </div>
             </div>
 
             {/* すべてのフィールドを1つのパネル内に表示 */}
-            <div className="bg-white rounded-lg p-6 space-y-6">
+            <div className="bg-white rounded-xl p-6 space-y-6">
               {/* タイトル */}
               <FloatingInput
                 label="タイトル"
@@ -143,7 +242,7 @@ export default function NewArticlePage() {
                 required
               />
 
-              {/* スラッグ - 自動生成ボタン付き */}
+              {/* スラッグ - 自動生成ボタン付き・プレースホルダーなし */}
               <div>
                 <div className="flex gap-2 items-end">
                   <div className="flex-1">
@@ -151,28 +250,34 @@ export default function NewArticlePage() {
                       label="スラッグ（URL）"
                       value={formData.slug}
                       onChange={(value) => setFormData({ ...formData, slug: value })}
-                      placeholder="article-slug"
                       required
                     />
                   </div>
                   <button
                     type="button"
                     onClick={generateSlug}
-                    className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 h-12 mb-0.5"
+                    className="px-4 py-2 bg-gray-600 text-white rounded-xl hover:bg-gray-700 h-12 mb-0.5"
                   >
                     自動生成
                   </button>
                 </div>
                 <p className="mt-2 text-sm text-gray-500">
-                  URL: /media/articles/{formData.slug || 'article-slug'}
+                  URL: /media/articles/{formData.slug || '(スラッグを入力)'}
                 </p>
               </div>
 
-              {/* 著者名 */}
-              <FloatingInput
-                label="著者名"
-                value={formData.authorName}
-                onChange={(value) => setFormData({ ...formData, authorName: value })}
+              {/* ライター選択 */}
+              <FloatingSelect
+                label="ライター"
+                value={formData.writerId}
+                onChange={(value) => setFormData({ ...formData, writerId: value })}
+                options={[
+                  { value: '', label: 'ライターを選択してください' },
+                  ...writers.map(writer => ({
+                    value: writer.id,
+                    label: writer.handleName,
+                  })),
+                ]}
                 required
               />
 
@@ -312,57 +417,60 @@ export default function NewArticlePage() {
             </div>
           </form>
 
-          {/* おすすめトグル（フローティング） */}
-          <div className="fixed bottom-48 right-8 bg-white rounded-full px-6 py-3 shadow-lg z-50">
-            <div className="flex flex-col items-center gap-2">
-              <span className="text-xs font-medium text-gray-700">おすすめ</span>
-              <label className="cursor-pointer">
-                <div className="relative inline-block w-14 h-8">
-                  <input
-                    type="checkbox"
-                    checked={formData.isFeatured || false}
-                    onChange={(e) => setFormData({ ...formData, isFeatured: e.target.checked })}
-                    className="sr-only"
-                  />
-                  <div 
-                    onClick={() => setFormData({ ...formData, isFeatured: !formData.isFeatured })}
-                    className={`absolute inset-0 rounded-full transition-colors cursor-pointer ${
-                      formData.isFeatured ? 'bg-orange-500' : 'bg-gray-400'
-                    }`}
-                  >
-                    <div className={`absolute top-1 left-1 w-6 h-6 bg-white rounded-full transition-transform ${
-                      formData.isFeatured ? 'translate-x-6' : 'translate-x-0'
-                    }`}></div>
+          {/* トグルエリア（固定位置・横幅統一・距離調整） */}
+          <div className="fixed bottom-56 right-8 w-40 space-y-4 z-50">
+            {/* おすすめトグル */}
+            <div className="bg-white rounded-full px-6 py-3 shadow-lg">
+              <div className="flex flex-col items-center gap-2">
+                <span className="text-xs font-medium text-gray-700">おすすめ</span>
+                <label className="cursor-pointer">
+                  <div className="relative inline-block w-14 h-8">
+                    <input
+                      type="checkbox"
+                      checked={formData.isFeatured || false}
+                      onChange={(e) => setFormData({ ...formData, isFeatured: e.target.checked })}
+                      className="sr-only"
+                    />
+                    <div 
+                      onClick={() => setFormData({ ...formData, isFeatured: !formData.isFeatured })}
+                      className={`absolute inset-0 rounded-full transition-colors cursor-pointer ${
+                        formData.isFeatured ? 'bg-blue-600' : 'bg-gray-400'
+                      }`}
+                    >
+                      <div className={`absolute top-1 left-1 w-6 h-6 bg-white rounded-full transition-transform ${
+                        formData.isFeatured ? 'translate-x-6' : 'translate-x-0'
+                      }`}></div>
+                    </div>
                   </div>
-                </div>
-              </label>
+                </label>
+              </div>
             </div>
-          </div>
 
-          {/* 公開トグル（フローティング） */}
-          <div className="fixed bottom-24 right-8 bg-white rounded-full px-6 py-3 shadow-lg z-50">
-            <div className="flex flex-col items-center gap-2">
-              <span className="text-xs font-medium text-gray-700">公開</span>
-              <label className="cursor-pointer">
-                <div className="relative inline-block w-14 h-8">
-                  <input
-                    type="checkbox"
-                    checked={formData.isPublished}
-                    onChange={(e) => setFormData({ ...formData, isPublished: e.target.checked })}
-                    className="sr-only"
-                  />
-                  <div 
-                    onClick={() => setFormData({ ...formData, isPublished: !formData.isPublished })}
-                    className={`absolute inset-0 rounded-full transition-colors cursor-pointer ${
-                      formData.isPublished ? 'bg-orange-500' : 'bg-gray-400'
-                    }`}
-                  >
-                    <div className={`absolute top-1 left-1 w-6 h-6 bg-white rounded-full transition-transform ${
-                      formData.isPublished ? 'translate-x-6' : 'translate-x-0'
-                    }`}></div>
+            {/* 公開トグル */}
+            <div className="bg-white rounded-full px-6 py-3 shadow-lg">
+              <div className="flex flex-col items-center gap-2">
+                <span className="text-xs font-medium text-gray-700">公開</span>
+                <label className="cursor-pointer">
+                  <div className="relative inline-block w-14 h-8">
+                    <input
+                      type="checkbox"
+                      checked={formData.isPublished}
+                      onChange={(e) => setFormData({ ...formData, isPublished: e.target.checked })}
+                      className="sr-only"
+                    />
+                    <div 
+                      onClick={() => setFormData({ ...formData, isPublished: !formData.isPublished })}
+                      className={`absolute inset-0 rounded-full transition-colors cursor-pointer ${
+                        formData.isPublished ? 'bg-blue-600' : 'bg-gray-400'
+                      }`}
+                    >
+                      <div className={`absolute top-1 left-1 w-6 h-6 bg-white rounded-full transition-transform ${
+                        formData.isPublished ? 'translate-x-6' : 'translate-x-0'
+                      }`}></div>
+                    </div>
                   </div>
-                </div>
-              </label>
+                </label>
+              </div>
             </div>
           </div>
 
@@ -384,6 +492,7 @@ export default function NewArticlePage() {
             <button
               type="submit"
               disabled={loading}
+              form="article-new-form"
               className="bg-blue-600 text-white w-14 h-14 rounded-full hover:bg-blue-700 transition-all hover:scale-110 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
               title="記事を作成"
             >
@@ -397,4 +506,3 @@ export default function NewArticlePage() {
     </AuthGuard>
   );
 }
-
