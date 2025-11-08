@@ -61,6 +61,10 @@ async function checkArticles() {
       console.log(`    スラッグ: ${data.slug || 'N/A'}`);
       console.log(`    公開: ${isPublished ? '✅' : '❌'}`);
       console.log(`    mediaId: ${hasMediaId ? `✅ ${data.mediaId}` : '❌ なし'}`);
+      console.log(`    viewCount: ${data.viewCount !== undefined ? data.viewCount : '❌ なし'}`);
+      console.log(`    likeCount: ${data.likeCount !== undefined ? data.likeCount : '❌ なし'}`);
+      console.log(`    publishedAt: ${data.publishedAt ? '✅' : '❌ なし'}`);
+      console.log(`    全フィールド: ${Object.keys(data).join(', ')}`);
       console.log('');
     });
     

@@ -69,19 +69,12 @@ export const getArticlesServer = async (
     console.log('[getArticlesServer] Fetching articles with options:', options);
     const articlesRef = adminDb.collection('articles');
     
-    // まず全記事数を確認
-    const allSnapshot = await articlesRef.get();
-    console.log('[getArticlesServer] Total articles in DB:', allSnapshot.size);
-    
-    // 公開済み記事を確認
-    const publishedSnapshot = await articlesRef.where('isPublished', '==', true).get();
-    console.log('[getArticlesServer] Published articles:', publishedSnapshot.size);
-    
     let q = articlesRef.where('isPublished', '==', true);
     
     // mediaIdが指定されている場合はフィルタリング
     if (options.mediaId) {
       q = q.where('mediaId', '==', options.mediaId) as any;
+      console.log('[getArticlesServer] Filtering by mediaId:', options.mediaId);
     }
     
     if (options.categoryId) {
@@ -92,23 +85,13 @@ export const getArticlesServer = async (
       q = q.where('tagIds', 'array-contains', options.tagId) as any;
     }
     
-    const orderField = options.orderBy || 'publishedAt';
-    const orderDir = options.orderDirection || 'desc';
-    q = q.orderBy(orderField, orderDir) as any;
-    
-    const limitCount = options.limit || 30;
-    const snapshot = await q.limit(limitCount).get();
+    // orderByは使わず、取得後にソートする（Firestoreの複合インデックス不足を回避）
+    const snapshot = await q.get();
     
     console.log('[getArticlesServer] Articles fetched:', snapshot.size);
     
-    const articles = snapshot.docs.map((doc) => {
+    let articles = snapshot.docs.map((doc) => {
       const data = doc.data();
-      console.log('[getArticlesServer] Article:', {
-        id: doc.id,
-        title: data.title,
-        slug: data.slug,
-        isPublished: data.isPublished,
-      });
       return {
         id: doc.id,
         ...data,
@@ -117,10 +100,33 @@ export const getArticlesServer = async (
       } as Article;
     });
     
+    // 取得後にソート
+    const orderField = options.orderBy || 'publishedAt';
+    const orderDir = options.orderDirection || 'desc';
+    
+    articles.sort((a, b) => {
+      const aValue = a[orderField] || 0;
+      const bValue = b[orderField] || 0;
+      
+      if (orderField === 'publishedAt') {
+        const aTime = (aValue as Date).getTime();
+        const bTime = (bValue as Date).getTime();
+        return orderDir === 'desc' ? bTime - aTime : aTime - bTime;
+      } else {
+        return orderDir === 'desc' 
+          ? (bValue as number) - (aValue as number)
+          : (aValue as number) - (bValue as number);
+      }
+    });
+    
+    // limit適用
+    const limitCount = options.limit || 30;
+    articles = articles.slice(0, limitCount);
+    
     console.log('[getArticlesServer] Returning', articles.length, 'articles');
     return articles;
   } catch (error) {
-    console.error('Error getting articles:', error);
+    console.error('[getArticlesServer] Error:', error);
     return [];
   }
 };
