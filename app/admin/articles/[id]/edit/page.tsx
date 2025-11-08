@@ -137,7 +137,7 @@ export default function EditArticlePage({ params }: { params: { id: string } }) 
     <AuthGuard>
       <AdminLayout>
         <div className="max-w-4xl">
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form id="article-edit-form" onSubmit={handleSubmit} className="space-y-6">
             {/* タイトル */}
             <div className="bg-white rounded-lg p-6">
               <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -147,7 +147,7 @@ export default function EditArticlePage({ params }: { params: { id: string } }) 
                 type="text"
                 value={formData.title}
                 onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
                 required
               />
             </div>
@@ -161,7 +161,7 @@ export default function EditArticlePage({ params }: { params: { id: string } }) 
                 type="text"
                 value={formData.slug}
                 onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
                 placeholder="article-slug"
                 required
               />
@@ -179,7 +179,7 @@ export default function EditArticlePage({ params }: { params: { id: string } }) 
                 type="text"
                 value={formData.authorName}
                 onChange={(e) => setFormData({ ...formData, authorName: e.target.value })}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
                 required
               />
             </div>
@@ -192,7 +192,7 @@ export default function EditArticlePage({ params }: { params: { id: string } }) 
               <textarea
                 value={formData.excerpt}
                 onChange={(e) => setFormData({ ...formData, excerpt: e.target.value })}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
                 rows={3}
               />
             </div>
@@ -294,7 +294,7 @@ export default function EditArticlePage({ params }: { params: { id: string } }) 
                   type="text"
                   value={formData.metaTitle}
                   onChange={(e) => setFormData({ ...formData, metaTitle: e.target.value })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
                 />
               </div>
 
@@ -305,7 +305,7 @@ export default function EditArticlePage({ params }: { params: { id: string } }) 
                 <textarea
                   value={formData.metaDescription}
                   onChange={(e) => setFormData({ ...formData, metaDescription: e.target.value })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
                   rows={3}
                 />
               </div>
@@ -323,7 +323,7 @@ export default function EditArticlePage({ params }: { params: { id: string } }) 
                   type="url"
                   value={formData.googleMapsUrl}
                   onChange={(e) => setFormData({ ...formData, googleMapsUrl: e.target.value })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
                 />
               </div>
 
@@ -335,7 +335,7 @@ export default function EditArticlePage({ params }: { params: { id: string } }) 
                   type="url"
                   value={formData.reservationUrl}
                   onChange={(e) => setFormData({ ...formData, reservationUrl: e.target.value })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
                 />
               </div>
             </div>
@@ -355,24 +355,45 @@ export default function EditArticlePage({ params }: { params: { id: string } }) 
               </label>
             </div>
 
-            {/* アクションボタン */}
-            <div className="flex justify-end space-x-4">
-              <button
-                type="button"
-                onClick={() => router.back()}
-                className="px-6 py-3 border border-gray-300 rounded-lg hover:bg-gray-50"
-              >
-                キャンセル
-              </button>
-              <button
-                type="submit"
-                disabled={loading}
-                className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {loading ? '更新中...' : '記事を更新'}
-              </button>
-            </div>
           </form>
+
+          {/* フローティングボタン */}
+          <div className="fixed bottom-8 right-8 flex items-center gap-4 z-50">
+            {/* キャンセルボタン */}
+            <button
+              type="button"
+              onClick={() => router.back()}
+              className="bg-gray-500 text-white w-14 h-14 rounded-full hover:bg-gray-600 transition-all hover:scale-110 flex items-center justify-center"
+              title="キャンセル"
+            >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+
+            {/* 更新ボタン */}
+            <button
+              type="button"
+              onClick={(e) => {
+                e.preventDefault();
+                const form = document.getElementById('article-edit-form') as HTMLFormElement;
+                if (form && form.checkValidity()) {
+                  const formEvent = new Event('submit', { bubbles: true, cancelable: true });
+                  form.dispatchEvent(formEvent);
+                  handleSubmit(formEvent as unknown as FormEvent<HTMLFormElement>);
+                } else {
+                  form?.reportValidity();
+                }
+              }}
+              disabled={loading}
+              className="bg-orange-500 text-white w-14 h-14 rounded-full hover:bg-orange-600 transition-all hover:scale-110 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
+              title="記事を更新"
+            >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+              </svg>
+            </button>
+          </div>
         </div>
       </AdminLayout>
     </AuthGuard>
