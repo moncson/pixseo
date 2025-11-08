@@ -45,7 +45,7 @@ export default function PopularKeywords({ limit = 10 }: PopularKeywordsProps) {
         {keywords.map((keyword, index) => (
           <Link
             key={keyword.id}
-            href={`/media/search?q=${encodeURIComponent(keyword.keyword)}`}
+            href={`/search?q=${encodeURIComponent(keyword.keyword)}`}
             className="inline-flex items-center px-3 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-full text-sm transition-colors"
           >
             <span className="mr-1.5 font-semibold text-blue-500">#{index + 1}</span>

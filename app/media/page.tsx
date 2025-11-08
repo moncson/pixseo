@@ -108,17 +108,17 @@ export default async function MediaPage() {
       <header className="bg-white shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
-            <Link href="/media" className="text-2xl font-bold text-gray-900">
+            <Link href="/" className="text-2xl font-bold text-gray-900">
               ふらっと。
             </Link>
             <nav className="hidden md:flex space-x-6">
-              <Link href="/media" className="text-gray-700 hover:text-gray-900">
+              <Link href="/" className="text-gray-700 hover:text-gray-900">
                 トップ
               </Link>
-              <Link href="/media/articles" className="text-gray-700 hover:text-gray-900">
+              <Link href="/articles" className="text-gray-700 hover:text-gray-900">
                 記事一覧
               </Link>
-              <Link href="/media/search" className="text-gray-700 hover:text-gray-900">
+              <Link href="/search" className="text-gray-700 hover:text-gray-900">
                 検索
               </Link>
             </nav>

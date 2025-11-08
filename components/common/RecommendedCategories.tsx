@@ -15,7 +15,7 @@ export default async function RecommendedCategories() {
         {categories.map((category) => (
           <Link
             key={category.id}
-            href={`/media/categories/${category.slug}`}
+            href={`/categories/${category.slug}`}
             className="block p-4 border-2 border-gray-200 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-colors text-center"
           >
             <h3 className="font-semibold text-gray-900">{category.name}</h3>

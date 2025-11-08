@@ -10,7 +10,7 @@ interface ArticleCardProps {
 export default function ArticleCard({ article }: ArticleCardProps) {
   return (
     <Link
-      href={`/media/articles/${article.slug}`}
+      href={`/articles/${article.slug}`}
       className="block bg-white rounded-lg shadow-md hover:shadow-xl transition-shadow overflow-hidden"
     >
       {article.featuredImage && (

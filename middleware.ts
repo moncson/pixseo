@@ -43,32 +43,21 @@ export async function middleware(request: NextRequest) {
     try {
       // スラッグを抽出
       const slug = hostname.replace('.pixseo.cloud', '');
+      const mediaId = await getMediaIdBySlug(slug);
+      
+      if (!mediaId) {
+        return new NextResponse('Service not found', { status: 404 });
+      }
 
-      // /media 配下のパスはそのまま
+      // /media 配下のパスはそのまま（内部パス用）
       if (pathname.startsWith('/media')) {
-        // ドメインからmediaIdを取得
-        const mediaId = await getMediaIdBySlug(slug);
-        
-        if (!mediaId) {
-          return NextResponse.next();
-        }
-
-        // レスポンスヘッダーにmediaIdを追加
         const response = NextResponse.next();
         response.headers.set('x-media-id', mediaId);
-        
         return response;
       }
 
       // ルートアクセスの場合は /media にrewrite
       if (pathname === '/' || pathname === '') {
-        const mediaId = await getMediaIdBySlug(slug);
-        
-        if (!mediaId) {
-          // 404ページを表示
-          return new NextResponse('Service not found', { status: 404 });
-        }
-
         const url = request.nextUrl.clone();
         url.pathname = '/media';
         
@@ -78,22 +67,14 @@ export async function middleware(request: NextRequest) {
         return response;
       }
 
-      // その他のパスは /media 配下にrewrite
-      if (!pathname.startsWith('/media')) {
-        const mediaId = await getMediaIdBySlug(slug);
-        
-        if (!mediaId) {
-          return new NextResponse('Service not found', { status: 404 });
-        }
-
-        const url = request.nextUrl.clone();
-        url.pathname = `/media${pathname}`;
-        
-        const response = NextResponse.rewrite(url);
-        response.headers.set('x-media-id', mediaId);
-        
-        return response;
-      }
+      // その他のパス（/articles/, /search など）は /media 配下にrewrite
+      const url = request.nextUrl.clone();
+      url.pathname = `/media${pathname}`;
+      
+      const response = NextResponse.rewrite(url);
+      response.headers.set('x-media-id', mediaId);
+      
+      return response;
     } catch (error) {
       console.error('[Middleware] Error:', error);
       return NextResponse.next();

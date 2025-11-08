@@ -149,8 +149,8 @@ export default function EditArticlePage({ params }: { params: { id: string } }) 
       return;
     }
     
-    // {slug}.pixseo.cloud/media/articles/{slug}
-    const previewUrl = `https://${currentTenant.slug}.pixseo.cloud/media/articles/${formData.slug}`;
+    // {slug}.pixseo.cloud/articles/{slug}
+    const previewUrl = `https://${currentTenant.slug}.pixseo.cloud/articles/${formData.slug}`;
     window.open(previewUrl, '_blank');
   };
 

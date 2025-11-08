@@ -121,17 +121,17 @@ export default function SearchPage() {
         <header className="bg-white shadow-sm">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
             <div className="flex items-center justify-between">
-              <a href="/media" className="text-2xl font-bold text-gray-900">
+              <a href="/" className="text-2xl font-bold text-gray-900">
                 ふらっと。
               </a>
               <nav className="hidden md:flex space-x-6">
-                <a href="/media" className="text-gray-700 hover:text-gray-900">
+                <a href="/" className="text-gray-700 hover:text-gray-900">
                   トップ
                 </a>
-                <a href="/media/articles" className="text-gray-700 hover:text-gray-900">
+                <a href="/articles" className="text-gray-700 hover:text-gray-900">
                   記事一覧
                 </a>
-                <a href="/media/search" className="text-gray-700 hover:text-gray-900">
+                <a href="/search" className="text-gray-700 hover:text-gray-900">
                   検索
                 </a>
               </nav>
