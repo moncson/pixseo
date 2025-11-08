@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { uploadImage, generateImagePath } from '@/lib/firebase/storage';
 
 interface FeaturedImageUploadProps {
   value?: string;
@@ -33,24 +32,37 @@ export default function FeaturedImageUpload({ value, onChange }: FeaturedImageUp
     };
     reader.readAsDataURL(file);
 
-    // アップロード
+    // アップロード（API経由）
     setUploading(true);
-    console.log('[FeaturedImageUpload] アップロード開始');
+    console.log('[FeaturedImageUpload] API経由でアップロード開始');
     
     try {
-      const path = generateImagePath(file, 'articles');
-      console.log('[FeaturedImageUpload] 生成されたパス:', path);
+      const formData = new FormData();
+      formData.append('file', file);
       
-      const url = await uploadImage(file, path);
-      console.log('[FeaturedImageUpload] アップロード成功、URL:', url);
+      console.log('[FeaturedImageUpload] APIリクエスト送信中...');
+      const response = await fetch('/api/admin/upload-image', {
+        method: 'POST',
+        body: formData,
+      });
+
+      console.log('[FeaturedImageUpload] APIレスポンス:', response.status);
+
+      if (!response.ok) {
+        throw new Error(`アップロード失敗: ${response.status}`);
+      }
+
+      const data = await response.json();
+      console.log('[FeaturedImageUpload] アップロード成功、URL:', data.url);
       
-      onChange(url);
+      onChange(data.url);
       console.log('[FeaturedImageUpload] onChange呼び出し完了');
     } catch (error: any) {
       console.error('[FeaturedImageUpload] アップロードエラー:', error);
-      console.error('[FeaturedImageUpload] エラーコード:', error?.code);
       console.error('[FeaturedImageUpload] エラーメッセージ:', error?.message);
       alert(`画像のアップロードに失敗しました: ${error?.message || '不明なエラー'}`);
+      // プレビューをクリア
+      setPreview(undefined);
     } finally {
       setUploading(false);
       console.log('[FeaturedImageUpload] アップロード処理終了');
