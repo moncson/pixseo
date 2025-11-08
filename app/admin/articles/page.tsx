@@ -7,8 +7,10 @@ import AdminLayout from '@/components/admin/AdminLayout';
 import { deleteArticle } from '@/lib/firebase/articles-admin';
 import { Article } from '@/types/article';
 import { apiGet } from '@/lib/api-client';
+import { useMediaTenant } from '@/contexts/MediaTenantContext';
 
 export default function ArticlesPage() {
+  const { currentTenant } = useMediaTenant();
   const [articles, setArticles] = useState<Article[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
@@ -162,7 +164,7 @@ export default function ArticlesPage() {
                           
                           {/* プレビューボタン */}
                           <Link
-                            href={`/media/articles/${article.slug}`}
+                            href={currentTenant ? `https://${currentTenant.slug}.pixseo.cloud/media/articles/${article.slug}` : '#'}
                             target="_blank"
                             className="w-8 h-8 rounded-full bg-green-100 text-green-600 hover:bg-green-200 flex items-center justify-center transition-colors"
                             title="プレビュー"
