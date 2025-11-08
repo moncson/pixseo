@@ -35,7 +35,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
       icon: (
         !homeIconError ? (
           <img 
-            src="/home-icon.png" 
+            src="/home.svg" 
             alt="ホーム" 
             className="w-5 h-5"
             onError={() => setHomeIconError(true)}
@@ -88,10 +88,9 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
         {/* ロゴ */}
         <div className="p-4 border-b flex items-center justify-center">
           <Link href="/admin" className="flex items-center justify-center">
-            {/* アイコン画像を配置: public/admin-logo.png または public/admin-logo.svg */}
             {!logoError ? (
               <img 
-                src="/admin-logo.png" 
+                src="/logo.svg" 
                 alt="ふらっと。管理画面" 
                 className="h-8 w-auto"
                 onError={() => setLogoError(true)}
