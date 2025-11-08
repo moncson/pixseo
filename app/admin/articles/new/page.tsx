@@ -132,7 +132,7 @@ export default function NewArticlePage() {
           <form id="article-new-form" onSubmit={handleSubmit}>
             {/* アイキャッチ画像（一番上・横長いっぱい） */}
             <div className="mb-6">
-              <div className="relative w-full h-64 bg-white rounded-xl overflow-hidden border-2 border-dashed border-gray-300 hover:border-blue-500 transition-colors">
+              <div className="relative w-full h-64 bg-white rounded-xl overflow-hidden">
                 {featuredImageUrl ? (
                   <div className="relative w-full h-full group">
                     <img 
@@ -243,27 +243,22 @@ export default function NewArticlePage() {
               />
 
               {/* スラッグ - 自動生成ボタン付き・プレースホルダーなし */}
-              <div>
-                <div className="flex gap-2 items-end">
-                  <div className="flex-1">
-                    <FloatingInput
-                      label="スラッグ（URL）"
-                      value={formData.slug}
-                      onChange={(value) => setFormData({ ...formData, slug: value })}
-                      required
-                    />
-                  </div>
-                  <button
-                    type="button"
-                    onClick={generateSlug}
-                    className="px-4 py-2 bg-gray-600 text-white rounded-xl hover:bg-gray-700 h-12 mb-0.5"
-                  >
-                    自動生成
-                  </button>
+              <div className="flex gap-2 items-end">
+                <div className="flex-1">
+                  <FloatingInput
+                    label="スラッグ（URL）"
+                    value={formData.slug}
+                    onChange={(value) => setFormData({ ...formData, slug: value })}
+                    required
+                  />
                 </div>
-                <p className="mt-2 text-sm text-gray-500">
-                  URL: /media/articles/{formData.slug || '(スラッグを入力)'}
-                </p>
+                <button
+                  type="button"
+                  onClick={generateSlug}
+                  className="px-4 py-2 bg-gray-600 text-white rounded-xl hover:bg-gray-700 h-12 mb-0.5"
+                >
+                  自動生成
+                </button>
               </div>
 
               {/* ライター選択 */}
@@ -417,8 +412,8 @@ export default function NewArticlePage() {
             </div>
           </form>
 
-          {/* トグルエリア（固定位置・横幅統一・距離調整） */}
-          <div className="fixed bottom-56 right-8 w-40 space-y-4 z-50">
+          {/* トグルエリア（固定位置・横幅をボタンに合わせる・距離を半分に） */}
+          <div className="fixed bottom-36 right-8 w-32 space-y-4 z-50">
             {/* おすすめトグル */}
             <div className="bg-white rounded-full px-6 py-3 shadow-lg">
               <div className="flex flex-col items-center gap-2">
@@ -432,8 +427,7 @@ export default function NewArticlePage() {
                       className="sr-only"
                     />
                     <div 
-                      onClick={() => setFormData({ ...formData, isFeatured: !formData.isFeatured })}
-                      className={`absolute inset-0 rounded-full transition-colors cursor-pointer ${
+                      className={`absolute inset-0 rounded-full transition-colors pointer-events-none ${
                         formData.isFeatured ? 'bg-blue-600' : 'bg-gray-400'
                       }`}
                     >
@@ -459,8 +453,7 @@ export default function NewArticlePage() {
                       className="sr-only"
                     />
                     <div 
-                      onClick={() => setFormData({ ...formData, isPublished: !formData.isPublished })}
-                      className={`absolute inset-0 rounded-full transition-colors cursor-pointer ${
+                      className={`absolute inset-0 rounded-full transition-colors pointer-events-none ${
                         formData.isPublished ? 'bg-blue-600' : 'bg-gray-400'
                       }`}
                     >

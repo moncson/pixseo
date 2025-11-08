@@ -175,7 +175,7 @@ export default function EditArticlePage({ params }: { params: { id: string } }) 
           <form id="article-edit-form" onSubmit={handleSubmit}>
             {/* アイキャッチ画像（一番上・横長いっぱい） */}
             <div className="mb-6">
-              <div className="relative w-full h-64 bg-white rounded-xl overflow-hidden border-2 border-dashed border-gray-300 hover:border-blue-500 transition-colors">
+              <div className="relative w-full h-64 bg-white rounded-xl overflow-hidden">
                 {featuredImageUrl ? (
                   <div className="relative w-full h-full group">
                     <img 
@@ -458,8 +458,8 @@ export default function EditArticlePage({ params }: { params: { id: string } }) 
             </div>
           </form>
 
-          {/* トグルエリア（固定位置・横幅統一・距離調整） */}
-          <div className="fixed bottom-56 right-8 w-40 space-y-4 z-50">
+          {/* トグルエリア（固定位置・横幅をボタンに合わせる・距離を半分に） */}
+          <div className="fixed bottom-36 right-8 w-32 space-y-4 z-50">
             {/* おすすめトグル */}
             <div className="bg-white rounded-full px-6 py-3 shadow-lg">
               <div className="flex flex-col items-center gap-2">
@@ -473,8 +473,7 @@ export default function EditArticlePage({ params }: { params: { id: string } }) 
                       className="sr-only"
                     />
                     <div 
-                      onClick={() => setFormData({ ...formData, isFeatured: !formData.isFeatured })}
-                      className={`absolute inset-0 rounded-full transition-colors cursor-pointer ${
+                      className={`absolute inset-0 rounded-full transition-colors pointer-events-none ${
                         formData.isFeatured ? 'bg-blue-600' : 'bg-gray-400'
                       }`}
                     >
@@ -500,8 +499,7 @@ export default function EditArticlePage({ params }: { params: { id: string } }) 
                       className="sr-only"
                     />
                     <div 
-                      onClick={() => setFormData({ ...formData, isPublished: !formData.isPublished })}
-                      className={`absolute inset-0 rounded-full transition-colors cursor-pointer ${
+                      className={`absolute inset-0 rounded-full transition-colors pointer-events-none ${
                         formData.isPublished ? 'bg-blue-600' : 'bg-gray-400'
                       }`}
                     >
