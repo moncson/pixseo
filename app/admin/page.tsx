@@ -4,8 +4,6 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import AuthGuard from '@/components/admin/AuthGuard';
 import AdminLayout from '@/components/admin/AdminLayout';
-import { collection, getDocs } from 'firebase/firestore';
-import { db } from '@/lib/firebase/config';
 
 interface Stats {
   articlesCount: number;
@@ -24,22 +22,12 @@ export default function AdminPage() {
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        if (!db) {
-          console.error('Firestore is not initialized');
-          return;
+        const response = await fetch('/api/admin/stats');
+        if (!response.ok) {
+          throw new Error('Failed to fetch stats');
         }
-
-        const [articlesSnap, categoriesSnap, tagsSnap] = await Promise.all([
-          getDocs(collection(db, 'articles')),
-          getDocs(collection(db, 'categories')),
-          getDocs(collection(db, 'tags')),
-        ]);
-
-        setStats({
-          articlesCount: articlesSnap.size,
-          categoriesCount: categoriesSnap.size,
-          tagsCount: tagsSnap.size,
-        });
+        const data = await response.json();
+        setStats(data);
       } catch (error) {
         console.error('Error fetching stats:', error);
       } finally {

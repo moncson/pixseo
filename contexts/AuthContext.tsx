@@ -29,15 +29,25 @@ interface AuthProviderProps {
 export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const [initialized, setInitialized] = useState(false);
 
   useEffect(() => {
+    console.log('[AuthProvider] Initializing auth state...');
+    
     const unsubscribe = onAuthStateChange((user) => {
+      console.log('[AuthProvider] Auth state changed:', user ? 'Logged in' : 'Not logged in');
       setUser(user);
-      setLoading(false);
+      
+      // 初回ロード完了後は常に loading = false に保つ
+      if (!initialized) {
+        setInitialized(true);
+        setLoading(false);
+        console.log('[AuthProvider] Initial auth check complete');
+      }
     });
 
     return () => unsubscribe();
-  }, []);
+  }, [initialized]);
 
   return (
     <AuthContext.Provider value={{ user, loading }}>
