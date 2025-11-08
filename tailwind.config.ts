@@ -12,6 +12,16 @@ const config: Config = {
         background: "var(--background)",
         foreground: "var(--foreground)",
       },
+      borderRadius: {
+        'sm': '1.75rem',
+        'DEFAULT': '1.75rem',
+        'md': '1.75rem',
+        'lg': '1.75rem',
+        'xl': '1.75rem',
+        '2xl': '1.75rem',
+        '3xl': '1.75rem',
+        'full': '9999px', // 正円はそのまま
+      },
     },
   },
   plugins: [require("@tailwindcss/typography")],
