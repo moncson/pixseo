@@ -7,14 +7,13 @@ import AdminLayout from '@/components/admin/AdminLayout';
 import RichTextEditor from '@/components/admin/RichTextEditor';
 import ImageUpload from '@/components/admin/ImageUpload';
 import { createArticle } from '@/lib/firebase/articles-admin';
-import { getAllCategories } from '@/lib/firebase/categories';
-import { getAllTags } from '@/lib/firebase/tags';
 import { Category, Tag } from '@/types/article';
 import { useEffect } from 'react';
 
 export default function NewArticlePage() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const [fetchLoading, setFetchLoading] = useState(true);
   const [categories, setCategories] = useState<Category[]>([]);
   const [tags, setTags] = useState<Tag[]>([]);
   
@@ -37,14 +36,29 @@ export default function NewArticlePage() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [categoriesData, tagsData] = await Promise.all([
-          getAllCategories(),
-          getAllTags(),
+        console.log('[NewArticlePage] Fetching categories and tags...');
+        
+        const [categoriesResponse, tagsResponse] = await Promise.all([
+          fetch('/api/admin/categories'),
+          fetch('/api/admin/tags'),
         ]);
+        
+        if (!categoriesResponse.ok || !tagsResponse.ok) {
+          throw new Error('Failed to fetch categories or tags');
+        }
+        
+        const [categoriesData, tagsData] = await Promise.all([
+          categoriesResponse.json(),
+          tagsResponse.json(),
+        ]);
+        
         setCategories(categoriesData);
         setTags(tagsData);
       } catch (error) {
         console.error('Error fetching data:', error);
+        alert('カテゴリーとタグの読み込みに失敗しました');
+      } finally {
+        setFetchLoading(false);
       }
     };
     fetchData();
@@ -82,6 +96,19 @@ export default function NewArticlePage() {
       .replace(/^-+|-+$/g, '');
     setFormData({ ...formData, slug });
   };
+
+  if (fetchLoading) {
+    return (
+      <AuthGuard>
+        <AdminLayout>
+          <div className="text-center py-8">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mx-auto"></div>
+            <p className="mt-2 text-gray-600">カテゴリーとタグを読み込み中...</p>
+          </div>
+        </AdminLayout>
+      </AuthGuard>
+    );
+  }
 
   return (
     <AuthGuard>

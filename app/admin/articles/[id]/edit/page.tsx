@@ -7,8 +7,6 @@ import AdminLayout from '@/components/admin/AdminLayout';
 import RichTextEditor from '@/components/admin/RichTextEditor';
 import ImageUpload from '@/components/admin/ImageUpload';
 import { updateArticle } from '@/lib/firebase/articles-admin';
-import { getAllCategories } from '@/lib/firebase/categories';
-import { getAllTags } from '@/lib/firebase/tags';
 import { Category, Tag, Article } from '@/types/article';
 
 export default function EditArticlePage({ params }: { params: { id: string } }) {
@@ -41,17 +39,27 @@ export default function EditArticlePage({ params }: { params: { id: string } }) 
         console.log('[EditArticlePage] Fetching article data...');
         
         // Admin SDK経由でサーバーサイドから取得（API Route）
-        const [articleResponse, categoriesData, tagsData] = await Promise.all([
+        const [articleResponse, categoriesResponse, tagsResponse] = await Promise.all([
           fetch(`/api/admin/articles/${params.id}`),
-          getAllCategories(),
-          getAllTags(),
+          fetch('/api/admin/categories'),
+          fetch('/api/admin/tags'),
         ]);
         
         if (!articleResponse.ok) {
           throw new Error(`記事の取得に失敗しました: ${articleResponse.status}`);
         }
+        if (!categoriesResponse.ok) {
+          throw new Error(`カテゴリーの取得に失敗しました: ${categoriesResponse.status}`);
+        }
+        if (!tagsResponse.ok) {
+          throw new Error(`タグの取得に失敗しました: ${tagsResponse.status}`);
+        }
         
-        const articleData: Article = await articleResponse.json();
+        const [articleData, categoriesData, tagsData] = await Promise.all([
+          articleResponse.json(),
+          categoriesResponse.json(),
+          tagsResponse.json(),
+        ]);
         console.log('[EditArticlePage] Received article:', articleData);
         
         // 日付をDateオブジェクトに変換
