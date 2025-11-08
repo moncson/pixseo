@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { uploadImage, generateImagePath } from '@/lib/firebase/storage';
 
 interface FeaturedImageUploadProps {
@@ -14,28 +14,46 @@ export default function FeaturedImageUpload({ value, onChange }: FeaturedImageUp
   const [isHovered, setIsHovered] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  // valueが変わったらpreviewを更新
+  useEffect(() => {
+    setPreview(value);
+  }, [value]);
+
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
+    console.log('[FeaturedImageUpload] ファイル選択:', file.name);
+
     // プレビュー表示
     const reader = new FileReader();
     reader.onloadend = () => {
+      console.log('[FeaturedImageUpload] プレビュー生成完了');
       setPreview(reader.result as string);
     };
     reader.readAsDataURL(file);
 
     // アップロード
     setUploading(true);
+    console.log('[FeaturedImageUpload] アップロード開始');
+    
     try {
       const path = generateImagePath(file, 'articles');
+      console.log('[FeaturedImageUpload] 生成されたパス:', path);
+      
       const url = await uploadImage(file, path);
+      console.log('[FeaturedImageUpload] アップロード成功、URL:', url);
+      
       onChange(url);
-    } catch (error) {
-      console.error('Error uploading image:', error);
-      alert('画像のアップロードに失敗しました');
+      console.log('[FeaturedImageUpload] onChange呼び出し完了');
+    } catch (error: any) {
+      console.error('[FeaturedImageUpload] アップロードエラー:', error);
+      console.error('[FeaturedImageUpload] エラーコード:', error?.code);
+      console.error('[FeaturedImageUpload] エラーメッセージ:', error?.message);
+      alert(`画像のアップロードに失敗しました: ${error?.message || '不明なエラー'}`);
     } finally {
       setUploading(false);
+      console.log('[FeaturedImageUpload] アップロード処理終了');
     }
   };
 

@@ -10,17 +10,28 @@ import { storage } from './config';
  * 画像をFirebase Storageにアップロード
  */
 export const uploadImage = async (file: File, path: string): Promise<string> => {
+  console.log('[uploadImage] アップロード開始:', { fileName: file.name, size: file.size, path });
+  
   if (!storage) {
+    console.error('[uploadImage] Firebase Storage is not initialized');
     throw new Error('Firebase Storage is not initialized');
   }
 
+  console.log('[uploadImage] Storage初期化済み、アップロード実行中...');
+
   try {
     const storageRef = ref(storage, path);
+    console.log('[uploadImage] Storage参照作成完了');
+    
     const snapshot = await uploadBytes(storageRef, file);
+    console.log('[uploadImage] アップロード完了、URL取得中...');
+    
     const downloadURL = await getDownloadURL(snapshot.ref);
+    console.log('[uploadImage] URL取得完了:', downloadURL);
+    
     return downloadURL;
   } catch (error) {
-    console.error('Error uploading image:', error);
+    console.error('[uploadImage] アップロードエラー:', error);
     throw error;
   }
 };
