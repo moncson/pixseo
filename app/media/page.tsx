@@ -80,9 +80,11 @@ export default async function MediaPage() {
     }
   }
   
-  // 記事データを取得（サーバーサイド）
-  const recentArticles = await getRecentArticlesServer(10, mediaId || undefined);
-  const popularArticles = await getPopularArticlesServer(10, mediaId || undefined);
+  // 記事データを並列取得（サーバーサイド）
+  const [recentArticles, popularArticles] = await Promise.all([
+    getRecentArticlesServer(10, mediaId || undefined),
+    getPopularArticlesServer(10, mediaId || undefined),
+  ]);
 
   // JSON-LD 構造化データ（WebSite）
   const jsonLd = {
