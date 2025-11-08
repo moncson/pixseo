@@ -21,14 +21,19 @@ const convertTimestamp = (timestamp: any): Date => {
 };
 
 // 記事を取得（サーバーサイド用）
-export const getArticleServer = async (slug: string): Promise<Article | null> => {
+export const getArticleServer = async (slug: string, mediaId?: string): Promise<Article | null> => {
   try {
     const articlesRef = adminDb.collection('articles');
-    const snapshot = await articlesRef
+    let query = articlesRef
       .where('slug', '==', slug)
-      .where('isPublished', '==', true)
-      .limit(1)
-      .get();
+      .where('isPublished', '==', true);
+    
+    // mediaIdが指定されている場合はフィルタリング
+    if (mediaId) {
+      query = query.where('mediaId', '==', mediaId) as any;
+    }
+    
+    const snapshot = await query.limit(1).get();
     
     if (snapshot.empty) {
       return null;
@@ -55,6 +60,7 @@ export const getArticlesServer = async (
     limit?: number;
     categoryId?: string;
     tagId?: string;
+    mediaId?: string;
     orderBy?: 'publishedAt' | 'viewCount' | 'likeCount';
     orderDirection?: 'asc' | 'desc';
   } = {}
@@ -72,6 +78,11 @@ export const getArticlesServer = async (
     console.log('[getArticlesServer] Published articles:', publishedSnapshot.size);
     
     let q = articlesRef.where('isPublished', '==', true);
+    
+    // mediaIdが指定されている場合はフィルタリング
+    if (options.mediaId) {
+      q = q.where('mediaId', '==', options.mediaId) as any;
+    }
     
     if (options.categoryId) {
       q = q.where('categoryIds', 'array-contains', options.categoryId) as any;

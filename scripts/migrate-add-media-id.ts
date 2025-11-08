@@ -36,15 +36,15 @@ async function main() {
     if (tenantsSnapshot.empty) {
       // デフォルトメディアを作成
       const defaultTenant = {
-        name: 'ふらっと。',
-        slug: 'furatto',
-        subdomain: 'furatto',
+        name: 'PixSEO',
+        slug: 'pixseo',
+        subdomain: 'pixseo',
         customDomain: null,
         ownerId: 'default', // 後で実際のオーナーIDに更新してください
         memberIds: [],
         settings: {
-          siteName: 'ふらっと。',
-          siteDescription: '旅行・グルメ情報メディア',
+          siteName: 'PixSEO',
+          siteDescription: 'SEO特化型メディアプラットフォーム',
           logoUrl: '',
         },
         isActive: true,
