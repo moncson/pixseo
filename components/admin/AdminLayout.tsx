@@ -57,7 +57,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
   };
 
   // サイトごとのメニュー（グループ化）
-  const siteNavigation = [
+  const siteNavigation = useMemo(() => [
     { 
       name: 'ダッシュボード', 
       href: '/admin',
@@ -69,6 +69,8 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
           width={20}
           height={20}
           priority
+          loading="eager"
+          unoptimized
         />
       )
     },
@@ -82,6 +84,8 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
           width={20}
           height={20}
           priority
+          loading="eager"
+          unoptimized
         />
       )
     },
@@ -95,6 +99,8 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
           width={20}
           height={20}
           priority
+          loading="eager"
+          unoptimized
         />
       )
     },
@@ -108,6 +114,8 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
           width={20}
           height={20}
           priority
+          loading="eager"
+          unoptimized
         />
       )
     },
@@ -166,7 +174,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
         </svg>
       )
     },
-  ];
+  ], []);
 
   // サービス管理メニュー（super_adminのみ）
   const serviceNavigation = isSuperAdmin ? [
@@ -208,6 +216,8 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
               width={120}
               height={32}
               priority
+              loading="eager"
+              quality={100}
               style={{ height: 'auto' }}
             />
           </Link>
@@ -336,6 +346,8 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                   fill
                   className="object-cover"
                   sizes="40px"
+                  priority
+                  loading="eager"
                 />
               </div>
             ) : (
