@@ -14,7 +14,7 @@ export default function AuthGuard({ children }: AuthGuardProps) {
 
   useEffect(() => {
     if (!loading && !user) {
-      router.push('/admin/login');
+      router.push('/login');
     }
   }, [user, loading, router]);
 

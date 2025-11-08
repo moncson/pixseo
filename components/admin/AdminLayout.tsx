@@ -50,7 +50,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
   const handleSignOut = async () => {
     try {
       await signOut();
-      router.push('/admin/login');
+      router.push('/login');
     } catch (error) {
       console.error('Sign out error:', error);
     }
@@ -60,7 +60,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
   const siteNavigation = useMemo(() => [
     { 
       name: 'ダッシュボード', 
-      href: '/admin',
+      href: '/',
       exact: true,
       icon: (
         <Image 
@@ -76,7 +76,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
     },
     { 
       name: '記事管理', 
-      href: '/admin/articles', 
+      href: '/articles', 
       icon: (
         <Image 
           src="/article.svg" 
@@ -91,7 +91,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
     },
     { 
       name: 'カテゴリー管理', 
-      href: '/admin/categories', 
+      href: '/categories',
       icon: (
         <Image 
           src="/category.svg" 
@@ -106,7 +106,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
     },
     { 
       name: 'タグ管理', 
-      href: '/admin/tags', 
+      href: '/tags',
       icon: (
         <Image 
           src="/tags.svg" 
@@ -121,7 +121,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
     },
     { 
       name: 'ライター管理', 
-      href: '/admin/writers', 
+      href: '/writers',
       icon: (
         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
@@ -130,7 +130,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
     },
     { 
       name: 'アカウント管理', 
-      href: '/admin/accounts', 
+      href: '/accounts',
       icon: (
         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
@@ -139,7 +139,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
     },
     { 
       name: 'サイト管理', 
-      href: '/admin/site', 
+      href: '/site',
       icon: (
         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
@@ -149,7 +149,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
     },
     { 
       name: 'デザイン', 
-      href: '/admin/design', 
+      href: '/design',
       icon: (
         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" />
@@ -158,7 +158,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
     },
     { 
       name: 'バナー管理', 
-      href: '/admin/banners', 
+      href: '/banners',
       icon: (
         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -167,7 +167,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
     },
     { 
       name: 'メディア管理', 
-      href: '/admin/media', 
+      href: '/media',
       icon: (
         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 4v16M17 4v16M3 8h4m10 0h4M3 12h18M3 16h4m10 0h4M4 20h16a1 1 0 001-1V5a1 1 0 00-1-1H4a1 1 0 00-1 1v14a1 1 0 001 1z" />
@@ -180,7 +180,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
   const serviceNavigation = isSuperAdmin ? [
     { 
       name: 'サービス管理', 
-      href: '/admin/service', 
+      href: '/service',
       icon: (
         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
@@ -189,7 +189,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
     },
     { 
       name: 'クライアント管理', 
-      href: '/admin/clients', 
+      href: '/clients',
       icon: (
         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
@@ -209,7 +209,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
       `}>
         {/* ロゴ */}
         <div className="p-4 border-b flex items-center justify-center">
-          <Link href="/admin" className="flex items-center justify-center">
+          <Link href="/" className="flex items-center justify-center">
             <Image 
               src="/logo.png" 
               alt="PixSEO 管理画面" 

@@ -14,27 +14,8 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // 管理画面ドメインの場合、ルートを /admin にリダイレクト
+  // 管理画面ドメインの場合、そのまま通す（Route Groupsで処理）
   if (hostname === 'admin.pixseo.cloud' || hostname === 'pixseo-lovat.vercel.app') {
-    // /admin 配下のパスはそのまま
-    if (pathname.startsWith('/admin') || pathname.startsWith('/api/admin')) {
-      return NextResponse.next();
-    }
-    
-    // ルートアクセスの場合は /admin にリダイレクト
-    if (pathname === '/' || pathname === '') {
-      const url = request.nextUrl.clone();
-      url.pathname = '/admin';
-      return NextResponse.redirect(url);
-    }
-    
-    // その他のパスは /admin 配下にrewrite
-    if (!pathname.startsWith('/admin')) {
-      const url = request.nextUrl.clone();
-      url.pathname = `/admin${pathname}`;
-      return NextResponse.rewrite(url);
-    }
-    
     return NextResponse.next();
   }
 
