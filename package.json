@@ -13,6 +13,7 @@
     "fetch-wordpress": "ts-node scripts/fetch-wordpress.ts",
     "migrate": "ts-node scripts/migrate-wordpress.ts",
     "migrate:add-media-id": "tsx scripts/migrate-add-media-id.ts",
+    "migrate:tenants": "tsx scripts/migrate-tenants.ts",
     "set-super-admin": "tsx scripts/set-super-admin.ts",
     "deploy:production": "npm run build && firebase deploy --only hosting:production",
     "deploy:admin": "npm run build && firebase deploy --only hosting:admin",
