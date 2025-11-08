@@ -9,7 +9,7 @@ export async function GET() {
   try {
     console.log('[API Tenants] メディアテナント一覧取得開始');
     
-    const snapshot = await adminDb.collection('tenants').orderBy('createdAt', 'desc').get();
+    const snapshot = await adminDb.collection('mediaTenants').orderBy('createdAt', 'desc').get();
     
     const tenants = snapshot.docs.map((doc) => {
       const data = doc.data();
@@ -43,14 +43,14 @@ export async function POST(request: Request) {
     }
 
     // スラッグの重複チェック
-    const existingSlug = await adminDb.collection('tenants').where('slug', '==', slug).get();
+    const existingSlug = await adminDb.collection('mediaTenants').where('slug', '==', slug).get();
     if (!existingSlug.empty) {
       return NextResponse.json({ error: 'Slug already exists' }, { status: 400 });
     }
 
     // カスタムドメインの重複チェック
     if (customDomain) {
-      const existingDomain = await adminDb.collection('tenants').where('customDomain', '==', customDomain).get();
+      const existingDomain = await adminDb.collection('mediaTenants').where('customDomain', '==', customDomain).get();
       if (!existingDomain.empty) {
         return NextResponse.json({ error: 'Custom domain already exists' }, { status: 400 });
       }
@@ -90,7 +90,7 @@ export async function POST(request: Request) {
       updatedAt: FieldValue.serverTimestamp(),
     };
 
-    const docRef = await adminDb.collection('tenants').add(tenantData);
+    const docRef = await adminDb.collection('mediaTenants').add(tenantData);
     
     // クライアントのmediaIdsを更新
     if (clientId) {

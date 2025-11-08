@@ -9,7 +9,7 @@ export async function GET(request: Request, { params }: { params: { id: string }
   try {
     console.log('[API Tenant Get] 取得開始:', params.id);
     
-    const doc = await adminDb.collection('tenants').doc(params.id).get();
+    const doc = await adminDb.collection('mediaTenants').doc(params.id).get();
     
     if (!doc.exists) {
       return NextResponse.json({ error: 'Tenant not found' }, { status: 404 });
@@ -41,7 +41,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
     const { name, slug, customDomain, clientId, settings, isActive } = body;
 
     // 現在のサービスデータを取得
-    const currentDoc = await adminDb.collection('tenants').doc(params.id).get();
+    const currentDoc = await adminDb.collection('mediaTenants').doc(params.id).get();
     if (!currentDoc.exists) {
       return NextResponse.json({ error: 'Service not found' }, { status: 404 });
     }
@@ -50,7 +50,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
 
     // スラッグの重複チェック（自分以外）
     if (slug) {
-      const existingSlug = await adminDb.collection('tenants')
+      const existingSlug = await adminDb.collection('mediaTenants')
         .where('slug', '==', slug)
         .get();
       
@@ -62,7 +62,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
 
     // カスタムドメインの重複チェック（自分以外）
     if (customDomain) {
-      const existingDomain = await adminDb.collection('tenants')
+      const existingDomain = await adminDb.collection('mediaTenants')
         .where('customDomain', '==', customDomain)
         .get();
       
@@ -114,7 +114,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
               updatedAt: FieldValue.serverTimestamp(),
             });
             // memberIdsにも追加
-            await adminDb.collection('tenants').doc(params.id).update({
+            await adminDb.collection('mediaTenants').doc(params.id).update({
               memberIds: FieldValue.arrayUnion(newClientUid),
             });
           }
@@ -122,7 +122,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
       }
     }
 
-    await adminDb.collection('tenants').doc(params.id).update(updateData);
+    await adminDb.collection('mediaTenants').doc(params.id).update(updateData);
     
     console.log('[API Service Update] 更新成功');
     
@@ -141,7 +141,7 @@ export async function DELETE(request: Request, { params }: { params: { id: strin
     // TODO: 関連する記事・バナー・メディアファイルも削除するか確認
     // 今回は論理削除（isActive: false）を推奨
     
-    await adminDb.collection('tenants').doc(params.id).delete();
+    await adminDb.collection('mediaTenants').doc(params.id).delete();
     
     console.log('[API Tenant Delete] 削除成功');
     

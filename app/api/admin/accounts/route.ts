@@ -76,7 +76,7 @@ export async function POST(request: Request) {
 
     // mediaIdが指定されている場合、tenantsコレクションのmemberIdsに追加
     if (mediaId) {
-      await adminDb.collection('tenants').doc(mediaId).update({
+      await adminDb.collection('mediaTenants').doc(mediaId).update({
         memberIds: FieldValue.arrayUnion(userRecord.uid),
         updatedAt: FieldValue.serverTimestamp(),
       });
