@@ -73,25 +73,11 @@ export default function SitePage() {
     }
   };
 
-  if (fetchLoading) {
-    return (
-      <AuthGuard>
-        <AdminLayout>
-          <div className="flex items-center justify-center min-h-[400px]">
-            <div className="text-center">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-              <p className="mt-4 text-gray-600">読み込み中...</p>
-            </div>
-          </div>
-        </AdminLayout>
-      </AuthGuard>
-    );
-  }
-
   return (
     <AuthGuard>
       <AdminLayout>
-        <div className="max-w-4xl pb-32">
+        {fetchLoading ? null : (
+          <div className="max-w-4xl pb-32 animate-fadeIn">
           <form onSubmit={handleSubmit}>
             <div className="bg-white rounded-lg p-6 space-y-6">
               <h2 className="text-xl font-bold text-gray-900">サイト管理</h2>
@@ -174,6 +160,7 @@ export default function SitePage() {
             </button>
           </div>
         </div>
+        )}
       </AdminLayout>
     </AuthGuard>
   );

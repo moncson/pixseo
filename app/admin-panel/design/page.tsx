@@ -75,22 +75,11 @@ export default function DesignPage() {
     { value: 'rounded', label: 'ラウンド' },
   ];
 
-  if (fetchLoading) {
-    return (
-      <AuthGuard>
-        <AdminLayout>
-          <div className="flex items-center justify-center h-64">
-            <div className="text-gray-500">読み込み中...</div>
-          </div>
-        </AdminLayout>
-      </AuthGuard>
-    );
-  }
-
   return (
     <AuthGuard>
       <AdminLayout>
-        <div className="p-8">
+        {fetchLoading ? null : (
+          <div className="p-8 animate-fadeIn">
           <div className="mb-6 flex items-center justify-between">
             <div>
               <h1 className="text-3xl font-bold text-gray-900">デザイン</h1>
@@ -458,6 +447,7 @@ export default function DesignPage() {
             </button>
           </div>
         </div>
+        )}
       </AdminLayout>
     </AuthGuard>
   );

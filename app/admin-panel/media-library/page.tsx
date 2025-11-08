@@ -113,7 +113,8 @@ export default function MediaPage() {
   return (
     <AuthGuard>
       <AdminLayout>
-        <div className="max-w-7xl">
+        {loading ? null : (
+          <div className="max-w-7xl animate-fadeIn">
           {/* 検索・フィルター */}
           <div className="bg-white rounded-xl p-4 mb-6" style={{ backgroundColor: '#ddecf8' }}>
             <div className="flex gap-4">
@@ -137,12 +138,7 @@ export default function MediaPage() {
           </div>
 
           {/* メディア一覧 */}
-          {loading ? (
-            <div className="bg-white rounded-xl p-8 text-center">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-              <p className="mt-4 text-gray-600">読み込み中...</p>
-            </div>
-          ) : filteredMedia.length === 0 ? (
+          {filteredMedia.length === 0 ? (
             <div className="bg-white rounded-xl p-12 text-center text-gray-500">
               {searchQuery || filterType !== 'all'
                 ? '条件に一致するメディアが見つかりません'
@@ -246,6 +242,7 @@ export default function MediaPage() {
             )}
           </button>
         </div>
+        )}
       </AdminLayout>
     </AuthGuard>
   );
