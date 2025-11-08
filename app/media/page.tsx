@@ -51,9 +51,18 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function MediaPage() {
+  // mediaIdを取得
+  const headersList = headers();
+  const mediaId = headersList.get('x-media-id');
+  
+  console.log('[Media Page] mediaId:', mediaId);
+  
   // 記事データを取得（サーバーサイド）
-  const recentArticles = await getRecentArticlesServer(10);
-  const popularArticles = await getPopularArticlesServer(10);
+  const recentArticles = await getRecentArticlesServer(10, mediaId || undefined);
+  const popularArticles = await getPopularArticlesServer(10, mediaId || undefined);
+  
+  console.log('[Media Page] Recent articles:', recentArticles.length);
+  console.log('[Media Page] Popular articles:', popularArticles.length);
 
   // JSON-LD 構造化データ（WebSite）
   const jsonLd = {

@@ -126,20 +126,22 @@ export const getArticlesServer = async (
 };
 
 // 新着記事を取得（サーバーサイド用）
-export const getRecentArticlesServer = async (limitCount: number = 10): Promise<Article[]> => {
+export const getRecentArticlesServer = async (limitCount: number = 10, mediaId?: string): Promise<Article[]> => {
   return getArticlesServer({
     orderBy: 'publishedAt',
     orderDirection: 'desc',
     limit: limitCount,
+    mediaId,
   });
 };
 
 // 人気記事を取得（サーバーサイド用）
-export const getPopularArticlesServer = async (limitCount: number = 10): Promise<Article[]> => {
+export const getPopularArticlesServer = async (limitCount: number = 10, mediaId?: string): Promise<Article[]> => {
   return getArticlesServer({
     orderBy: 'viewCount',
     orderDirection: 'desc',
     limit: limitCount,
+    mediaId,
   });
 };
 
@@ -148,12 +150,19 @@ export const getRelatedArticlesServer = async (
   excludeArticleId: string,
   categoryIds: string[],
   tagIds: string[],
-  limitCount: number = 6
+  limitCount: number = 6,
+  mediaId?: string
 ): Promise<Article[]> => {
   try {
     const articlesRef = adminDb.collection('articles');
-    const snapshot = await articlesRef
-      .where('isPublished', '==', true)
+    let query = articlesRef.where('isPublished', '==', true);
+    
+    // mediaIdが指定されている場合はフィルタリング
+    if (mediaId) {
+      query = query.where('mediaId', '==', mediaId) as any;
+    }
+    
+    const snapshot = await query
       .orderBy('publishedAt', 'desc')
       .limit(limitCount * 2)
       .get();

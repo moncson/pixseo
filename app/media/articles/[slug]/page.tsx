@@ -18,7 +18,11 @@ interface PageProps {
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
-  const article = await getArticleServer(params.slug);
+  // mediaIdを取得
+  const headersList = headers();
+  const mediaId = headersList.get('x-media-id');
+  
+  const article = await getArticleServer(params.slug, mediaId || undefined);
   
   if (!article) {
     return {
@@ -31,8 +35,6 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   }
 
   // サイトのインデックス設定を取得
-  const headersList = headers();
-  const mediaId = headersList.get('x-media-id');
   
   let siteAllowIndexing = false;
   let siteName = 'ふらっと。';
@@ -72,12 +74,16 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 }
 
 export default async function ArticlePage({ params }: PageProps) {
-  const article = await getArticleServer(params.slug);
+  // mediaIdを取得
+  const headersList = headers();
+  const mediaId = headersList.get('x-media-id');
+  
+  const article = await getArticleServer(params.slug, mediaId || undefined);
   if (!article) {
     notFound();
   }
 
-  const relatedArticles = await getRelatedArticlesServer(article.id, article.categoryIds, article.tagIds, 6);
+  const relatedArticles = await getRelatedArticlesServer(article.id, article.categoryIds, article.tagIds, 6, mediaId || undefined);
 
   // JSON-LD 構造化データ（SEO強化）
   const jsonLd = {
