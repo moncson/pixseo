@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import AuthGuard from '@/components/admin/AuthGuard';
 import AdminLayout from '@/components/admin/AdminLayout';
-import { getAllTagsAdmin, deleteTag } from '@/lib/firebase/tags-admin';
+import { deleteTag } from '@/lib/firebase/tags-admin';
 import { Tag } from '@/types/article';
 
 export default function TagsPage() {
@@ -18,7 +18,11 @@ export default function TagsPage() {
   const fetchTags = async () => {
     try {
       setLoading(true);
-      const data = await getAllTagsAdmin();
+      const response = await fetch('/api/admin/tags');
+      if (!response.ok) {
+        throw new Error(`API error: ${response.status}`);
+      }
+      const data = await response.json();
       setTags(data);
     } catch (error) {
       console.error('Error fetching tags:', error);

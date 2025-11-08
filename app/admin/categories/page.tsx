@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import AuthGuard from '@/components/admin/AuthGuard';
 import AdminLayout from '@/components/admin/AdminLayout';
-import { getAllCategoriesAdmin, deleteCategory } from '@/lib/firebase/categories-admin';
+import { deleteCategory } from '@/lib/firebase/categories-admin';
 import { Category } from '@/types/article';
 
 export default function CategoriesPage() {
@@ -18,7 +18,11 @@ export default function CategoriesPage() {
   const fetchCategories = async () => {
     try {
       setLoading(true);
-      const data = await getAllCategoriesAdmin();
+      const response = await fetch('/api/admin/categories');
+      if (!response.ok) {
+        throw new Error(`API error: ${response.status}`);
+      }
+      const data = await response.json();
       setCategories(data);
     } catch (error) {
       console.error('Error fetching categories:', error);

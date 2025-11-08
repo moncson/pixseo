@@ -15,6 +15,8 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
   const router = useRouter();
   const { user } = useAuth();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [homeIconError, setHomeIconError] = useState(false);
+  const [logoError, setLogoError] = useState(false);
 
   const handleSignOut = async () => {
     try {
@@ -31,9 +33,18 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
       href: '/admin',
       exact: true, // 完全一致のみアクティブ
       icon: (
-        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-        </svg>
+        !homeIconError ? (
+          <img 
+            src="/home-icon.png" 
+            alt="ホーム" 
+            className="w-5 h-5"
+            onError={() => setHomeIconError(true)}
+          />
+        ) : (
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+          </svg>
+        )
       )
     },
     { 
@@ -46,7 +57,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
       )
     },
     { 
-      name: 'カテゴリー', 
+      name: 'カテゴリー管理', 
       href: '/admin/categories', 
       icon: (
         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -55,7 +66,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
       )
     },
     { 
-      name: 'タグ', 
+      name: 'タグ管理', 
       href: '/admin/tags', 
       icon: (
         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -75,9 +86,19 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
         flex flex-col
       `}>
         {/* ロゴ */}
-        <div className="p-4 border-b">
-          <Link href="/admin" className="text-xl font-bold text-blue-600">
-            ふらっと。管理画面
+        <div className="p-4 border-b flex items-center justify-center">
+          <Link href="/admin" className="flex items-center justify-center">
+            {/* アイコン画像を配置: public/admin-logo.png または public/admin-logo.svg */}
+            {!logoError ? (
+              <img 
+                src="/admin-logo.png" 
+                alt="ふらっと。管理画面" 
+                className="h-8 w-auto"
+                onError={() => setLogoError(true)}
+              />
+            ) : (
+              <div className="h-8 w-8 bg-blue-600 rounded"></div>
+            )}
           </Link>
         </div>
 
@@ -107,9 +128,9 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
                   href={item.href}
                   onClick={() => setSidebarOpen(false)}
                   className={`
-                    flex items-center px-3 py-2.5 text-sm font-medium transition-all rounded-xl mx-2
+                    flex items-center px-3 py-2.5 text-sm transition-all rounded-xl mx-2 font-bold
                     ${isActive 
-                      ? 'bg-blue-100 text-blue-700' 
+                      ? 'bg-blue-600 text-white' 
                       : 'text-gray-700 hover:bg-gray-50'
                     }
                   `}
@@ -127,7 +148,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
           <div className="text-sm text-gray-600 truncate">{user?.email}</div>
           <button
             onClick={handleSignOut}
-            className="w-full px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700 transition-colors"
+            className="w-full px-4 py-2 text-sm font-medium text-white bg-orange-500 rounded-full hover:bg-orange-600 transition-colors"
           >
             ログアウト
           </button>
@@ -137,7 +158,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
       {/* オーバーレイ（モバイル） */}
       {sidebarOpen && (
         <div
-          className="fixed inset-0 bg-black bg-opacity-50 z-30 lg:hidden"
+          className="fixed inset-0 bg-blue-50 bg-opacity-50 z-30 lg:hidden"
           onClick={() => setSidebarOpen(false)}
         />
       )}
