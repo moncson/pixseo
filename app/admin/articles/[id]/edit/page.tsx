@@ -5,7 +5,8 @@ import { useRouter } from 'next/navigation';
 import AuthGuard from '@/components/admin/AuthGuard';
 import AdminLayout from '@/components/admin/AdminLayout';
 import RichTextEditor from '@/components/admin/RichTextEditor';
-import ImageUpload from '@/components/admin/ImageUpload';
+import FeaturedImageUpload from '@/components/admin/FeaturedImageUpload';
+import FloatingInput from '@/components/admin/FloatingInput';
 import { updateArticle } from '@/lib/firebase/articles-admin';
 import { Category, Tag, Article } from '@/types/article';
 
@@ -138,73 +139,45 @@ export default function EditArticlePage({ params }: { params: { id: string } }) 
       <AdminLayout>
         <div className="max-w-4xl">
           <form id="article-edit-form" onSubmit={handleSubmit} className="space-y-6">
+            {/* アイキャッチ画像（一番上） */}
+            <FeaturedImageUpload
+              value={formData.featuredImage}
+              onChange={(url) => setFormData({ ...formData, featuredImage: url })}
+            />
+
             {/* タイトル */}
-            <div className="bg-white rounded-lg p-6">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                タイトル *
-              </label>
-              <input
-                type="text"
-                value={formData.title}
-                onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
-                required
-              />
-            </div>
+            <FloatingInput
+              label="タイトル"
+              value={formData.title}
+              onChange={(value) => setFormData({ ...formData, title: value })}
+              required
+            />
 
             {/* スラッグ */}
-            <div className="bg-white rounded-lg p-6">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                スラッグ（URL） *
-              </label>
-              <input
-                type="text"
-                value={formData.slug}
-                onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
-                placeholder="article-slug"
-                required
-              />
-              <p className="mt-1 text-sm text-gray-500">
-                URL: /media/articles/{formData.slug || 'article-slug'}
-              </p>
-            </div>
+            <FloatingInput
+              label="スラッグ（URL）"
+              value={formData.slug}
+              onChange={(value) => setFormData({ ...formData, slug: value })}
+              placeholder="article-slug"
+              required
+            />
 
-            {/* 著者 */}
-            <div className="bg-white rounded-lg p-6">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                著者名 *
-              </label>
-              <input
-                type="text"
-                value={formData.authorName}
-                onChange={(e) => setFormData({ ...formData, authorName: e.target.value })}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
-                required
-              />
-            </div>
+            {/* 著者名 */}
+            <FloatingInput
+              label="著者名"
+              value={formData.authorName}
+              onChange={(value) => setFormData({ ...formData, authorName: value })}
+              required
+            />
 
             {/* 抜粋 */}
-            <div className="bg-white rounded-lg p-6">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                抜粋
-              </label>
-              <textarea
-                value={formData.excerpt}
-                onChange={(e) => setFormData({ ...formData, excerpt: e.target.value })}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
-                rows={3}
-              />
-            </div>
-
-            {/* アイキャッチ画像 */}
-            <div className="bg-white rounded-lg p-6">
-              <ImageUpload
-                label="アイキャッチ画像"
-                value={formData.featuredImage}
-                onChange={(url) => setFormData({ ...formData, featuredImage: url })}
-              />
-            </div>
+            <FloatingInput
+              label="抜粋"
+              value={formData.excerpt}
+              onChange={(value) => setFormData({ ...formData, excerpt: value })}
+              multiline
+              rows={3}
+            />
 
             {/* 本文 */}
             <div className="bg-white rounded-lg p-6">
@@ -282,80 +255,60 @@ export default function EditArticlePage({ params }: { params: { id: string } }) 
               </div>
             </div>
 
-            {/* SEO設定 */}
-            <div className="bg-white rounded-lg p-6 space-y-4">
-              <h3 className="text-lg font-semibold text-gray-900">SEO設定</h3>
-              
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  メタタイトル
-                </label>
-                <input
-                  type="text"
-                  value={formData.metaTitle}
-                  onChange={(e) => setFormData({ ...formData, metaTitle: e.target.value })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
-                />
-              </div>
+            {/* メタタイトル */}
+            <FloatingInput
+              label="メタタイトル"
+              value={formData.metaTitle}
+              onChange={(value) => setFormData({ ...formData, metaTitle: value })}
+            />
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  メタディスクリプション
-                </label>
-                <textarea
-                  value={formData.metaDescription}
-                  onChange={(e) => setFormData({ ...formData, metaDescription: e.target.value })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
-                  rows={3}
-                />
-              </div>
-            </div>
+            {/* メタディスクリプション */}
+            <FloatingInput
+              label="メタディスクリプション"
+              value={formData.metaDescription}
+              onChange={(value) => setFormData({ ...formData, metaDescription: value })}
+              multiline
+              rows={3}
+            />
 
-            {/* 追加設定 */}
-            <div className="bg-white rounded-lg p-6 space-y-4">
-              <h3 className="text-lg font-semibold text-gray-900">追加設定</h3>
-              
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Googleマップ URL
-                </label>
-                <input
-                  type="url"
-                  value={formData.googleMapsUrl}
-                  onChange={(e) => setFormData({ ...formData, googleMapsUrl: e.target.value })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
-                />
-              </div>
+            {/* Googleマップ URL */}
+            <FloatingInput
+              label="Googleマップ URL"
+              value={formData.googleMapsUrl}
+              onChange={(value) => setFormData({ ...formData, googleMapsUrl: value })}
+              type="url"
+            />
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  予約サイト URL
-                </label>
-                <input
-                  type="url"
-                  value={formData.reservationUrl}
-                  onChange={(e) => setFormData({ ...formData, reservationUrl: e.target.value })}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
-                />
-              </div>
-            </div>
+            {/* 予約サイト URL */}
+            <FloatingInput
+              label="予約サイト URL"
+              value={formData.reservationUrl}
+              onChange={(value) => setFormData({ ...formData, reservationUrl: value })}
+              type="url"
+            />
 
-            {/* 公開設定 */}
-            <div className="bg-white rounded-lg p-6">
-              <label className="flex items-center">
+          </form>
+
+          {/* 公開トグル（フローティング） */}
+          <div className="fixed bottom-32 right-8 bg-white rounded-full p-4 z-50">
+            <label className="flex items-center gap-3 cursor-pointer">
+              <span className="text-sm font-medium text-gray-700">公開</span>
+              <div className="relative inline-block w-14 h-8">
                 <input
                   type="checkbox"
                   checked={formData.isPublished}
                   onChange={(e) => setFormData({ ...formData, isPublished: e.target.checked })}
-                  className="mr-2"
+                  className="sr-only peer"
                 />
-                <span className="text-sm font-medium text-gray-700">
-                  この記事を公開する
-                </span>
-              </label>
-            </div>
-
-          </form>
+                <div className={`absolute inset-0 rounded-full transition-colors ${
+                  formData.isPublished ? 'bg-orange-500' : 'bg-gray-400'
+                }`}></div>
+                <div className={`absolute top-1 left-1 w-6 h-6 bg-white rounded-full transition-transform ${
+                  formData.isPublished ? 'translate-x-6' : 'translate-x-0'
+                }`}></div>
+              </div>
+            </label>
+          </div>
 
           {/* フローティングボタン */}
           <div className="fixed bottom-8 right-8 flex items-center gap-4 z-50">
