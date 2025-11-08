@@ -85,6 +85,7 @@ export async function POST(request: Request) {
         },
       },
       isActive: true,
+      allowIndexing: false, // デフォルトはNOINDEX（SEO保護）
       createdAt: FieldValue.serverTimestamp(),
       updatedAt: FieldValue.serverTimestamp(),
     };

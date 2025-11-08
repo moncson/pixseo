@@ -15,6 +15,7 @@ export interface MediaTenant {
     };
   };
   isActive: boolean;
+  allowIndexing: boolean;    // SEOインデックス許可（デフォルト：false）
   createdAt: Date;
   updatedAt: Date;
 }

@@ -10,6 +10,7 @@ interface SiteSettings {
   siteName: string;
   siteDescription: string;
   logoUrl: string;
+  allowIndexing: boolean;
 }
 
 export default function SitePage() {
@@ -19,6 +20,7 @@ export default function SitePage() {
     siteName: '',
     siteDescription: '',
     logoUrl: '',
+    allowIndexing: false, // デフォルトはOFF
   });
 
   useEffect(() => {
@@ -34,6 +36,7 @@ export default function SitePage() {
           siteName: data.siteName || '',
           siteDescription: data.siteDescription || '',
           logoUrl: data.logoUrl || '',
+          allowIndexing: data.allowIndexing || false, // デフォルトはOFF
         });
       }
     } catch (error) {
@@ -126,6 +129,35 @@ export default function SitePage() {
               </div>
             </div>
           </form>
+
+          {/* トグルエリア（固定位置） */}
+          <div className="fixed bottom-36 right-8 w-32 space-y-4 z-50">
+            {/* インデックス許可トグル */}
+            <div className="bg-white rounded-full px-6 py-3 shadow-lg">
+              <div className="flex flex-col items-center gap-2">
+                <span className="text-xs font-medium text-gray-700">インデックス</span>
+                <label className="cursor-pointer">
+                  <div className="relative inline-block w-14 h-8">
+                    <input
+                      type="checkbox"
+                      checked={formData.allowIndexing}
+                      onChange={(e) => setFormData({ ...formData, allowIndexing: e.target.checked })}
+                      className="sr-only"
+                    />
+                    <div 
+                      className={`absolute inset-0 rounded-full transition-colors pointer-events-none ${
+                        formData.allowIndexing ? 'bg-blue-600' : 'bg-gray-400'
+                      }`}
+                    >
+                      <div className={`absolute top-1 left-1 w-6 h-6 bg-white rounded-full transition-transform ${
+                        formData.allowIndexing ? 'translate-x-6' : 'translate-x-0'
+                      }`}></div>
+                    </div>
+                  </div>
+                </label>
+              </div>
+            </div>
+          </div>
 
           {/* フローティング更新ボタン */}
           <div className="fixed bottom-8 right-8 z-50">

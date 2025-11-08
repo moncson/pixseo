@@ -1,23 +1,54 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
+import { headers } from 'next/headers';
 import { getRecentArticlesServer, getPopularArticlesServer } from '@/lib/firebase/articles-server';
+import { adminDb } from '@/lib/firebase/admin';
 import SearchBar from '@/components/search/SearchBar';
 import ArticleCard from '@/components/articles/ArticleCard';
 import ExternalLinks from '@/components/common/ExternalLinks';
 import RecommendedCategories from '@/components/common/RecommendedCategories';
 import PopularKeywords from '@/components/search/PopularKeywords';
 
-export const metadata: Metadata = {
-  title: 'ふらっと。 | バリアフリー情報メディア',
-  description: 'おでかけ・外出に役立つバリアフリー情報を探す',
-  openGraph: {
-    title: 'ふらっと。 | バリアフリー情報メディア',
-    description: 'おでかけ・外出に役立つバリアフリー情報を探す',
-  },
-};
-
 // ISR: 60秒ごとに再生成（SEOに強く、高速）
 export const revalidate = 60;
+
+// 動的にメタデータを生成
+export async function generateMetadata(): Promise<Metadata> {
+  const headersList = headers();
+  const mediaId = headersList.get('x-media-id');
+  
+  let allowIndexing = false;
+  let siteName = 'ふらっと。';
+  let siteDescription = 'おでかけ・外出に役立つバリアフリー情報を探す';
+  
+  // mediaIdがある場合、テナント情報を取得
+  if (mediaId) {
+    try {
+      const tenantDoc = await adminDb.collection('mediaTenants').doc(mediaId).get();
+      if (tenantDoc.exists) {
+        const data = tenantDoc.data();
+        allowIndexing = data?.allowIndexing || false;
+        siteName = data?.name || siteName;
+        siteDescription = data?.settings?.siteDescription || siteDescription;
+      }
+    } catch (error) {
+      console.error('[Media Page] Error fetching tenant info:', error);
+    }
+  }
+  
+  return {
+    title: `${siteName} | バリアフリー情報メディア`,
+    description: siteDescription,
+    robots: {
+      index: allowIndexing,
+      follow: allowIndexing,
+    },
+    openGraph: {
+      title: `${siteName} | バリアフリー情報メディア`,
+      description: siteDescription,
+    },
+  };
+}
 
 export default async function MediaPage() {
   // 記事データを取得（サーバーサイド）

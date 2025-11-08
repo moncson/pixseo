@@ -1,6 +1,8 @@
 import { notFound } from 'next/navigation';
 import { Metadata } from 'next';
+import { headers } from 'next/headers';
 import { getArticleServer, getRelatedArticlesServer } from '@/lib/firebase/articles-server';
+import { adminDb } from '@/lib/firebase/admin';
 import ArticleContent from '@/components/articles/ArticleContent';
 import RelatedArticles from '@/components/articles/RelatedArticles';
 import ArticleHeader from '@/components/articles/ArticleHeader';
@@ -21,12 +23,46 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   if (!article) {
     return {
       title: '記事が見つかりません | ふらっと。',
+      robots: {
+        index: false,
+        follow: false,
+      },
     };
   }
 
+  // サイトのインデックス設定を取得
+  const headersList = headers();
+  const mediaId = headersList.get('x-media-id');
+  
+  let siteAllowIndexing = false;
+  let siteName = 'ふらっと。';
+  
+  if (mediaId) {
+    try {
+      const tenantDoc = await adminDb.collection('mediaTenants').doc(mediaId).get();
+      if (tenantDoc.exists) {
+        const data = tenantDoc.data();
+        siteAllowIndexing = data?.allowIndexing || false;
+        siteName = data?.name || siteName;
+      }
+    } catch (error) {
+      console.error('[Article Page] Error fetching tenant info:', error);
+    }
+  }
+  
+  // インデックス制御のロジック
+  // 1. サイトがNOINDEX → すべての記事もNOINDEX
+  // 2. サイトがINDEXで記事が非公開 → NOINDEX
+  // 3. サイトがINDEXで記事が公開 → INDEX
+  const allowIndexing = siteAllowIndexing && article.isPublished;
+
   return {
-    title: `${article.metaTitle || article.title} | ふらっと。`,
+    title: `${article.metaTitle || article.title} | ${siteName}`,
     description: article.metaDescription || article.excerpt || article.title,
+    robots: {
+      index: allowIndexing,
+      follow: allowIndexing,
+    },
     openGraph: {
       title: article.metaTitle || article.title,
       description: article.metaDescription || article.excerpt || article.title,
