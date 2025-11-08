@@ -1,0 +1,18 @@
+{
+  "projects": {
+    "default": "ayumi-f6bd2"
+  },
+  "targets": {
+    "ayumi-f6bd2": {
+      "hosting": {
+        "production": [
+          "ayumi-f6bd2"
+        ],
+        "admin": [
+          "ayumi-f6bd2-admin"
+        ]
+      }
+    }
+  },
+  "etags": {}
+}

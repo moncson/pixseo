@@ -1,0 +1,58 @@
+import { initializeApp, getApps, FirebaseApp } from 'firebase/app';
+import { getFirestore, Firestore } from 'firebase/firestore';
+import { getStorage, FirebaseStorage } from 'firebase/storage';
+import { getAuth, Auth } from 'firebase/auth';
+
+// 環境変数が未設定の場合はデフォルト値を使用
+const firebaseConfig = {
+  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY || 'AIzaSyDi8DiIdhLCJO9bXAzBGdeKwBBi7gYPXHs',
+  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN || 'ayumi-f6bd2.firebaseapp.com',
+  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || 'ayumi-f6bd2',
+  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET || 'ayumi-f6bd2.firebasestorage.app',
+  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID || '561071971625',
+  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID || '1:561071971625:web:0e382383fbb444c0066b38',
+};
+
+// 環境変数の検証
+if (typeof window !== 'undefined') {
+  const requiredEnvVars = [
+    'NEXT_PUBLIC_FIREBASE_API_KEY',
+    'NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN',
+    'NEXT_PUBLIC_FIREBASE_PROJECT_ID',
+    'NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET',
+    'NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID',
+    'NEXT_PUBLIC_FIREBASE_APP_ID',
+  ];
+
+  const missingVars = requiredEnvVars.filter(
+    (varName) => !process.env[varName]
+  );
+
+  if (missingVars.length > 0) {
+    console.warn(
+      'Missing Firebase environment variables:',
+      missingVars.join(', ')
+    );
+  }
+}
+
+// Firebase初期化（シングルトン）
+let app: FirebaseApp | undefined;
+let db: Firestore | undefined;
+let storage: FirebaseStorage | undefined;
+let auth: Auth | undefined;
+
+if (typeof window !== 'undefined') {
+  if (!getApps().length) {
+    app = initializeApp(firebaseConfig);
+  } else {
+    app = getApps()[0];
+  }
+  
+  db = getFirestore(app);
+  storage = getStorage(app);
+  auth = getAuth(app);
+}
+
+export { app, db, storage, auth };
+

@@ -1,0 +1,17 @@
+{
+  "buildCommand": "npm run build",
+  "outputDirectory": ".next",
+  "framework": "nextjs",
+  "regions": ["hnd1"],
+  "env": {
+    "NEXT_PUBLIC_FIREBASE_API_KEY": "AIzaSyDi8DiIdhLCJO9bXAzBGdeKwBBi7gYPXHs",
+    "NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN": "ayumi-f6bd2.firebaseapp.com",
+    "NEXT_PUBLIC_FIREBASE_PROJECT_ID": "ayumi-f6bd2",
+    "NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET": "ayumi-f6bd2.firebasestorage.app",
+    "NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID": "561071971625",
+    "NEXT_PUBLIC_FIREBASE_APP_ID": "1:561071971625:web:0e382383fbb444c0066b38",
+    "NEXT_PUBLIC_SITE_URL": "https://the-ayumi.jp",
+    "NEXT_PUBLIC_MEDIA_BASE_PATH": "/media"
+  }
+}
+

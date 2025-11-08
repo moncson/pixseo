@@ -1,0 +1,23 @@
+{
+  "/_not-found/page": "app/_not-found/page.js",
+  "/media/request/page": "app/media/request/page.js",
+  "/media/search/page": "app/media/search/page.js",
+  "/page": "app/page.js",
+  "/media/articles/[slug]/page": "app/media/articles/[slug]/page.js",
+  "/media/categories/[slug]/page": "app/media/categories/[slug]/page.js",
+  "/media/page": "app/media/page.js",
+  "/media/articles/page": "app/media/articles/page.js",
+  "/media/tags/[slug]/page": "app/media/tags/[slug]/page.js",
+  "/media/about/page": "app/media/about/page.js",
+  "/admin/articles/new/page": "app/admin/articles/new/page.js",
+  "/admin/articles/page": "app/admin/articles/page.js",
+  "/admin/login/page": "app/admin/login/page.js",
+  "/admin/categories/page": "app/admin/categories/page.js",
+  "/admin/page": "app/admin/page.js",
+  "/admin/categories/new/page": "app/admin/categories/new/page.js",
+  "/admin/categories/[id]/edit/page": "app/admin/categories/[id]/edit/page.js",
+  "/admin/tags/[id]/edit/page": "app/admin/tags/[id]/edit/page.js",
+  "/admin/tags/new/page": "app/admin/tags/new/page.js",
+  "/admin/articles/[id]/edit/page": "app/admin/articles/[id]/edit/page.js",
+  "/admin/tags/page": "app/admin/tags/page.js"
+}
