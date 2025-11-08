@@ -8,13 +8,16 @@ interface MediaTenant {
   name: string;
   slug: string;
   customDomain?: string;
-  subdomain?: string;
   ownerId: string;
   memberIds: string[];
+  clientId?: string;
   settings: {
-    siteName: string;
     siteDescription: string;
-    logoUrl: string;
+    logos: {
+      landscape: string;
+      square: string;
+      portrait: string;
+    };
   };
   isActive: boolean;
 }

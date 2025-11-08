@@ -35,10 +35,18 @@ export async function GET(request: Request, { params }: { params: { id: string }
 // メディアテナント更新
 export async function PUT(request: Request, { params }: { params: { id: string } }) {
   try {
-    console.log('[API Tenant Update] 更新開始:', params.id);
+    console.log('[API Service Update] 更新開始:', params.id);
     
     const body = await request.json();
-    const { name, slug, customDomain, subdomain, settings, isActive } = body;
+    const { name, slug, customDomain, clientId, settings, isActive } = body;
+
+    // 現在のサービスデータを取得
+    const currentDoc = await adminDb.collection('tenants').doc(params.id).get();
+    if (!currentDoc.exists) {
+      return NextResponse.json({ error: 'Service not found' }, { status: 404 });
+    }
+    const currentData = currentDoc.data()!;
+    const oldClientId = currentData.clientId;
 
     // スラッグの重複チェック（自分以外）
     if (slug) {
@@ -71,18 +79,57 @@ export async function PUT(request: Request, { params }: { params: { id: string }
     if (name !== undefined) updateData.name = name;
     if (slug !== undefined) updateData.slug = slug;
     if (customDomain !== undefined) updateData.customDomain = customDomain || null;
-    if (subdomain !== undefined) updateData.subdomain = subdomain;
     if (settings !== undefined) updateData.settings = settings;
     if (isActive !== undefined) updateData.isActive = isActive;
+    if (clientId !== undefined) updateData.clientId = clientId || null;
+
+    // クライアントが変更された場合の処理
+    if (clientId !== undefined && clientId !== oldClientId) {
+      // 古いクライアントのmediaIdsから削除
+      if (oldClientId) {
+        const oldClientDoc = await adminDb.collection('clients').doc(oldClientId).get();
+        if (oldClientDoc.exists) {
+          const oldClientData = oldClientDoc.data();
+          const oldClientUid = oldClientData?.uid;
+          if (oldClientUid) {
+            await adminDb.collection('users').doc(oldClientUid).update({
+              mediaIds: FieldValue.arrayRemove(params.id),
+              updatedAt: FieldValue.serverTimestamp(),
+            });
+            // memberIdsからも削除
+            updateData.memberIds = FieldValue.arrayRemove(oldClientUid);
+          }
+        }
+      }
+
+      // 新しいクライアントのmediaIdsに追加
+      if (clientId) {
+        const newClientDoc = await adminDb.collection('clients').doc(clientId).get();
+        if (newClientDoc.exists) {
+          const newClientData = newClientDoc.data();
+          const newClientUid = newClientData?.uid;
+          if (newClientUid) {
+            await adminDb.collection('users').doc(newClientUid).update({
+              mediaIds: FieldValue.arrayUnion(params.id),
+              updatedAt: FieldValue.serverTimestamp(),
+            });
+            // memberIdsにも追加
+            await adminDb.collection('tenants').doc(params.id).update({
+              memberIds: FieldValue.arrayUnion(newClientUid),
+            });
+          }
+        }
+      }
+    }
 
     await adminDb.collection('tenants').doc(params.id).update(updateData);
     
-    console.log('[API Tenant Update] 更新成功');
+    console.log('[API Service Update] 更新成功');
     
     return NextResponse.json({ success: true });
   } catch (error: any) {
-    console.error('[API Tenant Update] エラー:', error);
-    return NextResponse.json({ error: 'Failed to update tenant' }, { status: 500 });
+    console.error('[API Service Update] エラー:', error);
+    return NextResponse.json({ error: 'Failed to update service' }, { status: 500 });
   }
 }
 

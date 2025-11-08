@@ -30,13 +30,13 @@ export async function GET() {
   }
 }
 
-// メディアテナント作成
+// サービス作成
 export async function POST(request: Request) {
   try {
-    console.log('[API Tenants] メディアテナント作成開始');
+    console.log('[API Service] サービス作成開始');
     
     const body = await request.json();
-    const { name, slug, customDomain, subdomain, ownerId, settings } = body;
+    const { name, slug, customDomain, ownerId, clientId, settings } = body;
 
     if (!name || !slug || !ownerId) {
       return NextResponse.json({ error: 'Name, slug, and ownerId are required' }, { status: 400 });
@@ -56,17 +56,33 @@ export async function POST(request: Request) {
       }
     }
 
+    // クライアントIDがある場合、クライアントのmediaIdsを更新
+    let memberIds = [ownerId];
+    if (clientId) {
+      const clientDoc = await adminDb.collection('clients').doc(clientId).get();
+      if (clientDoc.exists) {
+        const clientData = clientDoc.data();
+        const clientUid = clientData?.uid;
+        if (clientUid && !memberIds.includes(clientUid)) {
+          memberIds.push(clientUid);
+        }
+      }
+    }
+
     const tenantData = {
       name,
       slug,
       customDomain: customDomain || null,
-      subdomain: subdomain || slug,
       ownerId,
-      memberIds: [ownerId], // 初期メンバーはオーナーのみ
+      memberIds,
+      clientId: clientId || null,
       settings: settings || {
-        siteName: name,
         siteDescription: '',
-        logoUrl: '',
+        logos: {
+          landscape: '',
+          square: '',
+          portrait: '',
+        },
       },
       isActive: true,
       createdAt: FieldValue.serverTimestamp(),
@@ -75,12 +91,27 @@ export async function POST(request: Request) {
 
     const docRef = await adminDb.collection('tenants').add(tenantData);
     
-    console.log('[API Tenants] メディアテナント作成成功:', docRef.id);
+    // クライアントのmediaIdsを更新
+    if (clientId) {
+      const clientDoc = await adminDb.collection('clients').doc(clientId).get();
+      if (clientDoc.exists) {
+        const clientData = clientDoc.data();
+        const clientUid = clientData?.uid;
+        if (clientUid) {
+          await adminDb.collection('users').doc(clientUid).update({
+            mediaIds: FieldValue.arrayUnion(docRef.id),
+            updatedAt: FieldValue.serverTimestamp(),
+          });
+        }
+      }
+    }
+    
+    console.log('[API Service] サービス作成成功:', docRef.id);
     
     return NextResponse.json({ id: docRef.id });
   } catch (error: any) {
-    console.error('[API Tenants] エラー:', error);
-    return NextResponse.json({ error: 'Failed to create tenant' }, { status: 500 });
+    console.error('[API Service] エラー:', error);
+    return NextResponse.json({ error: 'Failed to create service' }, { status: 500 });
   }
 }
 
