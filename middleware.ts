@@ -70,6 +70,8 @@ export async function middleware(request: NextRequest) {
       if (pathname === '/' || pathname === '') {
         const mediaId = await getMediaIdBySlug(slug);
         
+        console.log('[Middleware] Root access - mediaId:', mediaId);
+        
         if (!mediaId) {
           console.log('[Middleware] No media found for slug:', slug);
           // 404ページを表示
@@ -79,8 +81,12 @@ export async function middleware(request: NextRequest) {
         const url = request.nextUrl.clone();
         url.pathname = '/media';
         
+        console.log('[Middleware] Rewriting to /media with mediaId:', mediaId);
+        
         const response = NextResponse.rewrite(url);
         response.headers.set('x-media-id', mediaId);
+        
+        console.log('[Middleware] Headers set:', response.headers.get('x-media-id'));
         
         return response;
       }
