@@ -10,8 +10,8 @@ if (!admin.apps.length) {
 
   admin.initializeApp({
     credential,
-    projectId: 'ayumi-f6bd2',
-    storageBucket: 'ayumi-f6bd2.firebasestorage.app',
+    projectId: 'pixseo-1eeef',
+    storageBucket: 'pixseo-1eeef.firebasestorage.app',
   });
 }
 

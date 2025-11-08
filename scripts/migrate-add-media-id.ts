@@ -14,8 +14,8 @@ import * as admin from 'firebase-admin';
 // Firebase Admin SDKの初期化
 if (!admin.apps.length) {
   admin.initializeApp({
-    projectId: 'ayumi-f6bd2',
-    storageBucket: 'ayumi-f6bd2.firebasestorage.app',
+    projectId: 'pixseo-1eeef',
+    storageBucket: 'pixseo-1eeef.firebasestorage.app',
   });
 }
 
