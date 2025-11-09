@@ -147,14 +147,14 @@ export default async function ArticlePage({ params }: PageProps) {
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'Article',
-    headline: article.title,
-    description: article.excerpt || article.metaDescription || article.title,
+    headline: article.title || '',
+    description: article.excerpt || article.metaDescription || article.title || '',
     image: article.featuredImage || '',
-    datePublished: article.publishedAt.toISOString(),
-    dateModified: article.updatedAt.toISOString(),
+    datePublished: article.publishedAt instanceof Date ? article.publishedAt.toISOString() : new Date().toISOString(),
+    dateModified: article.updatedAt instanceof Date ? article.updatedAt.toISOString() : new Date().toISOString(),
     author: {
       '@type': 'Person',
-      name: article.authorName,
+      name: article.authorName || '匿名',
     },
     publisher: {
       '@type': 'Organization',
@@ -166,7 +166,7 @@ export default async function ArticlePage({ params }: PageProps) {
     },
     mainEntityOfPage: {
       '@type': 'WebPage',
-      '@id': `https://the-ayumi.jp/media/articles/${article.slug}`,
+      '@id': `https://the-ayumi.jp/media/articles/${article.slug || ''}`,
     },
   };
 
@@ -218,11 +218,14 @@ export default async function ArticlePage({ params }: PageProps) {
 
         {/* 記事本文 */}
         <article className="bg-white rounded-lg shadow-md p-6 md:p-8 mb-8">
-          <ArticleContent content={article.content} tableOfContents={article.tableOfContents} />
+          <ArticleContent 
+            content={typeof article.content === 'string' ? article.content : ''} 
+            tableOfContents={Array.isArray(article.tableOfContents) ? article.tableOfContents : []} 
+          />
         </article>
 
         {/* SNSシェアボタン */}
-        <SocialShare title={article.title} />
+        <SocialShare title={typeof article.title === 'string' ? article.title : ''} />
 
         {/* Googleマイマップ */}
         {article.googleMapsUrl && (

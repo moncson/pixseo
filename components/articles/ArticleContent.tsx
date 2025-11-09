@@ -44,23 +44,30 @@ export default function ArticleContent({ content, tableOfContents }: ArticleCont
 
         const Tag = domNode.name as 'h2' | 'h3' | 'h4';
         
-        // テキストを安全に抽出
-        const textContent = domNode.children?.map((child: any) => {
-          if (typeof child === 'string') return child;
-          if (child?.data && typeof child.data === 'string') return child.data;
-          if (child?.children) {
-            return child.children.map((c: any) => {
-              if (typeof c === 'string') return c;
-              if (c?.data && typeof c.data === 'string') return c.data;
-              return '';
-            }).join('');
+        // テキストを安全に抽出（再帰的に処理）
+        const extractText = (node: any): string => {
+          if (!node) return '';
+          if (typeof node === 'string') return node;
+          if (node.type === 'text' && typeof node.data === 'string') return node.data;
+          if (node.data && typeof node.data === 'string') return node.data;
+          if (Array.isArray(node.children)) {
+            return node.children.map(extractText).join('');
+          }
+          if (node.children) {
+            return extractText(node.children);
           }
           return '';
-        }).join('') || '';
+        };
+        
+        const textContent = domNode.children ? 
+          (Array.isArray(domNode.children) ? 
+            domNode.children.map(extractText).join('') : 
+            extractText(domNode.children)
+          ) : '';
         
         return (
           <Tag id={id} className="scroll-mt-20">
-            {textContent}
+            {textContent || ''}
           </Tag>
         );
       }
