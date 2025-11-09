@@ -85,6 +85,7 @@ export default function EditWriterPage({ params }: { params: { id: string } }) {
               <FeaturedImageUpload
                 value={formData.iconUrl}
                 onChange={(url) => setFormData({ ...formData, iconUrl: url })}
+                label="アイコン画像を選択"
               />
 
               {/* ハンドルネーム */}
@@ -96,18 +97,13 @@ export default function EditWriterPage({ params }: { params: { id: string } }) {
               />
 
               {/* 紹介文 */}
-              <div className="relative">
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  紹介文
-                </label>
-                <textarea
-                  value={formData.bio}
-                  onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
-                  rows={4}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900"
-                  placeholder="ライターの紹介文を入力してください"
-                />
-              </div>
+              <FloatingInput
+                label="紹介文"
+                value={formData.bio}
+                onChange={(value) => setFormData({ ...formData, bio: value })}
+                multiline
+                rows={4}
+              />
             </div>
           </form>
 
