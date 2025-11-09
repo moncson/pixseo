@@ -23,7 +23,7 @@ const config: Config = {
         'full': '9999px', // 正円はそのまま
       },
       boxShadow: {
-        'custom': '0 0 8px 0 rgba(0, 0, 0, 0.15)', // 共通シャドウ（上下左右均等、ぼかしあり）
+        'custom': '0 0 8px 0 rgba(0, 0, 0, 0.08)', // 共通シャドウ（上下左右均等、ぼかしあり、薄め）
       },
       keyframes: {
         fadeIn: {

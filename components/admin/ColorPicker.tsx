@@ -14,31 +14,32 @@ const ColorPicker: React.FC<ColorPickerProps> = ({ label, value, onChange, allow
   const isOff = value === 'transparent' || value === '';
 
   return (
-    <div className="relative">
+    <div className="relative flex items-center gap-3">
       {/* カラーフィールド */}
-      <div className="relative">
+      <div className="relative flex-1">
         <input
           type="text"
           value={isOff ? '' : value}
           onChange={(e) => onChange(e.target.value)}
           placeholder={allowOff ? "" : "#000000"}
-          className="w-full pl-16 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 font-mono peer"
+          disabled={isOff && allowOff}
+          className="w-full pl-16 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono peer disabled:bg-gray-50 disabled:text-gray-400"
           style={{ paddingLeft: '3.5rem' }}
         />
-        {/* カラーピッカー（正円） */}
-        <div className="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full overflow-hidden border-2 border-gray-300">
+        {/* カラーピッカー（正円・フル） */}
+        <div className="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full overflow-hidden border-2 border-gray-300 bg-white">
           <input
             type="color"
             value={isOff ? '#000000' : value}
             onChange={(e) => onChange(e.target.value)}
-            className="w-full h-full cursor-pointer"
+            disabled={isOff && allowOff}
+            className="w-[200%] h-[200%] cursor-pointer -ml-[50%] -mt-[50%]"
             style={{
               border: 'none',
               outline: 'none',
               WebkitAppearance: 'none',
               MozAppearance: 'none',
               appearance: 'none',
-              background: 'none',
               padding: 0,
               margin: 0,
             }}
@@ -55,15 +56,28 @@ const ColorPicker: React.FC<ColorPickerProps> = ({ label, value, onChange, allow
           {label}
         </label>
       </div>
-      {/* OFFボタン（必要な場合） */}
-      {allowOff && !isOff && (
-        <button
-          type="button"
-          onClick={() => onChange('transparent')}
-          className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-gray-500 hover:text-red-600 font-medium"
-        >
-          OFF
-        </button>
+      
+      {/* ON/OFFトグル（allowOffの場合） */}
+      {allowOff && (
+        <label className="cursor-pointer flex-shrink-0">
+          <div className="relative inline-block w-14 h-8">
+            <input
+              type="checkbox"
+              checked={!isOff}
+              onChange={(e) => onChange(e.target.checked ? '#000000' : 'transparent')}
+              className="sr-only"
+            />
+            <div 
+              className={`absolute inset-0 rounded-full transition-colors pointer-events-none ${
+                !isOff ? 'bg-blue-600' : 'bg-gray-400'
+              }`}
+            >
+              <div className={`absolute top-1 left-1 w-6 h-6 bg-white rounded-full transition-transform ${
+                !isOff ? 'translate-x-6' : 'translate-x-0'
+              }`}></div>
+            </div>
+          </div>
+        </label>
       )}
     </div>
   );

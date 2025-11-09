@@ -76,14 +76,14 @@ export default function FeaturedImageUpload({ value, onChange, label = 'ロゴ�
 
   if (!preview) {
     return (
-      <div className="bg-white rounded-lg p-6 flex justify-center">
+      <div className="flex justify-center items-center h-full">
         <div
-          className="aspect-square w-full max-w-sm flex justify-center items-center border-2 border-gray-300 border-dashed rounded-lg hover:border-blue-500 transition-colors cursor-pointer"
+          className="aspect-square w-full h-full flex justify-center items-center border-2 border-gray-300 border-dashed rounded-lg hover:border-blue-500 transition-colors cursor-pointer"
           onClick={handleChange}
         >
-          <div className="space-y-1 text-center">
+          <div className="text-center">
             <svg
-              className="mx-auto h-12 w-12 text-gray-400"
+              className="mx-auto h-6 w-6 text-gray-400"
               stroke="currentColor"
               fill="none"
               viewBox="0 0 48 48"
@@ -95,10 +95,8 @@ export default function FeaturedImageUpload({ value, onChange, label = 'ロゴ�
                 strokeLinejoin="round"
               />
             </svg>
-            <div className="flex justify-center text-sm">
-              <span className="font-medium text-gray-900">
-                {label}
-              </span>
+            <div className="text-xs text-gray-600 mt-1">
+              {label}
             </div>
           </div>
         </div>
@@ -111,7 +109,7 @@ export default function FeaturedImageUpload({ value, onChange, label = 'ロゴ�
           disabled={uploading}
         />
         {uploading && (
-          <div className="mt-2 text-center text-sm text-gray-600">
+          <div className="text-center text-xs text-gray-600">
             アップロード中...
           </div>
         )}
@@ -120,9 +118,9 @@ export default function FeaturedImageUpload({ value, onChange, label = 'ロゴ�
   }
 
   return (
-    <div className="bg-white rounded-lg p-6 flex justify-center">
+    <div className="flex justify-center items-center h-full">
       <div
-        className="relative aspect-square w-full max-w-sm rounded-lg overflow-hidden"
+        className="relative aspect-square w-full h-full rounded-lg overflow-hidden"
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
@@ -131,20 +129,20 @@ export default function FeaturedImageUpload({ value, onChange, label = 'ロゴ�
           alt="Featured"
           fill
           className="object-cover"
-          sizes="(max-width: 768px) 100vw, 512px"
+          sizes="48px"
         />
         
         {/* ホバー時のオーバーレイ */}
         {isHovered && (
-          <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center gap-4 transition-opacity z-10">
+          <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center gap-2 transition-opacity z-10">
             {/* 変更ボタン */}
             <button
               type="button"
               onClick={handleChange}
-              className="bg-white text-gray-900 w-12 h-12 rounded-full flex items-center justify-center hover:bg-gray-100 transition-colors"
+              className="bg-white text-gray-900 w-6 h-6 rounded-full flex items-center justify-center hover:bg-gray-100 transition-colors"
               title="画像を変更"
             >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
               </svg>
             </button>
@@ -153,10 +151,10 @@ export default function FeaturedImageUpload({ value, onChange, label = 'ロゴ�
             <button
               type="button"
               onClick={handleRemove}
-              className="bg-white text-red-600 w-12 h-12 rounded-full flex items-center justify-center hover:bg-red-50 transition-colors"
+              className="bg-white text-red-600 w-6 h-6 rounded-full flex items-center justify-center hover:bg-red-50 transition-colors"
               title="画像を削除"
             >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
               </svg>
             </button>
@@ -174,7 +172,7 @@ export default function FeaturedImageUpload({ value, onChange, label = 'ロゴ�
       />
       
       {uploading && (
-        <div className="mt-2 text-center text-sm text-gray-600">
+        <div className="text-center text-xs text-gray-600">
           アップロード中...
         </div>
       )}
