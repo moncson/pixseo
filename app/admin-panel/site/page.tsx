@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, FormEvent } from 'react';
+import { useState, useEffect, useCallback, FormEvent } from 'react';
 import AuthGuard from '@/components/admin/AuthGuard';
 import AdminLayout from '@/components/admin/AdminLayout';
 import FloatingInput from '@/components/admin/FloatingInput';
@@ -31,20 +31,20 @@ export default function SitePage() {
     allowIndexing: false,
   });
 
-  useEffect(() => {
-    fetchSettings();
-  }, [currentTenant]);
-
-  const fetchSettings = async () => {
+  const fetchSettings = useCallback(async () => {
     if (!currentTenant) {
       setFetchLoading(false);
       return;
     }
 
+    setFetchLoading(true);
+
     try {
+      console.log('[Site Settings] Fetching for tenant:', currentTenant.id);
       const response = await fetch(`/api/admin/service/${currentTenant.id}`);
       if (response.ok) {
         const data = await response.json();
+        console.log('[Site Settings] Fetched data:', data);
         setFormData({
           siteName: data.name || '',
           siteDescription: data.siteDescription || '',
@@ -53,13 +53,19 @@ export default function SitePage() {
           logoPortrait: data.logoPortrait || '',
           allowIndexing: data.allowIndexing || false,
         });
+      } else {
+        console.error('[Site Settings] Failed to fetch:', response.status);
       }
     } catch (error) {
-      console.error('Error fetching site settings:', error);
+      console.error('[Site Settings] Error fetching site settings:', error);
     } finally {
       setFetchLoading(false);
     }
-  };
+  }, [currentTenant]);
+
+  useEffect(() => {
+    fetchSettings();
+  }, [fetchSettings]);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
