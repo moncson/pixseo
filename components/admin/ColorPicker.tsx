@@ -28,14 +28,16 @@ const ColorPicker: React.FC<ColorPickerProps> = ({ label, value, onChange, allow
         style={{ paddingLeft: '3.5rem' }}
       />
       {/* カラーピッカー（正円・フル） */}
-      <div className="absolute left-3 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full overflow-hidden border-2 border-gray-300 bg-white">
+      <div className="absolute left-3 top-[50%] -translate-y-[50%] w-10 h-10 rounded-full overflow-hidden border-2 border-gray-300 bg-white flex items-center justify-center">
         <input
           type="color"
           value={isOff ? '#000000' : value}
           onChange={(e) => onChange(e.target.value)}
           disabled={isOff && allowOff}
-          className="w-[200%] h-[200%] cursor-pointer -ml-[50%] -mt-[50%]"
+          className="cursor-pointer"
           style={{
+            width: '60px',
+            height: '60px',
             border: 'none',
             outline: 'none',
             WebkitAppearance: 'none',
@@ -43,6 +45,7 @@ const ColorPicker: React.FC<ColorPickerProps> = ({ label, value, onChange, allow
             appearance: 'none',
             padding: 0,
             margin: 0,
+            transform: 'scale(2)',
           }}
         />
       </div>
@@ -51,7 +54,7 @@ const ColorPicker: React.FC<ColorPickerProps> = ({ label, value, onChange, allow
         className={`absolute left-14 transition-all pointer-events-none ${
           hasValue || !isOff
             ? 'text-xs -top-2.5 bg-white px-2 text-gray-700'
-            : 'text-sm top-1/2 -translate-y-1/2 text-gray-500 px-2'
+            : 'text-sm top-[50%] -translate-y-[50%] text-gray-500 px-2'
         } peer-focus:text-xs peer-focus:-top-2.5 peer-focus:translate-y-0 peer-focus:bg-white peer-focus:px-2 peer-focus:text-gray-700`}
       >
         {label}
@@ -59,7 +62,7 @@ const ColorPicker: React.FC<ColorPickerProps> = ({ label, value, onChange, allow
       
       {/* ON/OFFトグル（フィールド内右端） */}
       {allowOff && (
-        <label className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer">
+        <label className="absolute right-3 top-[50%] -translate-y-[50%] cursor-pointer">
           <div className="relative inline-block w-14 h-8">
             <input
               type="checkbox"

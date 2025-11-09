@@ -87,9 +87,9 @@ export default function DesignPage() {
 
           {/* H2 */}
           <div className="bg-white rounded-[1.75rem] p-8">
-            <div className="flex gap-6">
+            <div className="flex gap-6 items-start">
               {/* 左：アイコン */}
-              <div className="w-48 h-48 flex-shrink-0">
+              <div className="w-32 aspect-square flex-shrink-0">
                 <FeaturedImageUpload
                   value={theme.h2Icon || ''}
                   onChange={(url) => updateTheme('h2Icon', url)}
@@ -108,9 +108,9 @@ export default function DesignPage() {
 
           {/* H3 */}
           <div className="bg-white rounded-[1.75rem] p-8">
-            <div className="flex gap-6">
+            <div className="flex gap-6 items-start">
               {/* 左：アイコン */}
-              <div className="w-48 h-48 flex-shrink-0">
+              <div className="w-32 aspect-square flex-shrink-0">
                 <FeaturedImageUpload
                   value={theme.h3Icon || ''}
                   onChange={(url) => updateTheme('h3Icon', url)}
@@ -129,9 +129,9 @@ export default function DesignPage() {
 
           {/* H4 */}
           <div className="bg-white rounded-[1.75rem] p-8">
-            <div className="flex gap-6">
+            <div className="flex gap-6 items-start">
               {/* 左：アイコン */}
-              <div className="w-48 h-48 flex-shrink-0">
+              <div className="w-32 aspect-square flex-shrink-0">
                 <FeaturedImageUpload
                   value={theme.h4Icon || ''}
                   onChange={(url) => updateTheme('h4Icon', url)}
