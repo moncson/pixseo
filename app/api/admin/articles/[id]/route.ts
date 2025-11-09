@@ -41,3 +41,45 @@ export async function GET(
   }
 }
 
+export async function PUT(
+  request: NextRequest,
+  { params }: { params: { id: string } }
+) {
+  try {
+    const { id } = params;
+    const body = await request.json();
+    console.log(`[API /admin/articles/${id}] Updating article with:`, body);
+    
+    const articleRef = adminDb.collection('articles').doc(id);
+    const doc = await articleRef.get();
+
+    if (!doc.exists) {
+      return NextResponse.json(
+        { error: 'Article not found' },
+        { status: 404 }
+      );
+    }
+
+    // 更新データを作成
+    const updateData: any = {
+      updatedAt: new Date(),
+    };
+
+    // isPublishedが含まれている場合のみ更新
+    if (typeof body.isPublished === 'boolean') {
+      updateData.isPublished = body.isPublished;
+    }
+
+    await articleRef.update(updateData);
+
+    console.log(`[API /admin/articles/${id}] Article updated successfully`);
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    console.error(`[API /admin/articles/${id}] Error:`, error);
+    return NextResponse.json(
+      { error: 'Failed to update article', details: error instanceof Error ? error.message : String(error) },
+      { status: 500 }
+    );
+  }
+}
+

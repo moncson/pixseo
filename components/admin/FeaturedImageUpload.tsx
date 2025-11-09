@@ -150,13 +150,14 @@ export default function FeaturedImageUpload({ value, onChange, label = 'ロゴ�
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
         >
-          <Image
-            src={preview}
-            alt="Featured"
-            fill
-            className="object-cover"
-            sizes="48px"
-          />
+              <Image
+                src={preview}
+                alt="Featured"
+                fill
+                className="object-cover"
+                sizes="(max-width: 768px) 100vw, 400px"
+                quality={95}
+              />
           
           {/* ホバー時のオーバーレイ */}
           {isHovered && (

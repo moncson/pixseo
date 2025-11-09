@@ -20,14 +20,14 @@ export function cleanWordPressHtml(html: string): string {
   // 2. 不要なHTMLコメントを削除（wp以外も）
   cleaned = cleaned.replace(/<!--[\s\S]*?-->/g, '');
 
-  // 3. WordPressクラス名を削除
-  cleaned = cleaned.replace(/class="[^"]*wp-[^"]*"/g, '');
+  // 3. WordPressクラス名を削除（instagram-mediaなどのSNS埋め込みは除外）
+  cleaned = cleaned.replace(/class="(?!instagram-media|twitter-tweet)[^"]*wp-[^"]*"/g, '');
   
-  // 4. <figure> を <div> に変換
-  cleaned = cleaned.replace(/<figure([^>]*)>/g, '<div$1>');
+  // 4. <figure>を<div>に変換（Instagram埋め込みなどのblockquoteは除外）
+  cleaned = cleaned.replace(/<figure(?![^>]*class="[^"]*instagram-media[^"]*")([^>]*)>/g, '<div$1>');
   cleaned = cleaned.replace(/<\/figure>/g, '</div>');
   
-  // 5. <figcaption> を <p> に変換
+  // 5. <figcaption>を<p>に変換
   cleaned = cleaned.replace(/<figcaption([^>]*)>/g, '<p$1>');
   cleaned = cleaned.replace(/<\/figcaption>/g, '</p>');
 
@@ -35,47 +35,15 @@ export function cleanWordPressHtml(html: string): string {
   cleaned = cleaned.replace(/<p>\s*<\/p>/g, '');
   cleaned = cleaned.replace(/<p><br\s*\/?><\/p>/g, '');
   cleaned = cleaned.replace(/<p>&nbsp;<\/p>/g, '');
+  cleaned = cleaned.replace(/<p><\/p>/g, '');
 
-  // 7. 連続する<br>タグを1つに
+  // 7. 連続する<br>タグを2つまでに制限
   cleaned = cleaned.replace(/(<br\s*\/?>\s*){3,}/g, '<br><br>');
 
-  // 8. DOMParserで不正なHTMLを修正
-  if (typeof window !== 'undefined' && typeof DOMParser !== 'undefined') {
-    try {
-      const parser = new DOMParser();
-      const doc = parser.parseFromString(cleaned, 'text/html');
-      
-      // <p>タグの中にブロック要素がある場合は修正
-      const paragraphs = doc.querySelectorAll('p');
-      paragraphs.forEach(p => {
-        const blockElements = p.querySelectorAll('h1, h2, h3, h4, h5, h6, div, figure, ul, ol, table, blockquote');
-        if (blockElements.length > 0) {
-          // ブロック要素を<p>の外に移動
-          blockElements.forEach(block => {
-            p.parentNode?.insertBefore(block, p.nextSibling);
-          });
-          // <p>が空になったら削除
-          if (!p.textContent?.trim()) {
-            p.remove();
-          }
-        }
-      });
-
-      // 空要素を削除
-      const emptyElements = doc.querySelectorAll('p:empty, span:empty, div:empty');
-      emptyElements.forEach(el => {
-        if (!el.hasChildNodes() && !el.textContent?.trim()) {
-          el.remove();
-        }
-      });
-
-      // body.innerHTMLを取得
-      cleaned = doc.body.innerHTML;
-    } catch (error) {
-      console.warn('[cleanWordPressHtml] DOMParser error:', error);
-      // DOMParserが失敗した場合は正規表現ベースのクリーニングを継続
-    }
-  }
+  // 8. 正規表現ベースの修正（サーバーサイドでも動作）
+  // <p>内のブロック要素を外に出す
+  const blockElementsRegex = /<p>(\s*(?:<h[1-6]|<div|<ul|<ol|<table|<blockquote)[^>]*>[\s\S]*?<\/(?:h[1-6]|div|ul|ol|table|blockquote)>\s*)<\/p>/gi;
+  cleaned = cleaned.replace(blockElementsRegex, '$1');
 
   // 9. 不正な</p><p>パターンを修正
   cleaned = cleaned.replace(/<\/p>\s*<p>/g, '</p>\n<p>');
@@ -85,6 +53,9 @@ export function cleanWordPressHtml(html: string): string {
 
   // 11. 連続する空行を削除
   cleaned = cleaned.replace(/\n{3,}/g, '\n\n');
+
+  // 12. 余分な空白を削除
+  cleaned = cleaned.replace(/>\s+</g, '><');
 
   return cleaned;
 }

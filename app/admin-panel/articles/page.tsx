@@ -130,22 +130,22 @@ export default function ArticlesPage() {
                 {searchTerm ? '検索結果がありません' : '記事がまだありません'}
               </div>
             ) : (
-              <table className="min-w-full divide-y divide-gray-200">
+              <table className="w-full table-fixed divide-y divide-gray-200">
                 <thead className="bg-gray-50">
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-5/12">
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider" style={{ width: '40%' }}>
                       タイトル&ディスクリプション
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-2/12">
+                    <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider" style={{ width: '15%' }}>
                       ライター
                     </th>
-                    <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-1/12">
+                    <th className="px-3 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider" style={{ width: '12%' }}>
                       ステータス
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/12">
+                    <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider" style={{ width: '13%' }}>
                       更新日
                     </th>
-                    <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider w-3/12">
+                    <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider" style={{ width: '20%' }}>
                       操作
                     </th>
                   </tr>
@@ -155,16 +155,16 @@ export default function ArticlesPage() {
                     const writer = writers.find(w => w.id === article.writerId);
                     return (
                     <tr key={article.id} className="hover:bg-gray-50">
-                      <td className="px-6 py-4">
-                        <div className="flex items-center">
+                      <td className="px-4 py-3">
+                        <div className="flex items-center gap-3">
                           {article.featuredImage && (
-                            <div className="relative w-24 h-16 rounded-xl overflow-hidden mr-4 flex-shrink-0">
+                            <div className="relative w-20 h-14 rounded-lg overflow-hidden flex-shrink-0">
                               <Image
                                 src={article.featuredImage}
                                 alt={article.title}
                                 fill
                                 className="object-cover"
-                                sizes="96px"
+                                sizes="80px"
                               />
                             </div>
                           )}
@@ -172,23 +172,23 @@ export default function ArticlesPage() {
                             <div className="text-sm font-medium text-gray-900 truncate">
                               {article.title}
                             </div>
-                            <div className="text-sm text-gray-500 line-clamp-2">
-                              {article.excerpt?.substring(0, 80)}...
+                            <div className="text-xs text-gray-500 truncate">
+                              {article.excerpt?.substring(0, 60)}...
                             </div>
                           </div>
                         </div>
                       </td>
-                      <td className="px-6 py-4">
+                      <td className="px-3 py-3">
                         {writer && (
-                          <div className="flex items-center gap-2">
-                            <div className="relative w-8 h-8 rounded-full overflow-hidden flex-shrink-0 bg-gray-200">
+                          <div className="flex items-center gap-2 whitespace-nowrap">
+                            <div className="relative w-7 h-7 rounded-full overflow-hidden flex-shrink-0 bg-gray-200">
                               {writer.iconUrl ? (
                                 <Image
                                   src={writer.iconUrl}
                                   alt={writer.name}
                                   fill
                                   className="object-cover"
-                                  sizes="32px"
+                                  sizes="28px"
                                 />
                               ) : (
                                 <div className="w-full h-full bg-gray-300" />
@@ -198,31 +198,31 @@ export default function ArticlesPage() {
                           </div>
                         )}
                       </td>
-                      <td className="px-6 py-4 text-center">
-                        <label className="cursor-pointer">
-                          <div className="relative inline-block w-14 h-8">
+                      <td className="px-3 py-3 text-center whitespace-nowrap">
+                        <label className="cursor-pointer inline-flex items-center justify-center">
+                          <div className="relative inline-block w-12 h-7">
                             <input
                               type="checkbox"
                               checked={article.isPublished}
                               onChange={() => handleTogglePublished(article.id, article.isPublished)}
-                              className="sr-only"
+                              className="sr-only peer"
                             />
                             <div 
-                              className={`absolute inset-0 rounded-full transition-colors pointer-events-none ${
+                              className={`absolute inset-0 rounded-full transition-colors ${
                                 article.isPublished ? 'bg-blue-600' : 'bg-gray-400'
                               }`}
                             >
-                              <div className={`absolute top-1 left-1 w-6 h-6 bg-white rounded-full transition-transform ${
-                                article.isPublished ? 'translate-x-6' : 'translate-x-0'
+                              <div className={`absolute top-0.5 left-0.5 w-6 h-6 bg-white rounded-full transition-transform ${
+                                article.isPublished ? 'translate-x-5' : 'translate-x-0'
                               }`}></div>
                             </div>
                           </div>
                         </label>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {new Date(article.updatedAt).toLocaleDateString('ja-JP')}
+                      <td className="px-3 py-3 whitespace-nowrap text-sm text-gray-500">
+                        {new Date(article.updatedAt).toLocaleDateString('ja-JP', { year: 'numeric', month: '2-digit', day: '2-digit' })}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                      <td className="px-4 py-3 whitespace-nowrap text-right text-sm font-medium">
                         <div className="flex justify-end gap-2">
                           {/* 編集ボタン */}
                           <Link
