@@ -35,7 +35,7 @@ export default function NewWriterPage() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          iconUrl: formData.iconUrl,
+          icon: formData.iconUrl,
           handleName: formData.handleName,
           bio: formData.bio,
           mediaId: currentTenant.id,

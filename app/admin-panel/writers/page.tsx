@@ -88,10 +88,10 @@ export default function WritersPage() {
                     {writers.map((writer) => (
                       <tr key={writer.id} className="hover:bg-gray-50">
                         <td className="px-6 py-4">
-                          {writer.iconUrl ? (
+                          {writer.icon ? (
                             <div className="relative w-10 h-10 rounded-full overflow-hidden">
-                              <Image 
-                                src={writer.iconUrl} 
+                              <Image
+                                src={writer.icon}
                                 alt={writer.handleName}
                                 fill
                                 className="object-cover"

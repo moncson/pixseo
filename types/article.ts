@@ -4,6 +4,11 @@ export interface TableOfContentsItem {
   text: string;
 }
 
+export interface FAQItem {
+  question: string;
+  answer: string;
+}
+
 export interface Article {
   id: string;
   mediaId: string;           // 所属メディアID
@@ -38,6 +43,7 @@ export interface Article {
   tableOfContents?: TableOfContentsItem[];  // 目次
   relatedArticleIds?: string[];              // 関連記事ID
   readingTime?: number;                      // 読了時間（分）
+  faqs?: FAQItem[];                          // FAQ（よくある質問）
 }
 
 export interface Category {

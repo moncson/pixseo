@@ -237,6 +237,20 @@ export default async function ArticlePage({ params }: PageProps) {
     },
   };
 
+  // FAQスキーマ（よくある質問がある場合）
+  const faqSchema = article.faqs && article.faqs.length > 0 ? {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: article.faqs.map((faq) => ({
+      '@type': 'Question',
+      name: faq.question,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: faq.answer,
+      },
+    })),
+  } : null;
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* JSON-LD構造化データ */}
@@ -244,6 +258,14 @@ export default async function ArticlePage({ params }: PageProps) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
+      
+      {/* FAQスキーマ（SEO強化 - リッチスニペット表示） */}
+      {faqSchema && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+        />
+      )}
 
       {/* ヘッダー */}
       <header className="bg-white shadow-sm">

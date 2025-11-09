@@ -25,7 +25,7 @@ export default function EditWriterPage({ params }: { params: { id: string } }) {
         if (response.ok) {
           const data: Writer = await response.json();
           setFormData({
-            iconUrl: data.iconUrl || '',
+            iconUrl: data.icon || '',
             handleName: data.handleName || '',
             bio: data.bio || '',
           });
@@ -53,7 +53,7 @@ export default function EditWriterPage({ params }: { params: { id: string } }) {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          iconUrl: formData.iconUrl,
+          icon: formData.iconUrl,
           handleName: formData.handleName,
           bio: formData.bio,
         }),
