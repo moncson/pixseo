@@ -291,7 +291,7 @@ const AdminSidebar = memo(function AdminSidebar({
                   className={`
                     flex items-center px-3 py-2.5 text-sm transition-all rounded-xl font-bold
                     ${isActive 
-                      ? 'bg-white text-gray-900 shadow-md' 
+                      ? 'bg-white text-gray-900 shadow-custom' 
                       : 'text-gray-600 hover:bg-white hover:bg-opacity-50'
                     }
                   `}
@@ -324,7 +324,7 @@ const AdminSidebar = memo(function AdminSidebar({
                   className={`
                     flex items-center px-3 py-2.5 text-sm transition-all rounded-xl font-bold
                     ${isActive 
-                      ? 'bg-white text-gray-900 shadow-md' 
+                      ? 'bg-white text-gray-900 shadow-custom' 
                       : 'text-gray-600 hover:bg-white hover:bg-opacity-50'
                     }
                   `}
@@ -357,7 +357,7 @@ const AdminSidebar = memo(function AdminSidebar({
                   className={`
                     flex items-center px-3 py-2.5 text-sm transition-all rounded-xl font-bold
                     ${isActive 
-                      ? 'bg-white text-gray-900 shadow-md' 
+                      ? 'bg-white text-gray-900 shadow-custom' 
                       : 'text-gray-600 hover:bg-white hover:bg-opacity-50'
                     }
                   `}

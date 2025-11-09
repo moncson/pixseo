@@ -442,7 +442,7 @@ export default function EditArticlePage({ params }: { params: { id: string } }) 
           {/* トグルエリア（固定位置・横幅をボタンに合わせる・距離を半分に） */}
           <div className="fixed bottom-36 right-8 w-32 space-y-4 z-50">
             {/* おすすめトグル */}
-            <div className="bg-white rounded-full px-6 py-3 shadow-lg">
+            <div className="bg-white rounded-full px-6 py-3 shadow-custom">
               <div className="flex flex-col items-center gap-2">
                 <span className="text-xs font-medium text-gray-700">おすすめ</span>
                 <label className="cursor-pointer">
@@ -468,7 +468,7 @@ export default function EditArticlePage({ params }: { params: { id: string } }) 
             </div>
 
             {/* 公開トグル */}
-            <div className="bg-white rounded-full px-6 py-3 shadow-lg">
+            <div className="bg-white rounded-full px-6 py-3 shadow-custom">
               <div className="flex flex-col items-center gap-2">
                 <span className="text-xs font-medium text-gray-700">公開</span>
                 <label className="cursor-pointer">

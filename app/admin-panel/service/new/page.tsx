@@ -171,9 +171,9 @@ export default function NewServicePage() {
                 onChange={(value) => setFormData({ ...formData, customDomain: value })}
               />
 
-              {/* サイトの説明 */}
+              {/* サービス説明 */}
               <FloatingInput
-                label="サイトの説明（SEO用メタディスクリプション）"
+                label="サービス説明（SEO用メタディスクリプション）"
                 value={formData.siteDescription}
                 onChange={(value) => setFormData({ ...formData, siteDescription: value })}
                 multiline
@@ -188,7 +188,7 @@ export default function NewServicePage() {
             <button
               type="button"
               onClick={() => router.back()}
-              className="bg-gray-500 text-white w-14 h-14 rounded-full hover:bg-gray-600 transition-all hover:scale-110 flex items-center justify-center shadow-lg"
+              className="bg-gray-500 text-white w-14 h-14 rounded-full hover:bg-gray-600 transition-all hover:scale-110 flex items-center justify-center shadow-custom"
               title="キャンセル"
             >
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -201,7 +201,7 @@ export default function NewServicePage() {
               type="submit"
               disabled={loading}
               onClick={handleSubmit}
-              className="bg-blue-600 text-white w-14 h-14 rounded-full hover:bg-blue-700 transition-all hover:scale-110 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
+              className="bg-blue-600 text-white w-14 h-14 rounded-full hover:bg-blue-700 transition-all hover:scale-110 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed shadow-custom"
               title="サービス作成"
             >
               {loading ? (

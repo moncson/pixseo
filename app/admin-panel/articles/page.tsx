@@ -10,14 +10,22 @@ import { Article } from '@/types/article';
 import { apiGet } from '@/lib/api-client';
 import { useMediaTenant } from '@/contexts/MediaTenantContext';
 
+interface Writer {
+  id: string;
+  name: string;
+  iconUrl?: string;
+}
+
 export default function ArticlesPage() {
   const { currentTenant } = useMediaTenant();
   const [articles, setArticles] = useState<Article[]>([]);
+  const [writers, setWriters] = useState<Writer[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
 
   useEffect(() => {
     fetchArticles();
+    fetchWriters();
   }, []);
 
   const fetchArticles = async () => {
@@ -44,6 +52,15 @@ export default function ArticlesPage() {
       console.error('[ArticlesPage] Error fetching articles:', error);
       alert('記事の取得に失敗しました: ' + (error instanceof Error ? error.message : String(error)));
       setLoading(false);
+    }
+  };
+
+  const fetchWriters = async () => {
+    try {
+      const data: Writer[] = await apiGet('/api/admin/writers');
+      setWriters(data);
+    } catch (error) {
+      console.error('[ArticlesPage] Error fetching writers:', error);
     }
   };
 
@@ -116,22 +133,27 @@ export default function ArticlesPage() {
               <table className="min-w-full divide-y divide-gray-200">
                 <thead className="bg-gray-50">
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      タイトル
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-5/12">
+                      タイトル&ディスクリプション
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-2/12">
+                      ライター
+                    </th>
+                    <th className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider w-1/12">
                       ステータス
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/12">
                       更新日
                     </th>
-                    <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider w-3/12">
                       操作
                     </th>
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
-                  {filteredArticles.map((article) => (
+                  {filteredArticles.map((article) => {
+                    const writer = writers.find(w => w.id === article.writerId);
+                    return (
                     <tr key={article.id} className="hover:bg-gray-50">
                       <td className="px-6 py-4">
                         <div className="flex items-center">
@@ -156,7 +178,27 @@ export default function ArticlesPage() {
                           </div>
                         </div>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
+                      <td className="px-6 py-4">
+                        {writer && (
+                          <div className="flex items-center gap-2">
+                            <div className="relative w-8 h-8 rounded-full overflow-hidden flex-shrink-0 bg-gray-200">
+                              {writer.iconUrl ? (
+                                <Image
+                                  src={writer.iconUrl}
+                                  alt={writer.name}
+                                  fill
+                                  className="object-cover"
+                                  sizes="32px"
+                                />
+                              ) : (
+                                <div className="w-full h-full bg-gray-300" />
+                              )}
+                            </div>
+                            <span className="text-sm text-gray-900 truncate">{writer.name}</span>
+                          </div>
+                        )}
+                      </td>
+                      <td className="px-6 py-4 text-center">
                         <label className="cursor-pointer">
                           <div className="relative inline-block w-14 h-8">
                             <input
@@ -219,7 +261,8 @@ export default function ArticlesPage() {
                         </div>
                       </td>
                     </tr>
-                  ))}
+                    );
+                  })}
                 </tbody>
               </table>
             )}

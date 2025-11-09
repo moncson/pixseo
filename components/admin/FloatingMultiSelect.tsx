@@ -84,7 +84,7 @@ export default function FloatingMultiSelect({
 
       {/* ドロップダウンメニュー */}
       {isOpen && (
-        <div className="absolute z-10 w-full mt-2 bg-white border border-gray-300 rounded-xl shadow-lg max-h-60 overflow-y-auto">
+        <div className="absolute z-10 w-full mt-2 bg-white border border-gray-300 rounded-xl shadow-custom max-h-60 overflow-y-auto">
           {options.map((option) => {
             const isSelected = values.includes(option.value);
             return (

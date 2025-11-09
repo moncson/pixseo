@@ -150,7 +150,7 @@ export default function MediaPage() {
                 {filteredMedia.map((media) => (
                   <div
                     key={media.id}
-                    className="group relative bg-gray-50 rounded-lg overflow-hidden hover:shadow-lg transition-shadow"
+                    className="group relative bg-gray-50 rounded-lg overflow-hidden hover:shadow-custom transition-shadow"
                   >
                     {/* メディアプレビュー */}
                     <div className="aspect-square relative bg-gray-200">

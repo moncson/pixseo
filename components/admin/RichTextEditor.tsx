@@ -207,7 +207,7 @@ export default function RichTextEditor({ value, onChange, placeholder }: RichTex
       {/* フローティングツールバー（選択時/カーソル移動時） */}
       {showToolbar && (
         <div
-          className="fixed z-50 bg-white border border-gray-200 rounded-xl shadow-2xl p-2 flex gap-1 transform -translate-x-1/2 animate-fadeIn"
+          className="fixed z-50 bg-white border border-gray-200 rounded-xl shadow-custom p-2 flex gap-1 transform -translate-x-1/2 animate-fadeIn"
           style={{ 
             top: `${toolbarPosition.top}px`, 
             left: `${toolbarPosition.left}px`,
@@ -279,7 +279,7 @@ export default function RichTextEditor({ value, onChange, placeholder }: RichTex
       {/* 画像挿入モーダル */}
       {showImageModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-xl p-6 max-w-md w-full mx-4 shadow-2xl">
+          <div className="bg-white rounded-xl p-6 max-w-md w-full mx-4 shadow-custom">
             <h3 className="text-xl font-bold mb-4">画像を挿入</h3>
             
             {/* タブ切り替え */}

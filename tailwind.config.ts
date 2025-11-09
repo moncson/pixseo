@@ -22,6 +22,9 @@ const config: Config = {
         '3xl': '1.75rem',
         'full': '9999px', // 正円はそのまま
       },
+      boxShadow: {
+        'custom': '0 2px 0 0 rgba(0, 0, 0, 0.05)', // 共通シャドウ（x=0 y=2px blur=0 spread=0）
+      },
       keyframes: {
         fadeIn: {
           '0%': { opacity: '0' },

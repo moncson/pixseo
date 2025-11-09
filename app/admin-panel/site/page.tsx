@@ -162,9 +162,9 @@ export default function SitePage() {
                 required
               />
 
-              {/* サイトの説明 */}
+              {/* サービス説明 */}
               <FloatingInput
-                label="サイトの説明（SEO用メタディスクリプション）"
+                label="サービス説明（SEO用メタディスクリプション）"
                 value={formData.siteDescription}
                 onChange={(value) => setFormData({ ...formData, siteDescription: value })}
                 multiline
@@ -176,7 +176,7 @@ export default function SitePage() {
           {/* トグルエリア（固定位置） */}
           <div className="fixed bottom-36 right-8 w-32 space-y-4 z-50">
             {/* インデックス許可トグル */}
-            <div className="bg-white rounded-full px-6 py-3 shadow-lg">
+            <div className="bg-white rounded-full px-6 py-3 shadow-custom">
               <div className="flex flex-col items-center gap-2">
                 <span className="text-xs font-medium text-gray-700">インデックス</span>
                 <label className="cursor-pointer">
