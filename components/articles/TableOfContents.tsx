@@ -10,12 +10,12 @@ interface TableOfContentsProps {
 export default function TableOfContents({ items }: TableOfContentsProps) {
   const [activeId, setActiveId] = useState<string>('');
 
-  // 配列でない場合の安全チェック
-  if (!Array.isArray(items) || items.length === 0) {
-    return null;
-  }
-
   useEffect(() => {
+    // 配列チェック
+    if (!Array.isArray(items) || items.length === 0) {
+      return;
+    }
+
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
@@ -36,6 +36,11 @@ export default function TableOfContents({ items }: TableOfContentsProps) {
 
     return () => observer.disconnect();
   }, [items]);
+
+  // 配列でない場合の安全チェック（useEffect の後）
+  if (!Array.isArray(items) || items.length === 0) {
+    return null;
+  }
 
   const handleClick = (id: string) => {
     const element = document.getElementById(id);
