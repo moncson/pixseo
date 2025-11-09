@@ -45,8 +45,9 @@ export async function PUT(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
+  const { id } = params;
+  
   try {
-    const { id } = params;
     const body = await request.json();
     console.log(`[API /admin/articles/${id}] Updating article with:`, body);
     
