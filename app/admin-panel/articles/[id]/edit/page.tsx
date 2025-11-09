@@ -278,6 +278,22 @@ export default function EditArticlePage({ params }: { params: { id: string } }) 
 
             {/* すべてのフィールドを1つのパネル内に表示 */}
             <div className="bg-white rounded-xl p-6 space-y-6">
+              {/* カテゴリー */}
+              <FloatingMultiSelect
+                label="カテゴリー"
+                values={formData.categoryIds}
+                onChange={(values) => setFormData({ ...formData, categoryIds: values })}
+                options={categories.map(cat => ({ value: cat.id, label: cat.name }))}
+              />
+
+              {/* タグ */}
+              <FloatingMultiSelect
+                label="タグ"
+                values={formData.tagIds}
+                onChange={(values) => setFormData({ ...formData, tagIds: values })}
+                options={tags.map(tag => ({ value: tag.id, label: tag.name }))}
+              />
+
               {/* タイトル */}
               <FloatingInput
                 label="タイトル"
@@ -340,22 +356,6 @@ export default function EditArticlePage({ params }: { params: { id: string } }) 
                 value={formData.reservationUrl}
                 onChange={(value) => setFormData({ ...formData, reservationUrl: value })}
                 type="url"
-              />
-
-              {/* カテゴリー */}
-              <FloatingMultiSelect
-                label="カテゴリー"
-                values={formData.categoryIds}
-                onChange={(values) => setFormData({ ...formData, categoryIds: values })}
-                options={categories.map(cat => ({ value: cat.id, label: cat.name }))}
-              />
-
-              {/* タグ */}
-              <FloatingMultiSelect
-                label="タグ"
-                values={formData.tagIds}
-                onChange={(values) => setFormData({ ...formData, tagIds: values })}
-                options={tags.map(tag => ({ value: tag.id, label: tag.name }))}
               />
 
               {/* メタタイトル */}

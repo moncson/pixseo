@@ -93,10 +93,11 @@ export default function EditAccountPage({ params }: { params: { uid: string } })
           <div className="max-w-4xl pb-32 animate-fadeIn">
           <form onSubmit={handleSubmit}>
             <div className="bg-white rounded-lg p-6 space-y-6">
-              {/* ロゴ */}
+              {/* アイコン */}
               <FeaturedImageUpload
                 value={formData.logoUrl}
                 onChange={(url) => setFormData({ ...formData, logoUrl: url })}
+                label="アイコン画像を選択"
               />
 
               {/* メールアドレス */}
