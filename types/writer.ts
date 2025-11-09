@@ -1,10 +1,10 @@
 export interface Writer {
   id: string;
-  iconUrl: string; // アイコン画像
+  icon?: string; // アイコン画像（オプショナル）
   handleName: string; // ハンドルネーム
-  bio: string; // 紹介文
+  bio?: string; // 紹介文（オプショナル）
   mediaId: string; // サービスID
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 

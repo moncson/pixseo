@@ -96,6 +96,13 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   // 2. サイトがINDEXで記事が非公開 → NOINDEX
   // 3. サイトがINDEXで記事が公開 → INDEX
   const allowIndexing = siteAllowIndexing && article.isPublished;
+  
+  // カテゴリー・タグ情報を取得（メタデータ用）
+  const categories = article.categoryIds ? await getCategoriesServer(article.categoryIds).catch(() => []) : [];
+  const tags = article.tagIds ? await getTagsServer(article.tagIds).catch(() => []) : [];
+  
+  // Canonical URL（重複コンテンツ回避）
+  const canonicalUrl = `https://${host}/articles/${article.slug}`;
 
   return {
     title: `${article.metaTitle || article.title} | ${siteName}`,
@@ -104,7 +111,34 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       index: allowIndexing,
       follow: allowIndexing,
     },
+    // Canonical URL設定（SEO重要）
+    alternates: {
+      canonical: canonicalUrl,
+    },
+    // Open Graph最適化（SNSシェア用）
     openGraph: {
+      title: article.metaTitle || article.title,
+      description: article.metaDescription || article.excerpt || article.title,
+      url: canonicalUrl,
+      siteName: siteName,
+      locale: 'ja_JP',
+      type: 'article',
+      publishedTime: article.publishedAt instanceof Date ? article.publishedAt.toISOString() : undefined,
+      modifiedTime: article.updatedAt instanceof Date ? article.updatedAt.toISOString() : undefined,
+      authors: [article.authorName || ''],
+      tags: tags.map(t => t.name),
+      images: article.featuredImage ? [
+        {
+          url: article.featuredImage,
+          width: 1200,
+          height: 630,
+          alt: article.title,
+        },
+      ] : [],
+    },
+    // Twitter Card最適化
+    twitter: {
+      card: 'summary_large_image',
       title: article.metaTitle || article.title,
       description: article.metaDescription || article.excerpt || article.title,
       images: article.featuredImage ? [article.featuredImage] : [],
