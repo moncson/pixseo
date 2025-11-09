@@ -29,6 +29,17 @@ export default function ArticleContent({ content, tableOfContents }: ArticleCont
   // HTMLをパースしてReactコンポーネントに変換
   const options = {
     replace: (domNode: any) => {
+      // Instagram埋め込みのハイドレーションエラーを防ぐ
+      if (domNode.name === 'blockquote' && domNode.attribs?.class?.includes('instagram-media')) {
+        return (
+          <div suppressHydrationWarning>
+            <blockquote {...domNode.attribs} suppressHydrationWarning>
+              {domNode.children}
+            </blockquote>
+          </div>
+        );
+      }
+
       // YouTube埋め込みを検出して変換
       if (domNode.name === 'iframe' && domNode.attribs?.src?.includes('youtube.com')) {
         const youtubeId = extractYouTubeId(domNode.attribs.src);

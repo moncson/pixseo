@@ -7,14 +7,9 @@ import AuthGuard from '@/components/admin/AuthGuard';
 import AdminLayout from '@/components/admin/AdminLayout';
 import { deleteArticle } from '@/lib/firebase/articles-admin';
 import { Article } from '@/types/article';
+import { Writer } from '@/types/writer';
 import { apiGet } from '@/lib/api-client';
 import { useMediaTenant } from '@/contexts/MediaTenantContext';
-
-interface Writer {
-  id: string;
-  name: string;
-  iconUrl?: string;
-}
 
 export default function ArticlesPage() {
   const { currentTenant } = useMediaTenant();
@@ -182,19 +177,21 @@ export default function ArticlesPage() {
                         {writer && (
                           <div className="flex items-center gap-2 whitespace-nowrap">
                             <div className="relative w-7 h-7 rounded-full overflow-hidden flex-shrink-0 bg-gray-200">
-                              {writer.iconUrl ? (
+                              {writer.icon ? (
                                 <Image
-                                  src={writer.iconUrl}
-                                  alt={writer.name}
+                                  src={writer.icon}
+                                  alt={writer.handleName}
                                   fill
                                   className="object-cover"
                                   sizes="28px"
                                 />
                               ) : (
-                                <div className="w-full h-full bg-gray-300" />
+                                <div className="w-full h-full flex items-center justify-center bg-gray-300 text-white text-xs font-bold">
+                                  {writer.handleName.charAt(0)}
+                                </div>
                               )}
                             </div>
-                            <span className="text-sm text-gray-900 truncate">{writer.name}</span>
+                            <span className="text-sm text-gray-900 truncate">{writer.handleName}</span>
                           </div>
                         )}
                       </td>

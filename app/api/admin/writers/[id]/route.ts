@@ -21,7 +21,7 @@ export async function GET(
     const data = doc.data()!;
     return NextResponse.json({
       id: doc.id,
-      iconUrl: data.iconUrl || '',
+      icon: data.icon || data.iconUrl || '', // 互換性のため両方チェック
       handleName: data.handleName,
       bio: data.bio || '',
       mediaId: data.mediaId,
@@ -45,7 +45,7 @@ export async function PUT(
   try {
     const { id } = params;
     const body = await request.json();
-    const { iconUrl, handleName, bio } = body;
+    const { icon, handleName, bio } = body;
     
     const doc = await adminDb.collection('writers').doc(id).get();
     if (!doc.exists) {
@@ -56,7 +56,7 @@ export async function PUT(
     }
     
     const updateData = {
-      iconUrl: iconUrl || '',
+      icon: icon || '',
       handleName,
       bio: bio || '',
       updatedAt: FieldValue.serverTimestamp(),

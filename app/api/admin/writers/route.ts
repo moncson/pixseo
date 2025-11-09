@@ -24,7 +24,7 @@ export async function GET(request: NextRequest) {
       const data = doc.data();
       return {
         id: doc.id,
-        iconUrl: data.iconUrl || '',
+        icon: data.icon || data.iconUrl || '', // 互換性のため両方チェック
         handleName: data.handleName,
         bio: data.bio || '',
         mediaId: data.mediaId,
@@ -54,7 +54,7 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { iconUrl, handleName, bio, mediaId } = body;
+    const { icon, handleName, bio, mediaId } = body;
     
     if (!handleName || !mediaId) {
       return NextResponse.json(
@@ -64,7 +64,7 @@ export async function POST(request: NextRequest) {
     }
     
     const writerData = {
-      iconUrl: iconUrl || '',
+      icon: icon || '',
       handleName,
       bio: bio || '',
       mediaId,
