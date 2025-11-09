@@ -69,7 +69,7 @@ export default function TenantsPage() {
       }
     } catch (error) {
       console.error('Error toggling service active:', error);
-      alert('状態の更新に失敗しました');
+      alert('有効化の更新に失敗しました');
     }
   };
 
@@ -98,7 +98,7 @@ export default function TenantsPage() {
                         カスタムドメイン
                       </th>
                       <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        状態
+                        有効化
                       </th>
                       <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
                         操作

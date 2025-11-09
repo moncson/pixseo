@@ -51,10 +51,10 @@ export default function EditServicePage({ params }: { params: { id: string } }) 
             name: data.name || '',
             slug: data.slug || '',
             customDomain: data.customDomain || '',
-            siteDescription: data.settings?.siteDescription || '',
-            logoLandscape: data.settings?.logos?.landscape || '',
-            logoSquare: data.settings?.logos?.square || '',
-            logoPortrait: data.settings?.logos?.portrait || '',
+            siteDescription: data.siteDescription || data.settings?.siteDescription || '',
+            logoLandscape: data.logoLandscape || data.settings?.logos?.landscape || '',
+            logoSquare: data.logoSquare || data.settings?.logos?.square || '',
+            logoPortrait: data.logoPortrait || data.settings?.logos?.portrait || '',
             clientId: data.clientId || '',
             isActive: data.isActive !== undefined ? data.isActive : true,
           });
@@ -92,14 +92,10 @@ export default function EditServicePage({ params }: { params: { id: string } }) 
           slug: formData.slug,
           customDomain: formData.customDomain || undefined,
           clientId: formData.clientId || undefined,
-          settings: {
-            siteDescription: formData.siteDescription,
-            logos: {
-              landscape: formData.logoLandscape,
-              square: formData.logoSquare,
-              portrait: formData.logoPortrait,
-            },
-          },
+          siteDescription: formData.siteDescription,
+          logoLandscape: formData.logoLandscape,
+          logoSquare: formData.logoSquare,
+          logoPortrait: formData.logoPortrait,
           isActive: formData.isActive,
         }),
       });
@@ -215,30 +211,32 @@ export default function EditServicePage({ params }: { params: { id: string } }) 
           </form>
 
           {/* フローティング: 有効化トグル */}
-          <div className="fixed bottom-32 right-8 z-50">
-            <div className="bg-white rounded-full px-6 py-4 shadow-lg flex items-center gap-4 w-full">
-              <span className="text-sm font-medium text-gray-700 whitespace-nowrap">
-                有効化
-              </span>
-              <label className="cursor-pointer">
-                <div className="relative inline-block w-14 h-8">
-                  <input
-                    type="checkbox"
-                    checked={formData.isActive}
-                    onChange={(e) => setFormData({ ...formData, isActive: e.target.checked })}
-                    className="sr-only"
-                  />
-                  <div 
-                    className={`absolute inset-0 rounded-full transition-colors ${
-                      formData.isActive ? 'bg-blue-600' : 'bg-gray-400'
-                    }`}
-                  >
-                    <div className={`absolute top-1 left-1 w-6 h-6 bg-white rounded-full transition-transform ${
-                      formData.isActive ? 'translate-x-6' : 'translate-x-0'
-                    }`}></div>
+          <div className="fixed bottom-32 right-8 w-32 z-50">
+            <div className="bg-white rounded-full px-6 py-3 shadow-lg">
+              <div className="flex flex-col items-center gap-2">
+                <span className="text-xs font-medium text-gray-700 whitespace-nowrap">
+                  有効化
+                </span>
+                <label className="cursor-pointer">
+                  <div className="relative inline-block w-14 h-8">
+                    <input
+                      type="checkbox"
+                      checked={formData.isActive}
+                      onChange={(e) => setFormData({ ...formData, isActive: e.target.checked })}
+                      className="sr-only"
+                    />
+                    <div 
+                      className={`absolute inset-0 rounded-full transition-colors pointer-events-none ${
+                        formData.isActive ? 'bg-blue-600' : 'bg-gray-400'
+                      }`}
+                    >
+                      <div className={`absolute top-1 left-1 w-6 h-6 bg-white rounded-full transition-transform ${
+                        formData.isActive ? 'translate-x-6' : 'translate-x-0'
+                      }`}></div>
+                    </div>
                   </div>
-                </div>
-              </label>
+                </label>
+              </div>
             </div>
           </div>
 
