@@ -73,111 +73,134 @@ export default function DesignPage() {
     <AuthGuard>
       <AdminLayout>
         {fetchLoading ? null : (
-          <div className="animate-fadeIn pb-32">
-          {/* 全体を1つのパネルに */}
+          <div className="animate-fadeIn pb-32 space-y-6">
+          
+          {/* 背景色 */}
           <div className="bg-white rounded-[1.75rem] p-8">
-            
-            {/* 3列グリッド */}
             <div className="grid grid-cols-3 gap-6">
-              {/* 背景色 */}
               <ColorPicker label="全体背景色" value={theme.backgroundColor} onChange={(v) => updateTheme('backgroundColor', v)} />
               <ColorPicker label="ヘッダー背景色" value={theme.headerBackgroundColor} onChange={(v) => updateTheme('headerBackgroundColor', v)} />
               <ColorPicker label="フッター背景色" value={theme.footerBackgroundColor} onChange={(v) => updateTheme('footerBackgroundColor', v)} />
               <ColorPicker label="パネル背景色" value={theme.panelBackgroundColor} onChange={(v) => updateTheme('panelBackgroundColor', v)} />
-
-              {/* H2 */}
-              <ColorPicker label="H2 テキストカラー" value={theme.h2Color} onChange={(v) => updateTheme('h2Color', v)} />
-              <ColorPicker label="H2 背景色" value={theme.h2BackgroundColor || 'transparent'} onChange={(v) => updateTheme('h2BackgroundColor', v)} allowOff />
-              <ColorPicker label="H2 左ボーダーカラー" value={theme.h2LeftBorderColor || 'transparent'} onChange={(v) => updateTheme('h2LeftBorderColor', v)} allowOff />
-              <ColorPicker label="H2 下ボーダーカラー" value={theme.h2BottomBorderColor || 'transparent'} onChange={(v) => updateTheme('h2BottomBorderColor', v)} allowOff />
             </div>
-            
-            {/* H2 アイコン（正方形） */}
-            <div className="mt-6">
-              <div className="h-12 w-12">
+          </div>
+
+          {/* H2 */}
+          <div className="bg-white rounded-[1.75rem] p-8">
+            <div className="flex gap-6">
+              {/* 左：アイコン */}
+              <div className="w-48 h-48 flex-shrink-0">
                 <FeaturedImageUpload
                   value={theme.h2Icon || ''}
                   onChange={(url) => updateTheme('h2Icon', url)}
                   label="H2 アイコン画像を選択"
                 />
               </div>
+              {/* 右：カラーピッカー 2x2 */}
+              <div className="flex-1 grid grid-cols-2 gap-6">
+                <ColorPicker label="H2 テキストカラー" value={theme.h2Color} onChange={(v) => updateTheme('h2Color', v)} />
+                <ColorPicker label="H2 背景色" value={theme.h2BackgroundColor || 'transparent'} onChange={(v) => updateTheme('h2BackgroundColor', v)} allowOff />
+                <ColorPicker label="H2 左ボーダーカラー" value={theme.h2LeftBorderColor || 'transparent'} onChange={(v) => updateTheme('h2LeftBorderColor', v)} allowOff />
+                <ColorPicker label="H2 下ボーダーカラー" value={theme.h2BottomBorderColor || 'transparent'} onChange={(v) => updateTheme('h2BottomBorderColor', v)} allowOff />
+              </div>
             </div>
+          </div>
 
-            {/* 3列グリッド続き */}
-            <div className="grid grid-cols-3 gap-6 mt-6">
-              {/* H3 */}
-              <ColorPicker label="H3 テキストカラー" value={theme.h3Color} onChange={(v) => updateTheme('h3Color', v)} />
-              <ColorPicker label="H3 背景色" value={theme.h3BackgroundColor || 'transparent'} onChange={(v) => updateTheme('h3BackgroundColor', v)} allowOff />
-              <ColorPicker label="H3 左ボーダーカラー" value={theme.h3LeftBorderColor || 'transparent'} onChange={(v) => updateTheme('h3LeftBorderColor', v)} allowOff />
-              <ColorPicker label="H3 下ボーダーカラー" value={theme.h3BottomBorderColor || 'transparent'} onChange={(v) => updateTheme('h3BottomBorderColor', v)} allowOff />
-            </div>
-
-            {/* H3 アイコン（正方形） */}
-            <div className="mt-6">
-              <div className="h-12 w-12">
+          {/* H3 */}
+          <div className="bg-white rounded-[1.75rem] p-8">
+            <div className="flex gap-6">
+              {/* 左：アイコン */}
+              <div className="w-48 h-48 flex-shrink-0">
                 <FeaturedImageUpload
                   value={theme.h3Icon || ''}
                   onChange={(url) => updateTheme('h3Icon', url)}
                   label="H3 アイコン画像を選択"
                 />
               </div>
+              {/* 右：カラーピッカー 2x2 */}
+              <div className="flex-1 grid grid-cols-2 gap-6">
+                <ColorPicker label="H3 テキストカラー" value={theme.h3Color} onChange={(v) => updateTheme('h3Color', v)} />
+                <ColorPicker label="H3 背景色" value={theme.h3BackgroundColor || 'transparent'} onChange={(v) => updateTheme('h3BackgroundColor', v)} allowOff />
+                <ColorPicker label="H3 左ボーダーカラー" value={theme.h3LeftBorderColor || 'transparent'} onChange={(v) => updateTheme('h3LeftBorderColor', v)} allowOff />
+                <ColorPicker label="H3 下ボーダーカラー" value={theme.h3BottomBorderColor || 'transparent'} onChange={(v) => updateTheme('h3BottomBorderColor', v)} allowOff />
+              </div>
             </div>
+          </div>
 
-            {/* 3列グリッド続き */}
-            <div className="grid grid-cols-3 gap-6 mt-6">
-              {/* H4 */}
-              <ColorPicker label="H4 テキストカラー" value={theme.h4Color} onChange={(v) => updateTheme('h4Color', v)} />
-              <ColorPicker label="H4 背景色" value={theme.h4BackgroundColor || 'transparent'} onChange={(v) => updateTheme('h4BackgroundColor', v)} allowOff />
-              <ColorPicker label="H4 左ボーダーカラー" value={theme.h4LeftBorderColor || 'transparent'} onChange={(v) => updateTheme('h4LeftBorderColor', v)} allowOff />
-              <ColorPicker label="H4 下ボーダーカラー" value={theme.h4BottomBorderColor || 'transparent'} onChange={(v) => updateTheme('h4BottomBorderColor', v)} allowOff />
-            </div>
-
-            {/* H4 アイコン（正方形） */}
-            <div className="mt-6">
-              <div className="h-12 w-12">
+          {/* H4 */}
+          <div className="bg-white rounded-[1.75rem] p-8">
+            <div className="flex gap-6">
+              {/* 左：アイコン */}
+              <div className="w-48 h-48 flex-shrink-0">
                 <FeaturedImageUpload
                   value={theme.h4Icon || ''}
                   onChange={(url) => updateTheme('h4Icon', url)}
                   label="H4 アイコン画像を選択"
                 />
               </div>
+              {/* 右：カラーピッカー 2x2 */}
+              <div className="flex-1 grid grid-cols-2 gap-6">
+                <ColorPicker label="H4 テキストカラー" value={theme.h4Color} onChange={(v) => updateTheme('h4Color', v)} />
+                <ColorPicker label="H4 背景色" value={theme.h4BackgroundColor || 'transparent'} onChange={(v) => updateTheme('h4BackgroundColor', v)} allowOff />
+                <ColorPicker label="H4 左ボーダーカラー" value={theme.h4LeftBorderColor || 'transparent'} onChange={(v) => updateTheme('h4LeftBorderColor', v)} allowOff />
+                <ColorPicker label="H4 下ボーダーカラー" value={theme.h4BottomBorderColor || 'transparent'} onChange={(v) => updateTheme('h4BottomBorderColor', v)} allowOff />
+              </div>
             </div>
+          </div>
 
-            {/* 3列グリッド続き */}
-            <div className="grid grid-cols-3 gap-6 mt-6">
-              {/* テキストカラー */}
+          {/* テキストカラー */}
+          <div className="bg-white rounded-[1.75rem] p-8">
+            <div className="grid grid-cols-3 gap-6">
               <ColorPicker label="本文テキスト" value={theme.textColor} onChange={(v) => updateTheme('textColor', v)} />
               <ColorPicker label="リンクカラー" value={theme.linkColor} onChange={(v) => updateTheme('linkColor', v)} />
               <ColorPicker label="リンクホバーカラー" value={theme.linkHoverColor} onChange={(v) => updateTheme('linkHoverColor', v)} />
+            </div>
+          </div>
 
-              {/* ボタンカラー */}
+          {/* ボタンカラー */}
+          <div className="bg-white rounded-[1.75rem] p-8">
+            <div className="grid grid-cols-2 gap-6">
               <ColorPicker label="プライマリボタン 背景色" value={theme.primaryButtonColor} onChange={(v) => updateTheme('primaryButtonColor', v)} />
               <ColorPicker label="プライマリボタン テキスト色" value={theme.primaryButtonTextColor} onChange={(v) => updateTheme('primaryButtonTextColor', v)} />
               <ColorPicker label="セカンダリボタン 背景色" value={theme.secondaryButtonColor} onChange={(v) => updateTheme('secondaryButtonColor', v)} />
               <ColorPicker label="セカンダリボタン テキスト色" value={theme.secondaryButtonTextColor} onChange={(v) => updateTheme('secondaryButtonTextColor', v)} />
+            </div>
+          </div>
 
-              {/* 引用 */}
+          {/* 引用 */}
+          <div className="bg-white rounded-[1.75rem] p-8">
+            <div className="grid grid-cols-3 gap-6">
               <ColorPicker label="引用 背景色" value={theme.quoteBackgroundColor} onChange={(v) => updateTheme('quoteBackgroundColor', v)} />
               <ColorPicker label="引用 ボーダーカラー" value={theme.quoteBorderColor} onChange={(v) => updateTheme('quoteBorderColor', v)} />
               <ColorPicker label="引用 テキストカラー" value={theme.quoteTextColor} onChange={(v) => updateTheme('quoteTextColor', v)} />
+            </div>
+          </div>
 
-              {/* 参照 */}
+          {/* 参照 */}
+          <div className="bg-white rounded-[1.75rem] p-8">
+            <div className="grid grid-cols-3 gap-6">
               <ColorPicker label="参照 背景色" value={theme.referenceBackgroundColor} onChange={(v) => updateTheme('referenceBackgroundColor', v)} />
               <ColorPicker label="参照 ボーダーカラー" value={theme.referenceBorderColor} onChange={(v) => updateTheme('referenceBorderColor', v)} />
               <ColorPicker label="参照 テキストカラー" value={theme.referenceTextColor} onChange={(v) => updateTheme('referenceTextColor', v)} />
+            </div>
+          </div>
 
-              {/* 表 */}
+          {/* 表 */}
+          <div className="bg-white rounded-[1.75rem] p-8">
+            <div className="grid grid-cols-2 gap-6">
               <ColorPicker label="表 ヘッダー背景色" value={theme.tableHeaderBackgroundColor} onChange={(v) => updateTheme('tableHeaderBackgroundColor', v)} />
               <ColorPicker label="表 ヘッダーテキスト色" value={theme.tableHeaderTextColor} onChange={(v) => updateTheme('tableHeaderTextColor', v)} />
               <ColorPicker label="表 ボーダーカラー" value={theme.tableBorderColor} onChange={(v) => updateTheme('tableBorderColor', v)} />
               <ColorPicker label="表 ストライプ背景色" value={theme.tableStripedColor} onChange={(v) => updateTheme('tableStripedColor', v)} />
+            </div>
+          </div>
 
-              {/* その他 */}
+          {/* その他 */}
+          <div className="bg-white rounded-[1.75rem] p-8">
+            <div className="grid grid-cols-2 gap-6">
               <ColorPicker label="汎用ボーダーカラー" value={theme.borderColor} onChange={(v) => updateTheme('borderColor', v)} />
               <ColorPicker label="区切り線カラー" value={theme.dividerColor} onChange={(v) => updateTheme('dividerColor', v)} />
             </div>
-            
-            {/* シャドウカラー（1列） */}
             <div className="mt-6">
               <FloatingInput
                 label="シャドウカラー（RGBA形式）"
