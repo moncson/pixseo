@@ -369,70 +369,49 @@ export default function RichTextEditor({ value, onChange, placeholder }: RichTex
       <style jsx global>{`
         [contenteditable="true"] h2 {
           color: ${theme.h2Color};
-          ${theme.h2Style === 'border-left' ? `
-            border-left: 4px solid ${theme.h2BorderColor};
+          ${theme.h2BackgroundColor && theme.h2BackgroundColor !== 'transparent' ? `
+            background-color: ${theme.h2BackgroundColor};
+            padding: 0.5rem 1rem;
+          ` : ''}
+          ${theme.h2LeftBorderColor && theme.h2LeftBorderColor !== 'transparent' ? `
+            border-left: 4px solid ${theme.h2LeftBorderColor};
             padding-left: 1rem;
-            background-color: ${theme.h2BackgroundColor};
           ` : ''}
-          ${theme.h2Style === 'border-bottom' ? `
-            border-bottom: 2px solid ${theme.h2BorderColor};
+          ${theme.h2BottomBorderColor && theme.h2BottomBorderColor !== 'transparent' ? `
+            border-bottom: 2px solid ${theme.h2BottomBorderColor};
             padding-bottom: 0.5rem;
-          ` : ''}
-          ${theme.h2Style === 'background' ? `
-            background-color: ${theme.h2BackgroundColor};
-            padding: 0.5rem 1rem;
-            border-radius: 0.5rem;
-          ` : ''}
-          ${theme.h2Style === 'rounded' ? `
-            background-color: ${theme.h2BackgroundColor};
-            padding: 0.5rem 1rem;
-            border-radius: 1.5rem;
           ` : ''}
         }
 
         [contenteditable="true"] h3 {
           color: ${theme.h3Color};
-          ${theme.h3Style === 'border-left' ? `
-            border-left: 4px solid ${theme.h3BorderColor};
+          ${theme.h3BackgroundColor && theme.h3BackgroundColor !== 'transparent' ? `
+            background-color: ${theme.h3BackgroundColor};
+            padding: 0.5rem 1rem;
+          ` : ''}
+          ${theme.h3LeftBorderColor && theme.h3LeftBorderColor !== 'transparent' ? `
+            border-left: 4px solid ${theme.h3LeftBorderColor};
             padding-left: 1rem;
-            background-color: ${theme.h3BackgroundColor};
           ` : ''}
-          ${theme.h3Style === 'border-bottom' ? `
-            border-bottom: 2px solid ${theme.h3BorderColor};
+          ${theme.h3BottomBorderColor && theme.h3BottomBorderColor !== 'transparent' ? `
+            border-bottom: 2px solid ${theme.h3BottomBorderColor};
             padding-bottom: 0.5rem;
-          ` : ''}
-          ${theme.h3Style === 'background' ? `
-            background-color: ${theme.h3BackgroundColor};
-            padding: 0.5rem 1rem;
-            border-radius: 0.5rem;
-          ` : ''}
-          ${theme.h3Style === 'rounded' ? `
-            background-color: ${theme.h3BackgroundColor};
-            padding: 0.5rem 1rem;
-            border-radius: 1.5rem;
           ` : ''}
         }
 
         [contenteditable="true"] h4 {
           color: ${theme.h4Color};
-          ${theme.h4Style === 'border-left' ? `
-            border-left: 4px solid ${theme.h4BorderColor};
+          ${theme.h4BackgroundColor && theme.h4BackgroundColor !== 'transparent' ? `
+            background-color: ${theme.h4BackgroundColor};
+            padding: 0.5rem 1rem;
+          ` : ''}
+          ${theme.h4LeftBorderColor && theme.h4LeftBorderColor !== 'transparent' ? `
+            border-left: 4px solid ${theme.h4LeftBorderColor};
             padding-left: 1rem;
-            background-color: ${theme.h4BackgroundColor};
           ` : ''}
-          ${theme.h4Style === 'border-bottom' ? `
-            border-bottom: 2px solid ${theme.h4BorderColor};
+          ${theme.h4BottomBorderColor && theme.h4BottomBorderColor !== 'transparent' ? `
+            border-bottom: 2px solid ${theme.h4BottomBorderColor};
             padding-bottom: 0.5rem;
-          ` : ''}
-          ${theme.h4Style === 'background' ? `
-            background-color: ${theme.h4BackgroundColor};
-            padding: 0.5rem 1rem;
-            border-radius: 0.5rem;
-          ` : ''}
-          ${theme.h4Style === 'rounded' ? `
-            background-color: ${theme.h4BackgroundColor};
-            padding: 0.5rem 1rem;
-            border-radius: 1.5rem;
           ` : ''}
         }
 
