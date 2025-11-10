@@ -222,7 +222,7 @@ export default async function ArticlePage({ params }: PageProps) {
     dateModified: article.updatedAt instanceof Date ? article.updatedAt.toISOString() : new Date().toISOString(),
     author: {
       '@type': 'Person',
-      name: writer_info?.handleName || '匿名',
+      name: writer?.handleName || '匿名',
     },
     publisher: {
       '@type': 'Organization',
@@ -298,7 +298,7 @@ export default async function ArticlePage({ params }: PageProps) {
         <CategoryTagBadges categories={categories} tags={tags} />
 
         {/* 記事ヘッダー */}
-        <ArticleHeader article={article} writer={writer_info} />
+        <ArticleHeader article={article} writer={writer} />
 
         {/* 読了時間 */}
         {article.readingTime && (
