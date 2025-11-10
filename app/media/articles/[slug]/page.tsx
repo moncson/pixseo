@@ -9,7 +9,7 @@ import {
   getWriterServer,
   getAdjacentArticlesServer 
 } from '@/lib/firebase/articles-server';
-import { adminDb } from '@/lib/firebase/admin';
+import { getMediaIdFromHost, getSiteInfo } from '@/lib/firebase/media-tenant-helper';
 import { Article } from '@/types/article';
 import ArticleContent from '@/components/articles/ArticleContent';
 import RelatedArticles from '@/components/articles/RelatedArticles';
@@ -35,32 +35,8 @@ interface PageProps {
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
-  // mediaIdを取得（複数の方法を試す）
-  const headersList = headers();
-  const mediaIdFromHeader = headersList.get('x-media-id');
-  const host = headersList.get('host') || '';
-  
-  // ホスト名からスラッグを抽出してmediaIdを取得
-  let mediaId = mediaIdFromHeader;
-  
-  if (!mediaId && host.endsWith('.pixseo.cloud') && host !== 'admin.pixseo.cloud') {
-    const slug = host.replace('.pixseo.cloud', '');
-    
-    try {
-      const tenantsSnapshot = await adminDb
-        .collection('mediaTenants')
-        .where('slug', '==', slug)
-        .limit(1)
-        .get();
-      
-      if (!tenantsSnapshot.empty) {
-        mediaId = tenantsSnapshot.docs[0].id;
-      }
-    } catch (error) {
-      console.error('[generateMetadata] Error fetching mediaId:', error);
-    }
-  }
-  
+  // mediaIdを取得（キャッシュ付き共通関数）
+  const mediaId = await getMediaIdFromHost();
   const article = await getArticleServer(params.slug, mediaId || undefined);
   
   if (!article) {
@@ -73,23 +49,10 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     };
   }
 
-  // サイトのインデックス設定を取得
-  
-  let siteAllowIndexing = false;
-  let siteName = 'ふらっと。';
-  
-  if (mediaId) {
-    try {
-      const tenantDoc = await adminDb.collection('mediaTenants').doc(mediaId).get();
-      if (tenantDoc.exists) {
-        const data = tenantDoc.data();
-        siteAllowIndexing = data?.allowIndexing || false;
-        siteName = data?.name || siteName;
-      }
-    } catch (error) {
-      console.error('[Article Page] Error fetching tenant info:', error);
-    }
-  }
+  // サイトのインデックス設定を取得（キャッシュ付き共通関数）
+  const { allowIndexing: siteAllowIndexing, name: siteName } = mediaId 
+    ? await getSiteInfo(mediaId) 
+    : { allowIndexing: false, name: 'ふらっと。' };
   
   // インデックス制御のロジック
   // 1. サイトがNOINDEX → すべての記事もNOINDEX
@@ -103,6 +66,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const writer = article.writerId ? await getWriterServer(article.writerId).catch(() => null) : null;
   
   // Canonical URL（重複コンテンツ回避）
+  const headersList = headers();
+  const host = headersList.get('host') || '';
   const canonicalUrl = `https://${host}/articles/${article.slug}`;
 
   return {
@@ -148,32 +113,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 }
 
 export default async function ArticlePage({ params }: PageProps) {
-  // mediaIdを取得（複数の方法を試す）
-  const headersList = headers();
-  const mediaIdFromHeader = headersList.get('x-media-id');
-  const host = headersList.get('host') || '';
-  
-  // ホスト名からスラッグを抽出してmediaIdを取得
-  let mediaId = mediaIdFromHeader;
-  
-  if (!mediaId && host.endsWith('.pixseo.cloud') && host !== 'admin.pixseo.cloud') {
-    const slug = host.replace('.pixseo.cloud', '');
-    
-    try {
-      const tenantsSnapshot = await adminDb
-        .collection('mediaTenants')
-        .where('slug', '==', slug)
-        .limit(1)
-        .get();
-      
-      if (!tenantsSnapshot.empty) {
-        mediaId = tenantsSnapshot.docs[0].id;
-      }
-    } catch (error) {
-      console.error('[Article Page] Error fetching mediaId:', error);
-    }
-  }
-  
+  // mediaIdを取得（キャッシュ付き共通関数）
+  const mediaId = await getMediaIdFromHost();
   const article = await getArticleServer(params.slug, mediaId || undefined);
   if (!article) {
     notFound();
