@@ -33,8 +33,7 @@ export default function RelatedArticles({ articles }: RelatedArticlesProps) {
                 publishedAt: article.publishedAt,
                 updatedAt: article.publishedAt,
                 content: '',
-                authorId: '',
-                authorName: '',
+                writerId: '',  // ライターID（必須）
                 categoryIds: [],
                 tagIds: [],
                 relatedArticleIds: [],
