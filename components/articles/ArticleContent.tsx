@@ -29,15 +29,10 @@ export default function ArticleContent({ content, tableOfContents }: ArticleCont
   // HTMLをパースしてReactコンポーネントに変換
   const options = {
     replace: (domNode: any) => {
-      // Instagram埋め込みのハイドレーションエラーを防ぐ
+      // Instagram埋め込みはそのままスキップ（変換しない）
       if (domNode.name === 'blockquote' && domNode.attribs?.class?.includes('instagram-media')) {
-        return (
-          <div suppressHydrationWarning>
-            <blockquote {...domNode.attribs} suppressHydrationWarning>
-              {domNode.children}
-            </blockquote>
-          </div>
-        );
+        // 変換せずにそのまま表示（html-react-parserが自動で処理）
+        return undefined;
       }
 
       // YouTube埋め込みを検出して変換
@@ -137,7 +132,7 @@ export default function ArticleContent({ content, tableOfContents }: ArticleCont
   };
 
   return (
-    <div className="prose prose-lg max-w-none">
+    <div className="prose prose-lg max-w-none" suppressHydrationWarning>
       {parse(processedContent, options)}
     </div>
   );
