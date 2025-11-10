@@ -97,9 +97,10 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   // 3. サイトがINDEXで記事が公開 → INDEX
   const allowIndexing = siteAllowIndexing && article.isPublished;
   
-  // カテゴリー・タグ情報を取得（メタデータ用）
+  // カテゴリー・タグ・ライター情報を取得（メタデータ用）
   const categories = article.categoryIds ? await getCategoriesServer(article.categoryIds).catch(() => []) : [];
   const tags = article.tagIds ? await getTagsServer(article.tagIds).catch(() => []) : [];
+  const writer = article.writerId ? await getWriterServer(article.writerId).catch(() => null) : null;
   
   // Canonical URL（重複コンテンツ回避）
   const canonicalUrl = `https://${host}/articles/${article.slug}`;
@@ -125,7 +126,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       type: 'article',
       publishedTime: article.publishedAt instanceof Date ? article.publishedAt.toISOString() : undefined,
       modifiedTime: article.updatedAt instanceof Date ? article.updatedAt.toISOString() : undefined,
-      authors: [article.authorName || ''],
+      authors: writer ? [writer.handleName] : ['匿名'],
       tags: tags.map(t => t.name),
       images: article.featuredImage ? [
         {
@@ -221,7 +222,7 @@ export default async function ArticlePage({ params }: PageProps) {
     dateModified: article.updatedAt instanceof Date ? article.updatedAt.toISOString() : new Date().toISOString(),
     author: {
       '@type': 'Person',
-      name: article.authorName || '匿名',
+      name: writer_info?.handleName || '匿名',
     },
     publisher: {
       '@type': 'Organization',
@@ -297,7 +298,7 @@ export default async function ArticlePage({ params }: PageProps) {
         <CategoryTagBadges categories={categories} tags={tags} />
 
         {/* 記事ヘッダー */}
-        <ArticleHeader article={article} />
+        <ArticleHeader article={article} writer={writer_info} />
 
         {/* 読了時間 */}
         {article.readingTime && (

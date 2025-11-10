@@ -18,9 +18,7 @@ export interface Article {
   slug: string;
   publishedAt: Date;
   updatedAt: Date;
-  authorId: string;
-  authorName: string;        // 後方互換性のため残す
-  writerId?: string;         // ライターID（新規）
+  writerId: string;          // ライターID（必須・カテゴリー/タグと同じ設計）
   categoryIds: string[];
   tagIds: string[];
   featuredImage?: string;

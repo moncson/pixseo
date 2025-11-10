@@ -1,12 +1,14 @@
 import Image from 'next/image';
 import { Article } from '@/types/article';
+import { Writer } from '@/types/writer';
 import { formatDate } from '@/lib/utils/date';
 
 interface ArticleHeaderProps {
   article: Article;
+  writer?: Writer | null;
 }
 
-export default function ArticleHeader({ article }: ArticleHeaderProps) {
+export default function ArticleHeader({ article, writer }: ArticleHeaderProps) {
   return (
     <header className="mb-8">
       {article.featuredImage && (
@@ -51,7 +53,7 @@ export default function ArticleHeader({ article }: ArticleHeaderProps) {
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
           </svg>
-          <span>{article.authorName || '匿名'}</span>
+          <span>{writer?.handleName || '匿名'}</span>
         </div>
         
         <span>•</span>
