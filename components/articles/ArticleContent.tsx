@@ -182,7 +182,6 @@ export default function ArticleContent({ content, tableOfContents }: ArticleCont
       <div 
         className="prose prose-lg max-w-none"
         dangerouslySetInnerHTML={{ __html: processedContent }}
-        suppressHydrationWarning
       />
     );
   }
