@@ -48,6 +48,16 @@ const nextConfig = {
   async headers() {
     return [
       {
+        // すべてのページ：Instagram埋め込みの警告を抑制
+        source: '/:path*',
+        headers: [
+          {
+            key: 'Permissions-Policy',
+            value: 'unload=()',
+          },
+        ],
+      },
+      {
         // 記事ページ：5分キャッシュ + stale-while-revalidate
         source: '/media/articles/:slug*',
         headers: [
