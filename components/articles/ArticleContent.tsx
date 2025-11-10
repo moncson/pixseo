@@ -152,8 +152,22 @@ export default function ArticleContent({ content, tableOfContents }: ArticleCont
     );
   }
 
+  // Instagram埋め込みが含まれている場合は、dangerouslySetInnerHTMLで直接挿入
+  // これにより、ReactがInstagramの動的HTMLを管理しなくなる
+  const hasInstagramEmbed = processedContent.includes('instagram-media');
+  
+  if (hasInstagramEmbed) {
+    return (
+      <div 
+        className="prose prose-lg max-w-none"
+        dangerouslySetInnerHTML={{ __html: processedContent }}
+      />
+    );
+  }
+
+  // Instagram埋め込みがない場合は、通常のパース処理
   return (
-    <div className="prose prose-lg max-w-none" suppressHydrationWarning>
+    <div className="prose prose-lg max-w-none">
       {parse(processedContent, options)}
     </div>
   );
