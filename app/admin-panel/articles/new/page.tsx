@@ -111,8 +111,7 @@ export default function NewArticlePage() {
       await createArticle({
         ...formData,
         content: cleanedContent, // クリーニング済みのコンテンツを使用
-        authorId: 'admin', // TODO: 実際のユーザーIDを使用
-        authorName: selectedWriter.handleName,
+        writerId: formData.writerId, // ライターID（必須）
         featuredImage: featuredImageUrl,
         mediaId: currentTenant.id,
         tableOfContents,

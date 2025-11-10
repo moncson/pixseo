@@ -147,7 +147,7 @@ export default function EditArticlePage({ params }: { params: { id: string } }) 
         body: JSON.stringify({
           ...formData,
           content: cleanedContent, // クリーニング済みのコンテンツを使用
-          authorName: selectedWriter.handleName,
+          writerId: formData.writerId, // ライターID（必須）
           featuredImage: featuredImageUrl,
           mediaId: article.mediaId,
           tableOfContents,
