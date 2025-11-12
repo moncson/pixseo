@@ -48,13 +48,16 @@ const prepareNextApp = async () => {
 };
 
 export const nextjs = functions
-  .region('asia-northeast1')
   .runWith({
     memory: '2GB',
     timeoutSeconds: 120,
     secrets: [grokApiKey, openaiApiKey], // シークレットを指定
   })
-  .https.onRequest(async (request, response) => {
+  .https.onRequest(
+    {
+      region: 'asia-northeast1',
+    },
+    async (request, response) => {
     // シークレットを環境変数として設定（Next.jsアプリからアクセス可能にする）
     process.env.GROK_API_KEY = grokApiKey.value();
     process.env.OPENAI_API_KEY = openaiApiKey.value();
