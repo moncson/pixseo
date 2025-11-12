@@ -221,8 +221,6 @@ export default function ArticleGeneratorModal({
           {step === 'input' && (
             <div className="space-y-6">
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">記事の条件を入力</h3>
-                
                 {/* カテゴリー */}
                 <div className="mb-4">
                   <FloatingMultiSelect
