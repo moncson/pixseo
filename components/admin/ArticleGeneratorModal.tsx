@@ -229,15 +229,7 @@ export default function ArticleGeneratorModal({
                   />
                 </div>
 
-                {/* タグ */}
-                <div className="mb-4">
-                  <FloatingMultiSelect
-                    label="タグ"
-                    values={selectedTagIds}
-                    onChange={setSelectedTagIds}
-                    options={tags.map(tag => ({ value: tag.id, label: tag.name }))}
-                  />
-                </div>
+                {/* タグは編集画面で設定 */}
 
                 {/* トピック */}
                 <div className="mb-4">
