@@ -61,23 +61,34 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // 現在の日付を取得
+    const currentDate = new Date();
+    const currentYear = currentDate.getFullYear();
+    const currentMonth = currentDate.getMonth() + 1;
+    const dateString = `${currentYear}年${currentMonth}月`;
+    
     // プロンプトを構築
     const categoryText = categories.length > 0 ? `カテゴリ: ${categories.join(', ')}` : '';
     const tagText = tags.length > 0 ? `タグ: ${tags.join(', ')}` : '';
     const contextText = additionalContext ? `追加のコンテキスト: ${additionalContext}` : '';
     
-    const prompt = `以下の条件に基づいて、最新の情報を含む記事の原案を作成してください。
+    const prompt = `【現在の日付】${dateString}
+
+【重要】必ず${currentYear}年の最新情報に基づいて記事を作成してください。過去の予想や古い情報は使用しないでください。
+
+以下の条件に基づいて、最新の情報を含む記事の原案を作成してください。
 
 ${categoryText ? `${categoryText}\n` : ''}${tagText ? `${tagText}\n` : ''}${topic ? `トピック: ${topic}\n` : ''}${contextText ? `${contextText}\n` : ''}
 記事の要件:
-- 最新の情報を含む
+- 必ず${currentYear}年の最新の情報を含む
 - SEOを意識した構成
 - 読みやすい文章
 - 見出し（H2, H3）を適切に使用
 - 2000文字以上
+- タイトルには${currentYear}年であることを明示
 
 記事の形式（必ず以下の形式で出力してください）:
-タイトル: [記事タイトル]
+タイトル: [記事タイトル（${currentYear}年の情報であることを含める）]
 メタディスクリプション: [SEO用の説明文、160文字以内]
 本文: [HTML形式の記事本文]`;
 
@@ -89,11 +100,11 @@ ${categoryText ? `${categoryText}\n` : ''}${tagText ? `${tagText}\n` : ''}${topi
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'grok-4-latest', // Grok 4モデル
+        model: 'grok-beta', // Grok 4モデル（最新情報にアクセス可能）
         messages: [
           {
             role: 'system',
-            content: 'あなたはSEOに強い記事作成の専門家です。最新の情報を基に、読みやすく価値のある記事を作成してください。',
+            content: `あなたはSEOに強い記事作成の専門家です。現在は${currentYear}年${currentMonth}月です。必ず${currentYear}年の最新情報を基に、読みやすく価値のある記事を作成してください。過去の予想や古い情報は使用せず、現在利用可能な最新のデータと情報のみを使用してください。`,
           },
           {
             role: 'user',
