@@ -9,7 +9,6 @@ import FloatingInput from '@/components/admin/FloatingInput';
 import FloatingSelect from '@/components/admin/FloatingSelect';
 import FloatingMultiSelect from '@/components/admin/FloatingMultiSelect';
 import FeaturedImageUpload from '@/components/admin/FeaturedImageUpload';
-import ImageGenerator from '@/components/admin/ImageGenerator';
 import { Category, Tag, Article } from '@/types/article';
 import { Writer } from '@/types/writer';
 import { apiGet } from '@/lib/api-client';
@@ -31,7 +30,6 @@ export default function EditArticlePage({ params }: { params: { id: string } }) 
   const [article, setArticle] = useState<Article | null>(null);
   const [featuredImageUrl, setFeaturedImageUrl] = useState('');
   const [featuredImageAlt, setFeaturedImageAlt] = useState('');
-  const [showImageGenerator, setShowImageGenerator] = useState(false);
   const [serpPreviewDevice, setSerpPreviewDevice] = useState<'pc' | 'sp'>('pc');
   
   const [formData, setFormData] = useState({
@@ -194,50 +192,29 @@ export default function EditArticlePage({ params }: { params: { id: string } }) 
             {/* アイキャッチ画像（一番上・横長いっぱい） */}
             <div className="mb-6">
               <div className="bg-white rounded-xl p-6 space-y-4">
-                <div className="flex items-center justify-between">
-                  <h3 className="text-lg font-semibold text-gray-900">アイキャッチ画像</h3>
-                  <div className="flex gap-2">
+                {/* プレビューボタン */}
+                {formData.isPublished && (
+                  <div className="flex justify-end">
                     <button
                       type="button"
-                      onClick={() => setShowImageGenerator(!showImageGenerator)}
-                      className="px-4 py-2 text-sm bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors font-medium"
+                      onClick={handlePreview}
+                      className="px-4 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
                     >
-                      {showImageGenerator ? '画像生成を閉じる' : '🎨 AI画像を生成'}
+                      プレビュー
                     </button>
-                    {formData.isPublished && (
-                      <button
-                        type="button"
-                        onClick={handlePreview}
-                        className="px-4 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
-                      >
-                        プレビュー
-                      </button>
-                    )}
-                  </div>
-                </div>
-
-                {showImageGenerator && (
-                  <div className="border-t border-gray-200 pt-4">
-                    <ImageGenerator
-                      onImageGenerated={(url) => {
-                        setFeaturedImageUrl(url);
-                        setShowImageGenerator(false);
-                      }}
-                      articleTitle={formData.title}
-                      articleContent={formData.content}
-                    />
                   </div>
                 )}
 
-                <div className="relative w-full h-64">
-                  <FeaturedImageUpload
-                    value={featuredImageUrl}
-                    onChange={setFeaturedImageUrl}
-                    alt={featuredImageAlt}
-                    onAltChange={setFeaturedImageAlt}
-                    label="アイキャッチ画像を選択"
-                  />
-                </div>
+                <FeaturedImageUpload
+                  value={featuredImageUrl}
+                  onChange={setFeaturedImageUrl}
+                  alt={featuredImageAlt}
+                  onAltChange={setFeaturedImageAlt}
+                  label="アイキャッチ画像を選択"
+                  showImageGenerator={true}
+                  imageGeneratorTitle={formData.title}
+                  imageGeneratorContent={formData.content}
+                />
               </div>
             </div>
 

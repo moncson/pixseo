@@ -6,7 +6,6 @@ import AuthGuard from '@/components/admin/AuthGuard';
 import AdminLayout from '@/components/admin/AdminLayout';
 import FloatingInput from '@/components/admin/FloatingInput';
 import FeaturedImageUpload from '@/components/admin/FeaturedImageUpload';
-import ImageGenerator from '@/components/admin/ImageGenerator';
 import { getCategoryById, updateCategory } from '@/lib/firebase/categories-admin';
 import { Category } from '@/types/article';
 
@@ -15,7 +14,6 @@ export default function EditCategoryPage({ params }: { params: { id: string } })
   const [loading, setLoading] = useState(false);
   const [fetchLoading, setFetchLoading] = useState(true);
   const [category, setCategory] = useState<Category | null>(null);
-  const [showImageGenerator, setShowImageGenerator] = useState(false);
   
   const [formData, setFormData] = useState({
     name: '',
@@ -44,7 +42,7 @@ export default function EditCategoryPage({ params }: { params: { id: string } })
           slug: categoryData.slug,
           description: categoryData.description || '',
           imageUrl: categoryData.imageUrl || '',
-          imageAlt: '',
+          imageAlt: categoryData.imageAlt || '',
           isRecommended: categoryData.isRecommended || false,
           order: categoryData.order || 0,
         });
@@ -129,37 +127,15 @@ export default function EditCategoryPage({ params }: { params: { id: string } })
 
               {/* カテゴリー画像 */}
               <div>
-                <div className="flex items-center justify-between mb-3">
-                  <label className="block text-sm font-medium text-gray-700">
-                    カテゴリー画像
-                  </label>
-                  <button
-                    type="button"
-                    onClick={() => setShowImageGenerator(!showImageGenerator)}
-                    className="px-3 py-1.5 text-xs bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors font-medium"
-                  >
-                    {showImageGenerator ? '閉じる' : '🎨 AI生成'}
-                  </button>
-                </div>
-
-                {showImageGenerator && (
-                  <div className="mb-4 p-4 border border-gray-200 rounded-lg">
-                    <ImageGenerator
-                      onImageGenerated={(url) => {
-                        setFormData({ ...formData, imageUrl: url });
-                        setShowImageGenerator(false);
-                      }}
-                      articleTitle={`${formData.name}カテゴリー`}
-                      articleContent={formData.description}
-                    />
-                  </div>
-                )}
-
                 <FeaturedImageUpload
                   value={formData.imageUrl}
                   onChange={(url) => setFormData({ ...formData, imageUrl: url })}
                   alt={formData.imageAlt}
                   onAltChange={(alt) => setFormData({ ...formData, imageAlt: alt })}
+                  label="カテゴリー画像を選択"
+                  showImageGenerator={true}
+                  imageGeneratorTitle={`${formData.name}カテゴリー`}
+                  imageGeneratorContent={formData.description}
                 />
               </div>
             </div>

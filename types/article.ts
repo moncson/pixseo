@@ -51,6 +51,7 @@ export interface Category {
   slug: string;
   description?: string;
   imageUrl?: string;         // カテゴリー画像
+  imageAlt?: string;         // 画像のalt属性
   isRecommended?: boolean;
   order?: number;
 }

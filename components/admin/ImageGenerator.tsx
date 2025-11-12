@@ -26,10 +26,11 @@ export default function ImageGenerator({ onImageGenerated, articleTitle, article
   };
 
   const handleGenerate = async () => {
-    const imagePrompt = prompt || generateImagePrompt();
+    // プロンプトが空の場合は自動生成
+    const imagePrompt = prompt.trim() || generateImagePrompt();
     
-    if (!imagePrompt) {
-      setError('プロンプトを入力してください');
+    if (!imagePrompt || imagePrompt.trim() === '') {
+      setError('プロンプトを入力するか、タイトルとコンテンツを入力してください');
       return;
     }
 

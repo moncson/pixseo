@@ -4,6 +4,8 @@ import { useState, useRef, useEffect } from 'react';
 import Image from 'next/image';
 import { apiPostFormData } from '@/lib/api-client';
 import MediaLibraryModal from './MediaLibraryModal';
+import ImageGenerator from './ImageGenerator';
+import FloatingInput from './FloatingInput';
 
 interface FeaturedImageUploadProps {
   value?: string;
@@ -12,13 +14,27 @@ interface FeaturedImageUploadProps {
   alt?: string;
   onAltChange?: (alt: string) => void;
   showAltInput?: boolean; // デフォルトはtrue
+  showImageGenerator?: boolean; // デフォルトはfalse
+  imageGeneratorTitle?: string; // AI生成時のタイトル
+  imageGeneratorContent?: string; // AI生成時のコンテンツ
 }
 
-export default function FeaturedImageUpload({ value, onChange, label = 'ロゴ画像を選択', alt = '', onAltChange, showAltInput = true }: FeaturedImageUploadProps) {
+export default function FeaturedImageUpload({ 
+  value, 
+  onChange, 
+  label = '画像を選択', 
+  alt = '', 
+  onAltChange, 
+  showAltInput = true,
+  showImageGenerator = false,
+  imageGeneratorTitle = '',
+  imageGeneratorContent = ''
+}: FeaturedImageUploadProps) {
   const [uploading, setUploading] = useState(false);
   const [preview, setPreview] = useState<string | undefined>(value);
   const [isHovered, setIsHovered] = useState(false);
   const [showMediaLibrary, setShowMediaLibrary] = useState(false);
+  const [showAIGenerator, setShowAIGenerator] = useState(false);
   const [altText, setAltText] = useState(alt);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -44,13 +60,11 @@ export default function FeaturedImageUpload({ value, onChange, label = 'ロゴ�
     const file = e.target.files?.[0];
     if (!file) return;
 
-    console.log('[FeaturedImageUpload] ファイル選択:', file.name);
-
     // プレビュー表示
     const reader = new FileReader();
-    reader.onloadend = () => {
-      console.log('[FeaturedImageUpload] プレビュー生成完了');
-      setPreview(reader.result as string);
+    reader.onload = (e) => {
+      const result = e.target?.result as string;
+      setPreview(result);
     };
     reader.readAsDataURL(file);
 
@@ -72,23 +86,12 @@ export default function FeaturedImageUpload({ value, onChange, label = 'ロゴ�
       
       onChange(data.url);
       console.log('[FeaturedImageUpload] onChange呼び出し完了');
-    } catch (error: any) {
+    } catch (error) {
       console.error('[FeaturedImageUpload] アップロードエラー:', error);
-      console.error('[FeaturedImageUpload] エラーメッセージ:', error?.message);
-      alert(`画像のアップロードに失敗しました: ${error?.message || '不明なエラー'}`);
-      // プレビューをクリア
-      setPreview(undefined);
+      alert('画像のアップロードに失敗しました');
+      setPreview(value);
     } finally {
       setUploading(false);
-      console.log('[FeaturedImageUpload] アップロード処理終了');
-    }
-  };
-
-  const handleRemove = () => {
-    setPreview(undefined);
-    onChange('');
-    if (fileInputRef.current) {
-      fileInputRef.current.value = '';
     }
   };
 
@@ -96,174 +99,148 @@ export default function FeaturedImageUpload({ value, onChange, label = 'ロゴ�
     fileInputRef.current?.click();
   };
 
-  if (!preview) {
-    return (
-      <>
-        <div className="flex flex-col justify-center items-center h-full gap-3">
-          <div
-            className="aspect-square w-full h-full flex justify-center items-center border-2 border-gray-300 border-dashed rounded-lg hover:border-blue-500 transition-colors cursor-pointer"
-            onClick={handleChange}
-          >
-            <div className="text-center">
-              <svg
-                className="mx-auto h-6 w-6 text-gray-400"
-                stroke="currentColor"
-                fill="none"
-                viewBox="0 0 48 48"
-              >
-                <path
-                  d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02"
-                  strokeWidth={2}
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-              <div className="text-xs text-gray-600 mt-1">
-                {label}
-              </div>
-            </div>
-          </div>
-          
-          {/* Alt属性入力 */}
-          {showAltInput && (
-            <div className="w-full">
-              <input
-                type="text"
-                placeholder="画像の説明（alt属性）"
-                value={altText}
-                onChange={(e) => handleAltChange(e.target.value)}
-                className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-          )}
-          
-          {/* メディアライブラリから選択ボタン */}
-          <button
-            type="button"
-            onClick={() => setShowMediaLibrary(true)}
-            className="text-xs text-blue-600 hover:text-blue-700 font-medium"
-          >
-            メディアライブラリから選択
-          </button>
-          
-          <input
-            ref={fileInputRef}
-            type="file"
-            className="sr-only"
-            accept="image/*"
-            onChange={handleFileChange}
-            disabled={uploading}
-          />
-          {uploading && (
-            <div className="text-center text-xs text-gray-600">
-              アップロード中...
-            </div>
-          )}
-        </div>
-        
-        {/* メディアライブラリモーダル */}
-        <MediaLibraryModal
-          isOpen={showMediaLibrary}
-          onClose={() => setShowMediaLibrary(false)}
-          onSelect={(url) => {
-            onChange(url);
-            setPreview(url);
-          }}
-          filterType="image"
-        />
-      </>
-    );
-  }
+  const handleDelete = () => {
+    onChange('');
+    setPreview(undefined);
+  };
 
   return (
-    <>
-      <div className="space-y-3">
-        <div className="flex justify-center items-center h-full">
-          <div
-            className="relative aspect-square w-full h-full rounded-lg overflow-hidden"
-            onMouseEnter={() => setIsHovered(true)}
-            onMouseLeave={() => setIsHovered(false)}
+    <div className="space-y-4">
+      {/* ボタン群：アップロード、メディアライブラリ、AI生成 */}
+      <div className="flex gap-2">
+        <button
+          type="button"
+          onClick={handleChange}
+          disabled={uploading}
+          className="flex-1 px-4 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          {uploading ? 'アップロード中...' : 'アップロード'}
+        </button>
+        
+        <button
+          type="button"
+          onClick={() => setShowMediaLibrary(true)}
+          className="flex-1 px-4 py-2.5 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors font-medium text-sm"
+        >
+          メディアライブラリから選択
+        </button>
+        
+        {showImageGenerator && (
+          <button
+            type="button"
+            onClick={() => setShowAIGenerator(!showAIGenerator)}
+            className="flex-1 px-4 py-2.5 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors font-medium text-sm"
           >
-                <Image
-                  src={preview}
-                  alt={altText || "Featured"}
-                  fill
-                  className="object-cover"
-                  sizes="(max-width: 768px) 100vw, 400px"
-                  quality={95}
-                />
-            
-            {/* ホバー時のオーバーレイ */}
-            {isHovered && (
-            <div className="absolute inset-0 bg-black bg-opacity-50 flex flex-col items-center justify-center gap-2 transition-opacity z-10">
-              <div className="flex gap-2">
-                {/* 変更ボタン（アップロード） */}
-                <button
-                  type="button"
-                  onClick={handleChange}
-                  className="bg-white text-gray-900 w-6 h-6 rounded-full flex items-center justify-center hover:bg-gray-100 transition-colors"
-                  title="画像をアップロード"
-                >
-                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
-                  </svg>
-                </button>
-                
-                {/* 削除ボタン */}
-                <button
-                  type="button"
-                  onClick={handleRemove}
-                  className="bg-white text-red-600 w-6 h-6 rounded-full flex items-center justify-center hover:bg-red-50 transition-colors"
-                  title="画像を削除"
-                >
-                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                  </svg>
-                </button>
-              </div>
-              
-              {/* メディアライブラリから選択ボタン */}
+            {showAIGenerator ? 'AI生成を閉じる' : '🎨 AI生成'}
+          </button>
+        )}
+      </div>
+
+      <input
+        ref={fileInputRef}
+        type="file"
+        className="sr-only"
+        accept="image/*"
+        onChange={handleFileChange}
+        disabled={uploading}
+      />
+
+      {/* AI生成エリア */}
+      {showAIGenerator && (
+        <div className="p-4 border border-gray-200 rounded-lg bg-gray-50">
+          <ImageGenerator
+            onImageGenerated={(url) => {
+              onChange(url);
+              setPreview(url);
+              setShowAIGenerator(false);
+            }}
+            articleTitle={imageGeneratorTitle}
+            articleContent={imageGeneratorContent}
+          />
+        </div>
+      )}
+
+      {/* 画像プレビューエリア */}
+      {preview ? (
+        <div
+          className="relative w-full rounded-lg overflow-hidden border border-gray-200 bg-gray-50"
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
+        >
+          <div className="relative w-full" style={{ minHeight: '200px' }}>
+            <Image
+              src={preview}
+              alt={altText || label}
+              width={800}
+              height={600}
+              className="w-full h-auto object-contain"
+              style={{ maxHeight: '400px' }}
+            />
+          </div>
+          
+          {/* ホバー時のオーバーレイ */}
+          {isHovered && (
+            <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center gap-3 transition-opacity">
+              {/* 変更ボタン */}
+              <button
+                type="button"
+                onClick={handleChange}
+                className="bg-white text-gray-900 w-12 h-12 rounded-full flex items-center justify-center hover:bg-gray-100 transition-colors"
+                title="画像を変更"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                </svg>
+              </button>
+
+              {/* メディアライブラリボタン */}
               <button
                 type="button"
                 onClick={() => setShowMediaLibrary(true)}
-                className="text-xs text-white hover:text-gray-200 font-medium"
+                className="bg-white text-gray-900 w-12 h-12 rounded-full flex items-center justify-center hover:bg-gray-100 transition-colors"
+                title="メディアライブラリから選択"
               >
-                ライブラリから選択
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+              </button>
+
+              {/* 削除ボタン */}
+              <button
+                type="button"
+                onClick={handleDelete}
+                className="bg-white text-red-600 w-12 h-12 rounded-full flex items-center justify-center hover:bg-red-50 transition-colors"
+                title="画像を削除"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                </svg>
               </button>
             </div>
           )}
-          </div>
-          
-          <input
-            ref={fileInputRef}
-            type="file"
-            className="sr-only"
-            accept="image/*"
-            onChange={handleFileChange}
-            disabled={uploading}
-          />
-          
-          {uploading && (
-            <div className="text-center text-xs text-gray-600">
-              アップロード中...
-            </div>
-          )}
         </div>
-        
-        {/* Alt属性入力 */}
-        {showAltInput && (
-          <div className="w-full">
-            <input
-              type="text"
-              placeholder="画像の説明（alt属性）"
-              value={altText}
-              onChange={(e) => handleAltChange(e.target.value)}
-              className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-          </div>
-        )}
-      </div>
-      
+      ) : (
+        <div
+          className="w-full h-64 flex flex-col items-center justify-center border-2 border-dashed border-gray-300 rounded-lg hover:border-blue-500 transition-colors cursor-pointer bg-gray-50"
+          onClick={handleChange}
+        >
+          <svg className="w-16 h-16 text-gray-400 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+          </svg>
+          <span className="text-sm font-medium text-gray-700">{label}</span>
+        </div>
+      )}
+
+      {/* Alt属性入力 (FloatingInput) */}
+      {showAltInput && (
+        <FloatingInput
+          label="画像の説明（alt属性）"
+          value={altText}
+          onChange={handleAltChange}
+          placeholder="画像の内容を説明してください"
+        />
+      )}
+
       {/* メディアライブラリモーダル */}
       <MediaLibraryModal
         isOpen={showMediaLibrary}
@@ -274,7 +251,6 @@ export default function FeaturedImageUpload({ value, onChange, label = 'ロゴ�
         }}
         filterType="image"
       />
-    </>
+    </div>
   );
 }
-
