@@ -1,14 +1,24 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { adminDb } from '@/lib/firebase/admin';
 
 export const dynamic = 'force-dynamic';
 
 /**
  * OpenAI APIを使用して日本語タイトルから英語のスラッグを生成
+ * 同じmediaId内でスラッグの重複チェックを行い、重複していたら連番を追加
  */
 export async function POST(request: NextRequest) {
   try {
+    const mediaId = request.headers.get('x-media-id');
     const body = await request.json();
-    const { title } = body;
+    const { title, currentArticleId } = body; // 編集時は現在の記事IDを除外
+
+    if (!mediaId) {
+      return NextResponse.json(
+        { error: 'Media ID is required' },
+        { status: 400 }
+      );
+    }
 
     if (!title) {
       return NextResponse.json(
@@ -75,7 +85,33 @@ export async function POST(request: NextRequest) {
       .replace(/-+/g, '-')
       .replace(/^-+|-+$/g, '');
 
-    return NextResponse.json({ slug });
+    // 既存記事のスラッグを取得（同じmediaId）
+    const existingArticlesSnapshot = await adminDb
+      .collection('articles')
+      .where('mediaId', '==', mediaId)
+      .get();
+
+    const existingSlugs = existingArticlesSnapshot.docs
+      .filter(doc => doc.id !== currentArticleId) // 編集時は現在の記事を除外
+      .map(doc => doc.data().slug);
+
+    console.log('[API /admin/articles/generate-slug] 既存スラッグ数:', existingSlugs.length);
+
+    // 重複チェックと連番追加
+    let finalSlug = slug;
+    let counter = 2;
+
+    while (existingSlugs.includes(finalSlug)) {
+      finalSlug = `${slug}-${counter}`;
+      counter++;
+      console.log('[API /admin/articles/generate-slug] スラッグ重複、連番追加:', finalSlug);
+    }
+
+    if (finalSlug !== slug) {
+      console.log('[API /admin/articles/generate-slug] 最終スラッグ:', slug, '→', finalSlug);
+    }
+
+    return NextResponse.json({ slug: finalSlug });
   } catch (error) {
     console.error('[API /admin/articles/generate-slug] Error:', error);
     return NextResponse.json(

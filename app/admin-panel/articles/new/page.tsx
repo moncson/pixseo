@@ -122,10 +122,15 @@ function NewArticlePageContent() {
 
     setGeneratingSlug(true);
     try {
+      const currentTenantId = typeof window !== 'undefined' 
+        ? localStorage.getItem('currentTenantId') 
+        : null;
+
       const response = await fetch('/api/admin/articles/generate-slug', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'x-media-id': currentTenantId || '',
         },
         body: JSON.stringify({ title }),
       });

@@ -113,12 +113,20 @@ export default function EditArticlePage({ params }: { params: { id: string } }) 
 
     setGeneratingSlug(true);
     try {
+      const currentTenantId = typeof window !== 'undefined' 
+        ? localStorage.getItem('currentTenantId') 
+        : null;
+
       const response = await fetch('/api/admin/articles/generate-slug', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'x-media-id': currentTenantId || '',
         },
-        body: JSON.stringify({ title }),
+        body: JSON.stringify({ 
+          title,
+          currentArticleId: params.id, // 編集時は現在の記事IDを除外
+        }),
       });
 
       if (!response.ok) {
