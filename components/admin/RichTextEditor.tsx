@@ -478,7 +478,13 @@ export default function RichTextEditor({ value, onChange, placeholder }: RichTex
                 <ImageGenerator
                   onImageGenerated={(url) => {
                     setImageUrl(url);
-                    insertImage(url);
+                    // AI生成画像を直接挿入
+                    insertImageWithCaption(url);
+                    // モーダルを閉じる
+                    setShowImageModal(false);
+                    setImageUrl('');
+                    setImageCaption('');
+                    setImageCopyright('');
                   }}
                   articleTitle=""
                   articleContent={value}
