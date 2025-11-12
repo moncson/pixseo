@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, FormEvent } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, FormEvent, useEffect } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import AuthGuard from '@/components/admin/AuthGuard';
 import AdminLayout from '@/components/admin/AdminLayout';
 import RichTextEditor from '@/components/admin/RichTextEditor';
@@ -21,6 +21,7 @@ import { FAQItem } from '@/types/article';
 
 export default function NewArticlePage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { currentTenant } = useMediaTenant();
   const [loading, setLoading] = useState(false);
   const [fetchLoading, setFetchLoading] = useState(true);
@@ -65,6 +66,42 @@ export default function NewArticlePage() {
         setTags(tagsData);
         setWriters(writersData);
         setArticles(articlesData);
+
+        // URLパラメータから生成されたデータを取得
+        const titleParam = searchParams.get('title');
+        const excerptParam = searchParams.get('excerpt');
+        const contentParam = searchParams.get('content');
+        const categoryIdsParam = searchParams.get('categoryIds');
+        const tagIdsParam = searchParams.get('tagIds');
+        const featuredImageParam = searchParams.get('featuredImage');
+
+        if (titleParam || contentParam) {
+          setFormData(prev => ({
+            ...prev,
+            title: titleParam || prev.title,
+            excerpt: excerptParam || prev.excerpt,
+            content: contentParam || prev.content,
+            categoryIds: categoryIdsParam ? categoryIdsParam.split(',') : prev.categoryIds,
+            tagIds: tagIdsParam ? tagIdsParam.split(',') : prev.tagIds,
+          }));
+
+          // アイキャッチ画像を設定
+          if (featuredImageParam) {
+            setFeaturedImageUrl(featuredImageParam);
+          }
+
+          // スラッグを自動生成
+          if (titleParam) {
+            const slug = titleParam
+              .toLowerCase()
+              .replace(/[^a-z0-9\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FFF]+/g, '-')
+              .replace(/^-+|-+$/g, '');
+            setFormData(prev => ({ ...prev, slug }));
+          }
+
+          // URLパラメータをクリア（リロード時に再適用されないように）
+          router.replace('/articles/new', { scroll: false });
+        }
       } catch (error) {
         console.error('Error fetching data:', error);
         alert('データの読み込みに失敗しました');
@@ -73,7 +110,7 @@ export default function NewArticlePage() {
       }
     };
     fetchData();
-  }, []);
+  }, [searchParams, router]);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();

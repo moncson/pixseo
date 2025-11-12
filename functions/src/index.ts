@@ -1,4 +1,5 @@
-import * as functions from 'firebase-functions/v1';
+import * as functions from 'firebase-functions/v2';
+import { defineSecret } from 'firebase-functions/params';
 import * as admin from 'firebase-admin';
 import next from 'next';
 import * as path from 'path';
@@ -9,6 +10,10 @@ if (!admin.apps.length) {
     credential: admin.credential.applicationDefault(),
   });
 }
+
+// Firebase Functions v2のシークレットを定義
+const grokApiKey = defineSecret('GROK_API_KEY');
+const openaiApiKey = defineSecret('OPENAI_API_KEY');
 
 const dev = process.env.NODE_ENV !== 'production';
 // Firebase Functionsにデプロイする際は、.nextディレクトリがFunctionsディレクトリにコピーされる
@@ -47,8 +52,12 @@ export const nextjs = functions
   .runWith({
     memory: '2GB',
     timeoutSeconds: 120,
+    secrets: [grokApiKey, openaiApiKey], // シークレットを指定
   })
   .https.onRequest(async (request, response) => {
+    // シークレットを環境変数として設定（Next.jsアプリからアクセス可能にする）
+    process.env.GROK_API_KEY = grokApiKey.value();
+    process.env.OPENAI_API_KEY = openaiApiKey.value();
     try {
       const host = request.headers.host || '';
       const url = request.url || '/';

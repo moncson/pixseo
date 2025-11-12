@@ -6,21 +6,29 @@ import Image from 'next/image';
 import AuthGuard from '@/components/admin/AuthGuard';
 import AdminLayout from '@/components/admin/AdminLayout';
 import { deleteArticle } from '@/lib/firebase/articles-admin';
-import { Article } from '@/types/article';
+import { Article, Category, Tag } from '@/types/article';
 import { Writer } from '@/types/writer';
 import { apiGet } from '@/lib/api-client';
 import { useMediaTenant } from '@/contexts/MediaTenantContext';
+import ArticleGeneratorModal from '@/components/admin/ArticleGeneratorModal';
+import { useRouter } from 'next/navigation';
 
 export default function ArticlesPage() {
+  const router = useRouter();
   const { currentTenant } = useMediaTenant();
   const [articles, setArticles] = useState<Article[]>([]);
   const [writers, setWriters] = useState<Writer[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [tags, setTags] = useState<Tag[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
+  const [isGeneratorModalOpen, setIsGeneratorModalOpen] = useState(false);
 
   useEffect(() => {
     fetchArticles();
     fetchWriters();
+    fetchCategories();
+    fetchTags();
   }, []);
 
   const fetchArticles = async () => {
@@ -57,6 +65,44 @@ export default function ArticlesPage() {
     } catch (error) {
       console.error('[ArticlesPage] Error fetching writers:', error);
     }
+  };
+
+  const fetchCategories = async () => {
+    try {
+      const data: Category[] = await apiGet('/api/admin/categories');
+      setCategories(data);
+    } catch (error) {
+      console.error('[ArticlesPage] Error fetching categories:', error);
+    }
+  };
+
+  const fetchTags = async () => {
+    try {
+      const data: Tag[] = await apiGet('/api/admin/tags');
+      setTags(data);
+    } catch (error) {
+      console.error('[ArticlesPage] Error fetching tags:', error);
+    }
+  };
+
+  const handleArticleGenerated = (articleData: {
+    title: string;
+    excerpt: string;
+    content: string;
+    categoryIds: string[];
+    tagIds: string[];
+    featuredImage?: string;
+  }) => {
+    // 新規記事作成ページに遷移し、生成されたデータを渡す
+    const params = new URLSearchParams({
+      title: articleData.title,
+      excerpt: articleData.excerpt,
+      content: articleData.content,
+      categoryIds: articleData.categoryIds.join(','),
+      tagIds: articleData.tagIds.join(','),
+      ...(articleData.featuredImage && { featuredImage: articleData.featuredImage }),
+    });
+    router.push(`/articles/new?${params.toString()}`);
   };
 
   const handleDelete = async (id: string, title: string) => {
@@ -267,16 +313,39 @@ export default function ArticlesPage() {
         </div>
         )}
 
-        {/* フローティングボタン：新規記事作成 */}
-        <Link
-          href="/articles/new"
-          className="fixed bottom-8 right-8 bg-blue-600 text-white w-14 h-14 rounded-full hover:bg-blue-700 transition-all hover:scale-110 flex items-center justify-center z-50"
-          title="新規記事を作成"
-        >
-          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-          </svg>
-        </Link>
+        {/* フローティングボタン */}
+        <div className="fixed bottom-8 right-8 flex flex-col gap-4 z-50">
+          {/* AI記事生成ボタン */}
+          <button
+            onClick={() => setIsGeneratorModalOpen(true)}
+            className="bg-purple-600 text-white w-14 h-14 rounded-full hover:bg-purple-700 transition-all hover:scale-110 flex items-center justify-center shadow-lg"
+            title="AI記事生成"
+          >
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+            </svg>
+          </button>
+          
+          {/* 新規記事作成ボタン */}
+          <Link
+            href="/articles/new"
+            className="bg-blue-600 text-white w-14 h-14 rounded-full hover:bg-blue-700 transition-all hover:scale-110 flex items-center justify-center shadow-lg"
+            title="新規記事を作成"
+          >
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+            </svg>
+          </Link>
+        </div>
+
+        {/* AI記事生成モーダル */}
+        <ArticleGeneratorModal
+          isOpen={isGeneratorModalOpen}
+          onClose={() => setIsGeneratorModalOpen(false)}
+          onGenerate={handleArticleGenerated}
+          categories={categories}
+          tags={tags}
+        />
       </AdminLayout>
     </AuthGuard>
   );
