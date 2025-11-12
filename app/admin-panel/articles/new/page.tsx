@@ -188,7 +188,6 @@ function NewArticlePageContent() {
                   onChange={setFeaturedImageUrl}
                   alt={featuredImageAlt}
                   onAltChange={setFeaturedImageAlt}
-                  label="アイキャッチ画像を選択"
                   showImageGenerator={true}
                   imageGeneratorTitle={formData.title}
                   imageGeneratorContent={formData.content}

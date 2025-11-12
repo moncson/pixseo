@@ -22,7 +22,7 @@ interface FeaturedImageUploadProps {
 export default function FeaturedImageUpload({ 
   value, 
   onChange, 
-  label = '画像を選択', 
+  label = 'アイキャッチ画像', 
   alt = '', 
   onAltChange, 
   showAltInput = true,
@@ -115,20 +115,6 @@ export default function FeaturedImageUpload({
         disabled={uploading}
       />
 
-      {/* AI生成エリア */}
-      {showAIGenerator && (
-        <div className="p-4 border border-gray-200 rounded-lg bg-gray-50">
-          <ImageGenerator
-            onImageGenerated={(url) => {
-              onChange(url);
-              setPreview(url);
-              setShowAIGenerator(false);
-            }}
-            articleTitle={imageGeneratorTitle}
-            articleContent={imageGeneratorContent}
-          />
-        </div>
-      )}
 
       {/* 画像プレビューエリア */}
       {preview ? (
@@ -240,6 +226,21 @@ export default function FeaturedImageUpload({
               </button>
             )}
           </div>
+        </div>
+      )}
+
+      {/* AI生成エリア（サムネイルエリアの下） */}
+      {showAIGenerator && (
+        <div className="p-4 border border-gray-200 rounded-lg">
+          <ImageGenerator
+            onImageGenerated={(url) => {
+              onChange(url);
+              setPreview(url);
+              setShowAIGenerator(false);
+            }}
+            articleTitle={imageGeneratorTitle}
+            articleContent={imageGeneratorContent}
+          />
         </div>
       )}
 

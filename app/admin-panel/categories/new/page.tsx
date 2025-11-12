@@ -108,7 +108,7 @@ export default function NewCategoryPage() {
                   onChange={(url) => setFormData({ ...formData, imageUrl: url })}
                   alt={formData.imageAlt}
                   onAltChange={(alt) => setFormData({ ...formData, imageAlt: alt })}
-                  label="カテゴリー画像を選択"
+                  label="カテゴリー画像"
                   showImageGenerator={true}
                   imageGeneratorTitle={`${formData.name}カテゴリー`}
                   imageGeneratorContent={formData.description}

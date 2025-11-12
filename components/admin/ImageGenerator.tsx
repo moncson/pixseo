@@ -1,6 +1,8 @@
 'use client';
 
 import { useState } from 'react';
+import FloatingInput from './FloatingInput';
+import FloatingSelect from './FloatingSelect';
 
 interface ImageGeneratorProps {
   onImageGenerated: (url: string) => void;
@@ -70,38 +72,33 @@ export default function ImageGenerator({ onImageGenerated, articleTitle, article
     }
   };
 
+  const sizeOptions = [
+    { value: '1024x1024', label: '正方形 (1024x1024)' },
+    { value: '1792x1024', label: '横長 (1792x1024)' },
+    { value: '1024x1792', label: '縦長 (1024x1792)' },
+  ];
+
   return (
     <div className="space-y-4">
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
-          画像プロンプト
-        </label>
-        <textarea
-          value={prompt}
-          onChange={(e) => setPrompt(e.target.value)}
-          placeholder={articleTitle ? `記事タイトル「${articleTitle}」から自動生成されます（空欄のままでもOK）` : '画像の説明を入力してください'}
-          className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
-          rows={3}
-        />
-      </div>
+      {/* 画像プロンプト */}
+      <FloatingInput
+        label="画像プロンプト"
+        value={prompt}
+        onChange={setPrompt}
+        multiline
+        rows={3}
+      />
 
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
-          画像サイズ
-        </label>
-        <select
-          value={size}
-          onChange={(e) => setSize(e.target.value as typeof size)}
-          className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
-        >
-          <option value="1024x1024">正方形 (1024x1024)</option>
-          <option value="1792x1024">横長 (1792x1024)</option>
-          <option value="1024x1792">縦長 (1024x1792)</option>
-        </select>
-      </div>
+      {/* 画像サイズ */}
+      <FloatingSelect
+        label="画像サイズ"
+        value={size}
+        onChange={(value) => setSize(value as typeof size)}
+        options={sizeOptions}
+      />
 
       {error && (
-        <div className="p-4 bg-red-50 border border-red-200 rounded-xl text-red-700">
+        <div className="p-4 bg-red-50 border border-red-200 rounded-xl text-red-700 text-sm">
           {error}
         </div>
       )}
@@ -120,7 +117,7 @@ export default function ImageGenerator({ onImageGenerated, articleTitle, article
       <button
         onClick={handleGenerate}
         disabled={generating}
-        className="w-full px-6 py-3 bg-purple-600 text-white rounded-xl hover:bg-purple-700 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
+        className="w-full px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors font-medium disabled:opacity-50 disabled:cursor-not-allowed"
       >
         {generating ? (
           <span className="flex items-center justify-center gap-2">
@@ -128,10 +125,9 @@ export default function ImageGenerator({ onImageGenerated, articleTitle, article
             画像を生成中...
           </span>
         ) : (
-          '🎨 AI画像を生成'
+          'AI画像を生成'
         )}
       </button>
     </div>
   );
 }
-
