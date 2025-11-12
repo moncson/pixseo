@@ -80,6 +80,31 @@ export default async function MediaPage() {
     }
   }
   
+  // サイト設定を取得
+  let siteSettings = {
+    name: 'メディアサイト',
+    description: 'メディアサイトの説明',
+    mainTitle: '',
+    mainSubtitle: '',
+  };
+  
+  if (mediaId) {
+    try {
+      const tenantDoc = await adminDb.collection('mediaTenants').doc(mediaId).get();
+      if (tenantDoc.exists) {
+        const data = tenantDoc.data();
+        siteSettings = {
+          name: data?.name || 'メディアサイト',
+          description: data?.siteDescription || 'メディアサイトの説明',
+          mainTitle: data?.mainTitle || data?.siteDescription || 'メディアサイト',
+          mainSubtitle: data?.mainSubtitle || '',
+        };
+      }
+    } catch (error) {
+      console.error('[Media Page] Error fetching site settings:', error);
+    }
+  }
+  
   // 記事データを並列取得（サーバーサイド）
   const [recentArticles, popularArticles] = await Promise.all([
     getRecentArticlesServer(10, mediaId || undefined),
@@ -90,12 +115,12 @@ export default async function MediaPage() {
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'WebSite',
-    name: 'ふらっと。',
-    description: 'バリアフリー情報メディア - おでかけ・外出に役立つバリアフリー情報を探す',
-    url: 'https://the-ayumi.jp/media',
+    name: siteSettings.name,
+    description: siteSettings.description,
+    url: `https://${host}`,
     potentialAction: {
       '@type': 'SearchAction',
-      target: 'https://the-ayumi.jp/media/search?q={search_term_string}',
+      target: `https://${host}/search?q={search_term_string}`,
       'query-input': 'required name=search_term_string',
     },
   };
@@ -113,7 +138,7 @@ export default async function MediaPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
             <Link href="/" className="text-2xl font-bold text-gray-900">
-              ふらっと。
+              {siteSettings.name}
             </Link>
             <nav className="hidden md:flex space-x-6">
               <Link href="/" className="text-gray-700 hover:text-gray-900">
@@ -136,11 +161,13 @@ export default async function MediaPage() {
         <section className="mb-12">
           <div className="text-center mb-8">
             <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-              バリアフリー情報メディア
+              {siteSettings.mainTitle || siteSettings.name}
             </h1>
-            <p className="text-lg text-gray-600">
-              おでかけ・外出に役立つ情報を探す
-            </p>
+            {siteSettings.mainSubtitle && (
+              <p className="text-lg text-gray-600">
+                {siteSettings.mainSubtitle}
+              </p>
+            )}
           </div>
           <SearchBar />
         </section>
@@ -202,7 +229,7 @@ export default async function MediaPage() {
       <footer className="bg-gray-800 text-white mt-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="text-center">
-            <p className="text-gray-400">© 2024 Ayumi. All rights reserved.</p>
+            <p className="text-gray-400">© {new Date().getFullYear()} {siteSettings.name}. All rights reserved.</p>
           </div>
         </div>
       </footer>
