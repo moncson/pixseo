@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { useMediaTenant } from '@/contexts/MediaTenantContext';
 import { Theme, defaultTheme } from '@/types/theme';
+import ImageGenerator from './ImageGenerator';
 
 interface RichTextEditorProps {
   value: string;
@@ -17,7 +18,7 @@ export default function RichTextEditor({ value, onChange, placeholder }: RichTex
   const [showToolbar, setShowToolbar] = useState(false);
   const [toolbarPosition, setToolbarPosition] = useState({ top: 0, left: 0 });
   const [showImageModal, setShowImageModal] = useState(false);
-  const [imageInputMethod, setImageInputMethod] = useState<'upload' | 'url'>('upload');
+  const [imageInputMethod, setImageInputMethod] = useState<'upload' | 'url' | 'ai'>('upload');
   const [imageUrl, setImageUrl] = useState('');
   const [uploadingImage, setUploadingImage] = useState(false);
   const [imageCaption, setImageCaption] = useState('');
@@ -398,7 +399,7 @@ export default function RichTextEditor({ value, onChange, placeholder }: RichTex
             <div className="flex gap-2 mb-4">
               <button
                 onClick={() => setImageInputMethod('upload')}
-                className={`flex-1 px-4 py-2 rounded-xl font-medium transition-colors ${
+                className={`flex-1 px-3 py-2 rounded-xl font-medium transition-colors text-sm ${
                   imageInputMethod === 'upload' 
                     ? 'bg-blue-600 text-white' 
                     : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
@@ -407,8 +408,18 @@ export default function RichTextEditor({ value, onChange, placeholder }: RichTex
                 アップロード
               </button>
               <button
+                onClick={() => setImageInputMethod('ai')}
+                className={`flex-1 px-3 py-2 rounded-xl font-medium transition-colors text-sm ${
+                  imageInputMethod === 'ai' 
+                    ? 'bg-purple-600 text-white' 
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                }`}
+              >
+                🎨 AI生成
+              </button>
+              <button
                 onClick={() => setImageInputMethod('url')}
-                className={`flex-1 px-4 py-2 rounded-xl font-medium transition-colors ${
+                className={`flex-1 px-3 py-2 rounded-xl font-medium transition-colors text-sm ${
                   imageInputMethod === 'url' 
                     ? 'bg-blue-600 text-white' 
                     : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
@@ -460,6 +471,17 @@ export default function RichTextEditor({ value, onChange, placeholder }: RichTex
                   onChange={(e) => setImageCaption(e.target.value)}
                   placeholder="画像キャプション（例：画像元：～）"
                   className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+            ) : imageInputMethod === 'ai' ? (
+              <div>
+                <ImageGenerator
+                  onImageGenerated={(url) => {
+                    setImageUrl(url);
+                    insertImage(url);
+                  }}
+                  articleTitle=""
+                  articleContent={value}
                 />
               </div>
             ) : (
