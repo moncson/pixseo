@@ -7,7 +7,6 @@ import SearchBar from '@/components/search/SearchBar';
 import ArticleCard from '@/components/articles/ArticleCard';
 import ExternalLinks from '@/components/common/ExternalLinks';
 import RecommendedCategories from '@/components/common/RecommendedCategories';
-import PopularKeywords from '@/components/search/PopularKeywords';
 
 // 動的レンダリング + Firestoreキャッシュで高速化
 // headers()を使用しているため、完全な静的生成はできない
@@ -159,22 +158,7 @@ export default async function MediaPage() {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* ファーストビュー: 検索バー */}
         <section className="mb-12">
-          <div className="text-center mb-8">
-            <h1 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-              {siteSettings.mainTitle || siteSettings.name}
-            </h1>
-            {siteSettings.mainSubtitle && (
-              <p className="text-lg text-gray-600">
-                {siteSettings.mainSubtitle}
-              </p>
-            )}
-          </div>
           <SearchBar />
-        </section>
-
-        {/* よく検索されているキーワード */}
-        <section className="mb-12">
-          <PopularKeywords limit={10} />
         </section>
 
         {/* おすすめカテゴリー */}
@@ -227,9 +211,17 @@ export default async function MediaPage() {
 
       {/* フッター */}
       <footer className="bg-gray-800 text-white mt-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="text-center">
-            <p className="text-gray-400">© {new Date().getFullYear()} {siteSettings.name}. All rights reserved.</p>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          <div className="text-center space-y-4">
+            <h3 className="text-2xl font-bold">{siteSettings.name}</h3>
+            {siteSettings.description && (
+              <p className="text-gray-300 max-w-2xl mx-auto">
+                {siteSettings.description}
+              </p>
+            )}
+            <p className="text-gray-400 text-sm pt-4">
+              © {new Date().getFullYear()} {siteSettings.name}. All rights reserved.
+            </p>
           </div>
         </div>
       </footer>
