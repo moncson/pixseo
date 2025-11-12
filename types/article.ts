@@ -50,6 +50,7 @@ export interface Category {
   name: string;
   slug: string;
   description?: string;
+  imageUrl?: string;         // カテゴリー画像
   isRecommended?: boolean;
   order?: number;
 }

@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import AuthGuard from '@/components/admin/AuthGuard';
 import AdminLayout from '@/components/admin/AdminLayout';
 import FloatingInput from '@/components/admin/FloatingInput';
+import FeaturedImageUpload from '@/components/admin/FeaturedImageUpload';
 import { createCategory } from '@/lib/firebase/categories-admin';
 import { useMediaTenant } from '@/contexts/MediaTenantContext';
 
@@ -17,6 +18,7 @@ export default function NewCategoryPage() {
     name: '',
     slug: '',
     description: '',
+    imageUrl: '',
     isRecommended: false,
     order: 0,
   });
@@ -97,6 +99,17 @@ export default function NewCategoryPage() {
                 multiline
                 rows={3}
               />
+
+              {/* カテゴリー画像 */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-3">
+                  カテゴリー画像
+                </label>
+                <FeaturedImageUpload
+                  value={formData.imageUrl}
+                  onChange={(url) => setFormData({ ...formData, imageUrl: url })}
+                />
+              </div>
             </div>
           </form>
 

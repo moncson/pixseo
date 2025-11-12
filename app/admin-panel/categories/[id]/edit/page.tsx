@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import AuthGuard from '@/components/admin/AuthGuard';
 import AdminLayout from '@/components/admin/AdminLayout';
 import FloatingInput from '@/components/admin/FloatingInput';
+import FeaturedImageUpload from '@/components/admin/FeaturedImageUpload';
 import { getCategoryById, updateCategory } from '@/lib/firebase/categories-admin';
 import { Category } from '@/types/article';
 
@@ -18,6 +19,7 @@ export default function EditCategoryPage({ params }: { params: { id: string } })
     name: '',
     slug: '',
     description: '',
+    imageUrl: '',
     isRecommended: false,
     order: 0,
   });
@@ -38,6 +40,7 @@ export default function EditCategoryPage({ params }: { params: { id: string } })
           name: categoryData.name,
           slug: categoryData.slug,
           description: categoryData.description || '',
+          imageUrl: categoryData.imageUrl || '',
           isRecommended: categoryData.isRecommended || false,
           order: categoryData.order || 0,
         });
@@ -119,6 +122,17 @@ export default function EditCategoryPage({ params }: { params: { id: string } })
                 multiline
                 rows={3}
               />
+
+              {/* カテゴリー画像 */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-3">
+                  カテゴリー画像
+                </label>
+                <FeaturedImageUpload
+                  value={formData.imageUrl}
+                  onChange={(url) => setFormData({ ...formData, imageUrl: url })}
+                />
+              </div>
             </div>
           </form>
 
