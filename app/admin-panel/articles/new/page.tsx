@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, FormEvent, useEffect } from 'react';
+import { useState, FormEvent, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import AuthGuard from '@/components/admin/AuthGuard';
 import AdminLayout from '@/components/admin/AdminLayout';
@@ -18,7 +18,7 @@ import { cleanWordPressHtml } from '@/lib/cleanWordPressHtml';
 import FAQManager from '@/components/admin/FAQManager';
 import { FAQItem } from '@/types/article';
 
-export default function NewArticlePage() {
+function NewArticlePageContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { currentTenant } = useMediaTenant();
@@ -560,5 +560,17 @@ export default function NewArticlePage() {
         )}
       </AdminLayout>
     </AuthGuard>
+  );
+}
+
+export default function NewArticlePage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      </div>
+    }>
+      <NewArticlePageContent />
+    </Suspense>
   );
 }
