@@ -100,7 +100,7 @@ ${categoryText ? `${categoryText}\n` : ''}${tagText ? `${tagText}\n` : ''}${topi
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'grok-2-latest', // Grok 2最新版（リアルタイム検索機能付き）
+        model: 'grok-4-latest', // Grok 4最新版
         messages: [
           {
             role: 'system',
