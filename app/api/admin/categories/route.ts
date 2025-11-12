@@ -27,6 +27,8 @@ export async function GET(request: NextRequest) {
       name: doc.data().name,
       slug: doc.data().slug,
       description: doc.data().description || '',
+      imageUrl: doc.data().imageUrl || '',
+      imageAlt: doc.data().imageAlt || '',
       mediaId: doc.data().mediaId,
       isRecommended: doc.data().isRecommended || false,
       order: doc.data().order || 0,
