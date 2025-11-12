@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { adminStorage } from '@/lib/firebase/admin';
+import { adminStorage, adminDb } from '@/lib/firebase/admin';
+import { FieldValue } from 'firebase-admin/firestore';
 
 export const dynamic = 'force-dynamic';
 
@@ -102,8 +103,32 @@ export async function POST(request: NextRequest) {
     await fileRef.makePublic();
     const publicUrl = `https://storage.googleapis.com/${bucket.name}/${fileName}`;
 
+    // Firestoreのmediaコレクションに登録（メディアライブラリで閲覧可能にする）
+    const mediaData = {
+      mediaId,
+      name: `ai-generated_${timestamp}_${randomString}.png`,
+      originalName: `AI生成画像_${prompt.substring(0, 30)}....png`,
+      url: publicUrl,
+      thumbnailUrl: publicUrl, // AI生成画像はそのままサムネイルとして使用
+      type: 'image',
+      mimeType: 'image/png',
+      size: imageBuffer.length,
+      width: parseInt(size.split('x')[0]),
+      height: parseInt(size.split('x')[1]),
+      alt: prompt, // プロンプトをaltとして保存
+      isAiGenerated: true,
+      aiPrompt: prompt,
+      aiRevisedPrompt: openaiData.data?.[0]?.revised_prompt || prompt,
+      createdAt: FieldValue.serverTimestamp(),
+      updatedAt: FieldValue.serverTimestamp(),
+    };
+
+    const docRef = await adminDb.collection('media').add(mediaData);
+    console.log('[API /admin/images/generate] メディアライブラリに登録:', docRef.id);
+
     return NextResponse.json({
       url: publicUrl,
+      mediaId: docRef.id,
       revisedPrompt: openaiData.data?.[0]?.revised_prompt || prompt, // DALL-E 3はプロンプトを改善する場合がある
     });
   } catch (error) {

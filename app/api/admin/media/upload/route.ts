@@ -13,6 +13,7 @@ export async function POST(request: Request) {
     const formData = await request.formData();
     const file = formData.get('file') as File | null;
     const mediaId = formData.get('mediaId') as string | null;
+    const alt = (formData.get('alt') as string | null) || '';
 
     if (!file) {
       return NextResponse.json({ error: 'No file uploaded' }, { status: 400 });
@@ -119,6 +120,7 @@ export async function POST(request: Request) {
       size: finalSize,
       width,
       height,
+      alt: alt || file.name.replace(/\.[^.]+$/, ''), // altが空の場合、ファイル名（拡張子なし）を使用
       createdAt: FieldValue.serverTimestamp(),
       updatedAt: FieldValue.serverTimestamp(),
     };

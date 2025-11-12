@@ -10,6 +10,10 @@ export interface MediaFile {
   size: number;
   width?: number;
   height?: number;
+  alt?: string;              // 画像のalt属性
+  isAiGenerated?: boolean;   // AI生成画像かどうか
+  aiPrompt?: string;         // AI生成時のプロンプト
+  aiRevisedPrompt?: string;  // AI生成時の改訂プロンプト
   createdAt: Date;
   updatedAt: Date;
 }

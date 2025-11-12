@@ -9,19 +9,36 @@ interface FeaturedImageUploadProps {
   value?: string;
   onChange: (url: string) => void;
   label?: string;
+  alt?: string;
+  onAltChange?: (alt: string) => void;
+  showAltInput?: boolean; // デフォルトはtrue
 }
 
-export default function FeaturedImageUpload({ value, onChange, label = 'ロゴ画像を選択' }: FeaturedImageUploadProps) {
+export default function FeaturedImageUpload({ value, onChange, label = 'ロゴ画像を選択', alt = '', onAltChange, showAltInput = true }: FeaturedImageUploadProps) {
   const [uploading, setUploading] = useState(false);
   const [preview, setPreview] = useState<string | undefined>(value);
   const [isHovered, setIsHovered] = useState(false);
   const [showMediaLibrary, setShowMediaLibrary] = useState(false);
+  const [altText, setAltText] = useState(alt);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // valueが変わったらpreviewを更新
   useEffect(() => {
     setPreview(value);
   }, [value]);
+
+  // altが変わったらaltTextを更新
+  useEffect(() => {
+    setAltText(alt);
+  }, [alt]);
+
+  // altTextが変わったら親に通知
+  const handleAltChange = (newAlt: string) => {
+    setAltText(newAlt);
+    if (onAltChange) {
+      onAltChange(newAlt);
+    }
+  };
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -44,6 +61,9 @@ export default function FeaturedImageUpload({ value, onChange, label = 'ロゴ�
     try {
       const formData = new FormData();
       formData.append('file', file);
+      if (altText) {
+        formData.append('alt', altText);
+      }
       
       console.log('[FeaturedImageUpload] APIリクエスト送信中...');
       const data = await apiPostFormData<{ url: string }>('/api/admin/media/upload', formData);
@@ -104,6 +124,19 @@ export default function FeaturedImageUpload({ value, onChange, label = 'ロゴ�
             </div>
           </div>
           
+          {/* Alt属性入力 */}
+          {showAltInput && (
+            <div className="w-full">
+              <input
+                type="text"
+                placeholder="画像の説明（alt属性）"
+                value={altText}
+                onChange={(e) => handleAltChange(e.target.value)}
+                className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+          )}
+          
           {/* メディアライブラリから選択ボタン */}
           <button
             type="button"
@@ -144,23 +177,24 @@ export default function FeaturedImageUpload({ value, onChange, label = 'ロゴ�
 
   return (
     <>
-      <div className="flex justify-center items-center h-full">
-        <div
-          className="relative aspect-square w-full h-full rounded-lg overflow-hidden"
-          onMouseEnter={() => setIsHovered(true)}
-          onMouseLeave={() => setIsHovered(false)}
-        >
-              <Image
-                src={preview}
-                alt="Featured"
-                fill
-                className="object-cover"
-                sizes="(max-width: 768px) 100vw, 400px"
-                quality={95}
-              />
-          
-          {/* ホバー時のオーバーレイ */}
-          {isHovered && (
+      <div className="space-y-3">
+        <div className="flex justify-center items-center h-full">
+          <div
+            className="relative aspect-square w-full h-full rounded-lg overflow-hidden"
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}
+          >
+                <Image
+                  src={preview}
+                  alt={altText || "Featured"}
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 768px) 100vw, 400px"
+                  quality={95}
+                />
+            
+            {/* ホバー時のオーバーレイ */}
+            {isHovered && (
             <div className="absolute inset-0 bg-black bg-opacity-50 flex flex-col items-center justify-center gap-2 transition-opacity z-10">
               <div className="flex gap-2">
                 {/* 変更ボタン（アップロード） */}
@@ -198,20 +232,34 @@ export default function FeaturedImageUpload({ value, onChange, label = 'ロゴ�
               </button>
             </div>
           )}
+          </div>
+          
+          <input
+            ref={fileInputRef}
+            type="file"
+            className="sr-only"
+            accept="image/*"
+            onChange={handleFileChange}
+            disabled={uploading}
+          />
+          
+          {uploading && (
+            <div className="text-center text-xs text-gray-600">
+              アップロード中...
+            </div>
+          )}
         </div>
         
-        <input
-          ref={fileInputRef}
-          type="file"
-          className="sr-only"
-          accept="image/*"
-          onChange={handleFileChange}
-          disabled={uploading}
-        />
-        
-        {uploading && (
-          <div className="text-center text-xs text-gray-600">
-            アップロード中...
+        {/* Alt属性入力 */}
+        {showAltInput && (
+          <div className="w-full">
+            <input
+              type="text"
+              placeholder="画像の説明（alt属性）"
+              value={altText}
+              onChange={(e) => handleAltChange(e.target.value)}
+              className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
           </div>
         )}
       </div>
