@@ -249,7 +249,6 @@ export default function ArticleGeneratorModal({
                     label="トピック（任意）"
                     value={topic}
                     onChange={setTopic}
-                    placeholder="例：バリアフリー対応のカフェ"
                   />
                 </div>
 
@@ -261,7 +260,6 @@ export default function ArticleGeneratorModal({
                     onChange={setAdditionalContext}
                     multiline
                     rows={3}
-                    placeholder="例：特に車椅子でのアクセスについて詳しく書いてください"
                   />
                 </div>
 
@@ -273,16 +271,16 @@ export default function ArticleGeneratorModal({
 
                 <div className="flex gap-4">
                   <button
+                    onClick={handleClose}
+                    className="flex-1 px-6 py-3 bg-gray-200 text-gray-700 rounded-xl hover:bg-gray-300 transition-colors font-medium"
+                  >
+                    キャンセル
+                  </button>
+                  <button
                     onClick={handleGenerate}
                     className="flex-1 px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors font-medium"
                   >
-                    📝 記事を生成
-                  </button>
-                  <button
-                    onClick={handleClose}
-                    className="px-6 py-3 bg-gray-200 text-gray-700 rounded-xl hover:bg-gray-300 transition-colors"
-                  >
-                    キャンセル
+                    記事を生成
                   </button>
                 </div>
               </div>
