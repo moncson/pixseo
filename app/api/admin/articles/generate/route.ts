@@ -140,7 +140,7 @@ ${categoryText ? `${categoryText}\n` : ''}${tagText ? `${tagText}\n` : ''}${topi
       // 全体を本文として扱う
       content = generatedContent.trim();
       // 最初の行をタイトル候補として使用
-      const lines = generatedContent.split('\n').filter(line => line.trim());
+      const lines = generatedContent.split('\n').filter((line: string) => line.trim());
       if (lines.length > 0) {
         title = lines[0].replace(/^#+\s*/, '').trim() || topic || '生成された記事';
       } else {
