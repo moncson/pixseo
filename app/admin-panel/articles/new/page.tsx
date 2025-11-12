@@ -41,7 +41,7 @@ function NewArticlePageContent() {
     slug: '',
     writerId: '',
     categoryIds: [] as string[],
-    tagIds: [] as string[],
+    tagIds: [] as string[], // 新規作成時は空、編集画面で設定
     relatedArticleIds: [] as string[],
     isPublished: false,
     isFeatured: false,
@@ -240,13 +240,7 @@ function NewArticlePageContent() {
                 options={categories.map(cat => ({ value: cat.id, label: cat.name }))}
               />
 
-              {/* タグ */}
-              <FloatingMultiSelect
-                label="タグ"
-                values={formData.tagIds}
-                onChange={(values) => setFormData({ ...formData, tagIds: values })}
-                options={tags.map(tag => ({ value: tag.id, label: tag.name }))}
-              />
+              {/* タグは編集画面で設定 */}
 
               {/* タイトル */}
               <FloatingInput

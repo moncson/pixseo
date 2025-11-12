@@ -15,11 +15,11 @@ interface ArticleGeneratorModalProps {
     excerpt: string;
     content: string;
     categoryIds: string[];
-    tagIds: string[];
+    tagIds: string[]; // 常に空配列、編集画面で設定
     featuredImage?: string;
   }) => void;
   categories: Category[];
-  tags: Tag[];
+  tags: Tag[]; // 使用しないが互換性のため残す
 }
 
 export default function ArticleGeneratorModal({
@@ -31,7 +31,6 @@ export default function ArticleGeneratorModal({
 }: ArticleGeneratorModalProps) {
   const [step, setStep] = useState<'input' | 'generating' | 'review' | 'rewriting'>('input');
   const [selectedCategoryIds, setSelectedCategoryIds] = useState<string[]>([]);
-  const [selectedTagIds, setSelectedTagIds] = useState<string[]>([]);
   const [topic, setTopic] = useState('');
   const [additionalContext, setAdditionalContext] = useState('');
   const [generatedArticle, setGeneratedArticle] = useState<{
@@ -48,8 +47,8 @@ export default function ArticleGeneratorModal({
   } | null>(null);
 
   const handleGenerate = async () => {
-    if (selectedCategoryIds.length === 0 && selectedTagIds.length === 0 && !topic) {
-      setError('カテゴリ、タグ、またはトピックのいずれかを選択してください');
+    if (selectedCategoryIds.length === 0 && !topic) {
+      setError('カテゴリまたはトピックのいずれかを選択してください');
       return;
     }
 
@@ -69,7 +68,7 @@ export default function ArticleGeneratorModal({
         },
         body: JSON.stringify({
           categoryIds: selectedCategoryIds,
-          tagIds: selectedTagIds,
+          tagIds: [], // タグは編集画面で設定
           topic,
           additionalContext,
         }),
@@ -178,7 +177,7 @@ export default function ArticleGeneratorModal({
       excerpt: generatedArticle.excerpt,
       content: generatedArticle.content,
       categoryIds: selectedCategoryIds,
-      tagIds: selectedTagIds,
+      tagIds: [], // タグは編集画面で設定
       featuredImage: generatedArticle.featuredImage,
     });
 
@@ -189,7 +188,6 @@ export default function ArticleGeneratorModal({
   const handleClose = () => {
     setStep('input');
     setSelectedCategoryIds([]);
-    setSelectedTagIds([]);
     setTopic('');
     setAdditionalContext('');
     setGeneratedArticle(null);
