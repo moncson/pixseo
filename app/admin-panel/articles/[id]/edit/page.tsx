@@ -31,6 +31,8 @@ export default function EditArticlePage({ params }: { params: { id: string } }) 
   const [featuredImageUrl, setFeaturedImageUrl] = useState('');
   const [featuredImageAlt, setFeaturedImageAlt] = useState('');
   const [serpPreviewDevice, setSerpPreviewDevice] = useState<'pc' | 'sp'>('pc');
+  const [generatingSlug, setGeneratingSlug] = useState(false);
+  const [showSlugWarning, setShowSlugWarning] = useState(false);
   
   const [formData, setFormData] = useState({
     title: '',
@@ -104,6 +106,44 @@ export default function EditArticlePage({ params }: { params: { id: string } }) 
     };
     fetchData();
   }, [params.id, router]);
+
+  const generateSlugFromTitle = async (title: string) => {
+    if (!title.trim()) return;
+
+    setGeneratingSlug(true);
+    try {
+      const response = await fetch('/api/admin/articles/generate-slug', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ title }),
+      });
+
+      if (!response.ok) {
+        throw new Error('スラッグの生成に失敗しました');
+      }
+
+      const data = await response.json();
+      setFormData(prev => ({ ...prev, slug: data.slug }));
+    } catch (error) {
+      console.error('Error generating slug:', error);
+      alert('スラッグの生成に失敗しました');
+    } finally {
+      setGeneratingSlug(false);
+    }
+  };
+
+  const handleGenerateSlug = () => {
+    setShowSlugWarning(true);
+  };
+
+  const confirmGenerateSlug = () => {
+    if (formData.title) {
+      generateSlugFromTitle(formData.title);
+    }
+    setShowSlugWarning(false);
+  };
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -230,13 +270,25 @@ export default function EditArticlePage({ params }: { params: { id: string } }) 
                 required
               />
 
-              {/* スラッグ - プレースホルダーなし */}
-              <FloatingInput
-                label="スラッグ（URL）"
-                value={formData.slug}
-                onChange={(value) => setFormData({ ...formData, slug: value })}
-                required
-              />
+              {/* スラッグ - 自動生成ボタン付き */}
+              <div className="flex gap-2">
+                <div className="flex-1">
+                  <FloatingInput
+                    label="スラッグ（URL）"
+                    value={formData.slug}
+                    onChange={(value) => setFormData({ ...formData, slug: value })}
+                    required
+                  />
+                </div>
+                <button
+                  type="button"
+                  onClick={handleGenerateSlug}
+                  disabled={generatingSlug || !formData.title}
+                  className="px-4 py-2 bg-gray-600 text-white rounded-xl hover:bg-gray-700 h-12 mb-0.5 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {generatingSlug ? '生成中...' : '自動生成'}
+                </button>
+              </div>
 
               {/* ライター選択 */}
               <FloatingSelect

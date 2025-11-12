@@ -32,6 +32,7 @@ function NewArticlePageContent() {
   const [featuredImageUrl, setFeaturedImageUrl] = useState('');
   const [featuredImageAlt, setFeaturedImageAlt] = useState('');
   const [serpPreviewDevice, setSerpPreviewDevice] = useState<'pc' | 'sp'>('pc');
+  const [generatingSlug, setGeneratingSlug] = useState(false);
   
   const [formData, setFormData] = useState({
     title: '',
@@ -91,13 +92,9 @@ function NewArticlePageContent() {
             setFeaturedImageUrl(featuredImageParam);
           }
 
-          // スラッグを自動生成
+          // スラッグを自動生成（OpenAI API使用）
           if (titleParam) {
-            const slug = titleParam
-              .toLowerCase()
-              .replace(/[^a-z0-9\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FFF]+/g, '-')
-              .replace(/^-+|-+$/g, '');
-            setFormData(prev => ({ ...prev, slug }));
+            generateSlugFromTitle(titleParam);
           }
 
           // URLパラメータをクリア（リロード時に再適用されないように）
@@ -112,6 +109,46 @@ function NewArticlePageContent() {
     };
     fetchData();
   }, [searchParams, router]);
+
+  // タイトルが変更されたら自動的にスラッグを生成
+  useEffect(() => {
+    if (formData.title && !formData.slug) {
+      generateSlugFromTitle(formData.title);
+    }
+  }, [formData.title]);
+
+  const generateSlugFromTitle = async (title: string) => {
+    if (!title.trim()) return;
+
+    setGeneratingSlug(true);
+    try {
+      const response = await fetch('/api/admin/articles/generate-slug', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ title }),
+      });
+
+      if (!response.ok) {
+        throw new Error('スラッグの生成に失敗しました');
+      }
+
+      const data = await response.json();
+      setFormData(prev => ({ ...prev, slug: data.slug }));
+    } catch (error) {
+      console.error('Error generating slug:', error);
+      // エラー時はフォールバック（簡易的なスラッグ生成）
+      const fallbackSlug = title
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-+|-+$/g, '')
+        .substring(0, 50);
+      setFormData(prev => ({ ...prev, slug: fallbackSlug }));
+    } finally {
+      setGeneratingSlug(false);
+    }
+  };
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -167,11 +204,9 @@ function NewArticlePageContent() {
   };
 
   const generateSlug = () => {
-    const slug = formData.title
-      .toLowerCase()
-      .replace(/[^a-z0-9\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FFF]+/g, '-')
-      .replace(/^-+|-+$/g, '');
-    setFormData({ ...formData, slug });
+    if (formData.title) {
+      generateSlugFromTitle(formData.title);
+    }
   };
 
   return (
@@ -234,9 +269,10 @@ function NewArticlePageContent() {
                 <button
                   type="button"
                   onClick={generateSlug}
-                  className="px-4 py-2 bg-gray-600 text-white rounded-xl hover:bg-gray-700 h-12 mb-0.5"
+                  disabled={generatingSlug || !formData.title}
+                  className="px-4 py-2 bg-gray-600 text-white rounded-xl hover:bg-gray-700 h-12 mb-0.5 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  自動生成
+                  {generatingSlug ? '生成中...' : '自動生成'}
                 </button>
               </div>
 
