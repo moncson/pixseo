@@ -22,18 +22,23 @@ export default function ImageGenerator({ onImageGenerated, articleTitle, article
     if (articleTitle && articleContent) {
       // 記事の最初の段落からキーワードを抽出
       const contentPreview = articleContent.replace(/<[^>]*>/g, '').substring(0, 200);
-      return `${articleTitle}に関連する、プロフェッショナルで魅力的な画像。${contentPreview}の内容を反映した、高品質な写真風の画像。`;
+      return `${articleTitle}に関連する、プロフェッショナルで魅力的な画像。${contentPreview}の内容を反映した、高品質な写真風の画像。重要：画像内にテキスト、文字、文章を一切含めないでください。`;
     }
     return prompt;
   };
 
   const handleGenerate = async () => {
     // プロンプトが空の場合は自動生成
-    const imagePrompt = prompt.trim() || generateImagePrompt();
+    let imagePrompt = prompt.trim() || generateImagePrompt();
     
     if (!imagePrompt || imagePrompt.trim() === '') {
       setError('プロンプトを入力するか、タイトルとコンテンツを入力してください');
       return;
+    }
+
+    // テキストを含めないように明示的に指示を追加（プロンプトに含まれていない場合）
+    if (!imagePrompt.includes('テキスト') && !imagePrompt.toLowerCase().includes('no text')) {
+      imagePrompt = `${imagePrompt}. Important: No text, letters, or words should appear in the image. Create a clean photographic image without any text elements.`;
     }
 
     setGenerating(true);
