@@ -521,6 +521,46 @@ export default function EditArticlePage({ params }: { params: { id: string } }) 
               </svg>
             </button>
           </div>
+
+          {/* スラッグ変更警告モーダル */}
+          {showSlugWarning && (
+            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+              <div className="bg-white rounded-xl max-w-md w-full p-6 shadow-custom">
+                <h3 className="text-xl font-bold text-gray-900 mb-4">⚠️ スラッグ変更の確認</h3>
+                <div className="mb-6 space-y-3">
+                  <p className="text-gray-700">
+                    記事のスラッグを変更すると、URLが変わります。
+                  </p>
+                  <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
+                    <p className="text-sm text-yellow-800 font-medium mb-2">SEO上の注意点：</p>
+                    <ul className="text-sm text-yellow-700 space-y-1 list-disc list-inside">
+                      <li>既存のURLからのアクセスができなくなります</li>
+                      <li>検索エンジンのインデックスに影響します</li>
+                      <li>外部リンクが切れる可能性があります</li>
+                      <li>301リダイレクトの設定が必要になります</li>
+                    </ul>
+                  </div>
+                  <p className="text-gray-700 font-medium">
+                    本当にスラッグを自動生成しますか？
+                  </p>
+                </div>
+                <div className="flex gap-4">
+                  <button
+                    onClick={() => setShowSlugWarning(false)}
+                    className="flex-1 px-6 py-3 bg-gray-200 text-gray-700 rounded-xl hover:bg-gray-300 transition-colors font-medium"
+                  >
+                    キャンセル
+                  </button>
+                  <button
+                    onClick={confirmGenerateSlug}
+                    className="flex-1 px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors font-medium"
+                  >
+                    生成する
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
         )}
       </AdminLayout>
