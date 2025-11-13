@@ -142,7 +142,6 @@ export default async function CategoryPage({ params }: PageProps) {
       {/* フッター */}
       <footer style={{ backgroundColor: theme.footerBackgroundColor }} className="text-white">
         {footerTextLinkSections.length > 0 ? (
-          /* セクションがある場合: TCD106風レイアウト */
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 pb-8">
               {/* 左カラム: ロゴとディスクリプション */}
@@ -196,7 +195,6 @@ export default async function CategoryPage({ params }: PageProps) {
             </div>
           </div>
         ) : (
-          /* セクションがない場合: 従来の中央配置レイアウト */
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
             <div className="text-center space-y-4">
               <h3 className="text-2xl font-bold">{siteInfo.name}</h3>
