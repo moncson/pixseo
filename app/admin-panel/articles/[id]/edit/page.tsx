@@ -253,7 +253,9 @@ export default function EditArticlePage({ params }: { params: { id: string } }) 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     
-    console.log('[handleSubmit] 記事更新処理を開始');
+    console.log('[ArticleEdit] handleSubmit called');
+    console.log('[ArticleEdit] featuredImageUrl:', featuredImageUrl);
+    console.log('[ArticleEdit] featuredImageAlt:', featuredImageAlt);
     
     if (!formData.title || !formData.content || !formData.slug || !formData.writerId) {
       alert('タイトル、本文、スラッグ、ライターは必須です');
