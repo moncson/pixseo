@@ -34,7 +34,7 @@ function ContentItem({ content }: { content: FooterContent }) {
   }
 
   const contentElement = (
-    <div className="group relative w-full overflow-hidden" style={{ paddingBottom: '60%' }}>
+    <div className="group relative w-full overflow-hidden" style={{ paddingBottom: '40%' }}>
       {/* 画像 */}
       <Image
         src={content.imageUrl}
@@ -48,17 +48,17 @@ function ContentItem({ content }: { content: FooterContent }) {
       <div className="absolute inset-0 bg-black bg-opacity-40 transition-opacity group-hover:bg-opacity-30"></div>
 
       {/* テキストオーバーレイ */}
-      <div className="absolute inset-0 flex flex-col justify-end p-6 text-white">
+      <div className="absolute inset-0 flex flex-col justify-end p-8 text-white">
         {/* タイトル */}
         {content.title && (
-          <h3 className="text-xl font-bold mb-2">
+          <h3 className="text-3xl mb-3" style={{ fontWeight: 600 }}>
             {content.title}
           </h3>
         )}
 
         {/* 説明 */}
         {content.description && (
-          <p className="text-sm opacity-90 line-clamp-2">
+          <p className="text-lg opacity-90 line-clamp-2" style={{ fontWeight: 600 }}>
             {content.description}
           </p>
         )}
