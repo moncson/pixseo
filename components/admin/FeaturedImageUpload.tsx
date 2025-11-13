@@ -29,7 +29,8 @@ export default function FeaturedImageUpload({
   showAltInput = true,
   showImageGenerator = false,
   imageGeneratorTitle = '',
-  imageGeneratorContent = ''
+  imageGeneratorContent = '',
+  autoGenerateAlt = true,
 }: FeaturedImageUploadProps) {
   const [uploading, setUploading] = useState(false);
   const [preview, setPreview] = useState<string | undefined>(value);
@@ -37,6 +38,7 @@ export default function FeaturedImageUpload({
   const [showMediaLibrary, setShowMediaLibrary] = useState(false);
   const [showAIGenerator, setShowAIGenerator] = useState(false);
   const [altText, setAltText] = useState(alt);
+  const [generatingAlt, setGeneratingAlt] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // valueが変わったらpreviewを更新
@@ -48,6 +50,44 @@ export default function FeaturedImageUpload({
   useEffect(() => {
     setAltText(alt);
   }, [alt]);
+
+  // alt属性を自動生成する関数
+  const generateAltText = async (imageUrl: string) => {
+    if (!autoGenerateAlt || !imageGeneratorTitle) return;
+
+    setGeneratingAlt(true);
+    try {
+      const response = await fetch('/api/admin/images/generate-alt', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          articleTitle: imageGeneratorTitle,
+          contextText: imageGeneratorContent ? imageGeneratorContent.substring(0, 500) : '',
+          imageUrl,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to generate alt text');
+      }
+
+      const data = await response.json();
+      const generatedAlt = data.alt;
+
+      setAltText(generatedAlt);
+      onAltChange?.(generatedAlt);
+    } catch (error) {
+      console.error('Error generating alt text:', error);
+      // エラー時はフォールバック
+      const fallbackAlt = imageGeneratorTitle ? `${imageGeneratorTitle}の画像` : label;
+      setAltText(fallbackAlt);
+      onAltChange?.(fallbackAlt);
+    } finally {
+      setGeneratingAlt(false);
+    }
+  };
 
   // altTextが変わったら親に通知
   const handleAltChange = (newAlt: string) => {
@@ -87,6 +127,11 @@ export default function FeaturedImageUpload({
       
       onChange(data.url);
       console.log('[FeaturedImageUpload] onChange呼び出し完了');
+
+      // alt属性を自動生成（altTextが空の場合のみ）
+      if (!altText && autoGenerateAlt) {
+        await generateAltText(data.url);
+      }
     } catch (error) {
       console.error('[FeaturedImageUpload] アップロードエラー:', error);
       alert('画像のアップロードに失敗しました');
@@ -224,10 +269,15 @@ export default function FeaturedImageUpload({
       {showAIGenerator && (
         <div className="p-4 border border-gray-200 rounded-lg">
           <ImageGenerator
-            onImageGenerated={(url) => {
+            onImageGenerated={async (url) => {
               onChange(url);
               setPreview(url);
               setShowAIGenerator(false);
+              
+              // AI生成画像のalt属性を自動生成
+              if (autoGenerateAlt) {
+                await generateAltText(url);
+              }
             }}
             articleTitle={imageGeneratorTitle}
             articleContent={imageGeneratorContent}
@@ -235,22 +285,46 @@ export default function FeaturedImageUpload({
         </div>
       )}
 
-      {/* Alt属性入力 (FloatingInput) */}
+      {/* Alt属性入力 (FloatingInput) + AI生成ボタン */}
       {showAltInput && (
-        <FloatingInput
-          label="画像の説明（alt属性）"
-          value={altText}
-          onChange={handleAltChange}
-        />
+        <div className="flex gap-2">
+          <div className="flex-1">
+            <FloatingInput
+              label="画像の説明（alt属性）"
+              value={altText}
+              onChange={handleAltChange}
+            />
+          </div>
+          {autoGenerateAlt && imageGeneratorTitle && (
+            <button
+              type="button"
+              onClick={() => preview && generateAltText(preview)}
+              disabled={generatingAlt || !preview}
+              className="w-12 h-12 mb-0.5 bg-purple-600 text-white rounded-xl hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+              title="alt属性自動生成"
+            >
+              {generatingAlt ? (
+                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+              ) : (
+                <Image src="/ai.svg" alt="AI" width={20} height={20} className="brightness-0 invert" />
+              )}
+            </button>
+          )}
+        </div>
       )}
 
       {/* メディアライブラリモーダル */}
       <MediaLibraryModal
         isOpen={showMediaLibrary}
         onClose={() => setShowMediaLibrary(false)}
-        onSelect={(url) => {
+        onSelect={async (url) => {
           onChange(url);
           setPreview(url);
+          
+          // メディアライブラリから選択した画像のalt属性を自動生成（altTextが空の場合のみ）
+          if (!altText && autoGenerateAlt) {
+            await generateAltText(url);
+          }
         }}
         filterType="image"
       />
