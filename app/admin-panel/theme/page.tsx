@@ -15,7 +15,7 @@ export default function ThemePage() {
   const [theme, setTheme] = useState<Theme>(defaultTheme);
   const [loading, setLoading] = useState(false);
   const [fetchLoading, setFetchLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<'banner' | 'footer-content' | 'footer-section' | 'color' | 'css'>('banner');
+  const [activeTab, setActiveTab] = useState<'banner' | 'footer-content' | 'footer-section' | 'menu' | 'color' | 'css'>('banner');
 
   useEffect(() => {
     if (currentTenant) {
@@ -135,6 +135,35 @@ export default function ThemePage() {
     }
   };
 
+  // メニュー設定関連の関数
+  const updateMenuLabel = (field: 'topLabel' | 'articlesLabel' | 'searchLabel', value: string) => {
+    setTheme(prev => ({
+      ...prev,
+      menuSettings: {
+        ...prev.menuSettings,
+        topLabel: field === 'topLabel' ? value : prev.menuSettings?.topLabel || 'トップ',
+        articlesLabel: field === 'articlesLabel' ? value : prev.menuSettings?.articlesLabel || '記事一覧',
+        searchLabel: field === 'searchLabel' ? value : prev.menuSettings?.searchLabel || '検索',
+        customMenus: prev.menuSettings?.customMenus || Array(5).fill({ label: '', url: '' }),
+      },
+    }));
+  };
+
+  const updateCustomMenu = (index: number, field: 'label' | 'url', value: string) => {
+    const customMenus = [...(theme.menuSettings?.customMenus || Array(5).fill({ label: '', url: '' }))];
+    customMenus[index] = { ...customMenus[index], [field]: value };
+    setTheme(prev => ({
+      ...prev,
+      menuSettings: {
+        ...prev.menuSettings,
+        topLabel: prev.menuSettings?.topLabel || 'トップ',
+        articlesLabel: prev.menuSettings?.articlesLabel || '記事一覧',
+        searchLabel: prev.menuSettings?.searchLabel || '検索',
+        customMenus,
+      },
+    }));
+  };
+
   const selectedThemeLayout = THEME_LAYOUTS[theme.layoutTheme as ThemeLayoutId] || THEME_LAYOUTS.cobi;
 
   return (
@@ -217,6 +246,18 @@ export default function ThemePage() {
                     </button>
                   </>
                 )}
+                <button
+                  type="button"
+                  onClick={() => setActiveTab('menu')}
+                  className={`flex-1 px-6 py-4 text-sm font-medium transition-colors ${
+                    activeTab === 'menu'
+                      ? 'text-blue-600 border-b-2 border-blue-600'
+                      : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                  }`}
+                  style={activeTab === 'menu' ? { backgroundColor: '#f9fafb' } : {}}
+                >
+                  メニュー
+                </button>
                 <button
                   type="button"
                   onClick={() => setActiveTab('color')}
@@ -375,6 +416,61 @@ export default function ThemePage() {
                 </div>
               )}
 
+              {/* メニュータブ */}
+              {activeTab === 'menu' && (
+                <div className="space-y-6">
+                  {/* 基本メニュー */}
+                  <div className="p-6 border border-gray-200 rounded-xl">
+                    <h3 className="text-lg font-semibold mb-4">基本メニュー</h3>
+                    <div className="space-y-4">
+                      <FloatingInput
+                        label="トップ"
+                        value={theme.menuSettings?.topLabel || 'トップ'}
+                        onChange={(value) => updateMenuLabel('topLabel', value)}
+                      />
+                      <FloatingInput
+                        label="記事一覧"
+                        value={theme.menuSettings?.articlesLabel || '記事一覧'}
+                        onChange={(value) => updateMenuLabel('articlesLabel', value)}
+                      />
+                      <FloatingInput
+                        label="検索"
+                        value={theme.menuSettings?.searchLabel || '検索'}
+                        onChange={(value) => updateMenuLabel('searchLabel', value)}
+                      />
+                    </div>
+                  </div>
+
+                  {/* 追加メニュー */}
+                  <div className="p-6 border border-gray-200 rounded-xl">
+                    <h3 className="text-lg font-semibold mb-4">追加メニュー</h3>
+                    <div className="space-y-6">
+                      {[0, 1, 2, 3, 4].map((index) => {
+                        const menu = theme.menuSettings?.customMenus?.[index] || { label: '', url: '' };
+                        return (
+                          <div key={index} className="p-4 bg-gray-50 rounded-lg">
+                            <h4 className="text-sm font-medium text-gray-700 mb-3">追加メニュー {index + 1}</h4>
+                            <div className="grid grid-cols-2 gap-4">
+                              <FloatingInput
+                                label="表示名"
+                                value={menu.label}
+                                onChange={(value) => updateCustomMenu(index, 'label', value)}
+                              />
+                              <FloatingInput
+                                label="リンク先URL"
+                                value={menu.url}
+                                onChange={(value) => updateCustomMenu(index, 'url', value)}
+                                type="url"
+                              />
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </div>
+              )}
+
               {/* カラータブ */}
               {activeTab === 'color' && (
                 <div className="space-y-8">
@@ -389,6 +485,8 @@ export default function ThemePage() {
                     <ColorPicker label="ヘッダー背景色" value={theme.headerBackgroundColor} onChange={(v) => updateTheme('headerBackgroundColor', v)} />
                     <ColorPicker label="フッター背景色" value={theme.footerBackgroundColor} onChange={(v) => updateTheme('footerBackgroundColor', v)} />
                     <ColorPicker label="ブロック背景色" value={theme.blockBackgroundColor} onChange={(v) => updateTheme('blockBackgroundColor', v)} />
+                    <ColorPicker label="メニュー背景色" value={theme.menuBackgroundColor} onChange={(v) => updateTheme('menuBackgroundColor', v)} />
+                    <ColorPicker label="メニューテキストカラー" value={theme.menuTextColor} onChange={(v) => updateTheme('menuTextColor', v)} />
                   </div>
 
                   <div className="grid grid-cols-2 gap-6">

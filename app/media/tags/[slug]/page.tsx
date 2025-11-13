@@ -146,7 +146,7 @@ export default async function TagPage({ params }: PageProps) {
               <div className="text-left">
                 <h3 className="text-2xl font-bold mb-4">{siteInfo.name}</h3>
                 {siteInfo.description && (
-                  <p className="text-gray-300 text-sm leading-relaxed">
+                  <p className="text-gray-300 text-sm leading-relaxed whitespace-pre-line">
                     {siteInfo.description}
                   </p>
                 )}

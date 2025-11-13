@@ -57,6 +57,20 @@ export interface FooterTextLinkSection {
   links: FooterTextLink[];
 }
 
+// メニュー項目の定義
+export interface MenuItem {
+  label: string;
+  url: string;
+}
+
+// メニュー設定の定義
+export interface MenuSettings {
+  topLabel: string;           // トップ
+  articlesLabel: string;      // 記事一覧
+  searchLabel: string;        // 検索
+  customMenus: MenuItem[];    // 追加メニュー1-5
+}
+
 export interface Theme {
   // レイアウトテーマ
   layoutTheme: ThemeLayoutId; // 'cobi' | 'furatto'
@@ -70,6 +84,9 @@ export interface Theme {
   // テキストリンクセクション（2セット）- cobi テーマ用
   footerTextLinkSections?: FooterTextLinkSection[];
   
+  // メニュー設定
+  menuSettings?: MenuSettings;
+  
   // 基本カラー
   primaryColor: string;             // メインカラー
   secondaryColor: string;           // サブカラー
@@ -80,6 +97,8 @@ export interface Theme {
   headerBackgroundColor: string;    // ヘッダー背景色
   footerBackgroundColor: string;    // フッター背景色
   blockBackgroundColor: string;     // ブロック背景色
+  menuBackgroundColor: string;      // メニュー背景色
+  menuTextColor: string;            // メニューテキストカラー
   
   // テキスト・リンク
   linkColor: string;                // リンクテキストカラー
@@ -137,6 +156,20 @@ export interface Theme {
 export const defaultTheme: Theme = {
   layoutTheme: 'cobi',
   
+  // メニュー設定
+  menuSettings: {
+    topLabel: 'トップ',
+    articlesLabel: '記事一覧',
+    searchLabel: '検索',
+    customMenus: [
+      { label: '', url: '' },
+      { label: '', url: '' },
+      { label: '', url: '' },
+      { label: '', url: '' },
+      { label: '', url: '' },
+    ],
+  },
+  
   // 基本カラー
   primaryColor: '#3b82f6',          // blue-500（メインカラー）
   secondaryColor: '#6b7280',        // gray-500（サブカラー）
@@ -147,6 +180,8 @@ export const defaultTheme: Theme = {
   headerBackgroundColor: '#ffffff', // white（ヘッダー背景）
   footerBackgroundColor: '#1f2937', // gray-800（フッター背景）
   blockBackgroundColor: '#ffffff',  // white（ブロック背景）
+  menuBackgroundColor: '#1f2937',   // gray-800（メニュー背景）
+  menuTextColor: '#ffffff',         // white（メニューテキスト）
   
   // テキスト・リンク
   linkColor: '#2563eb',             // blue-600（リンクカラー）

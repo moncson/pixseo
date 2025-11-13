@@ -22,11 +22,12 @@ export default function SearchBar() {
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           placeholder="キーワードで検索"
-          className="w-full px-6 py-4 pr-14 text-lg border-2 border-gray-300 rounded-full focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
+          className="w-full px-6 py-4 pr-16 text-lg bg-gray-100 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-200"
         />
         <button
           type="submit"
-          className="absolute right-2 top-1/2 -translate-y-1/2 bg-blue-600 text-white w-10 h-10 rounded-full hover:bg-blue-700 transition-colors flex items-center justify-center"
+          className="absolute right-4 top-1/2 -translate-y-1/2 text-white w-10 h-10 rounded-full hover:opacity-90 transition-opacity flex items-center justify-center"
+          style={{ backgroundColor: 'var(--color-primary)' }}
           aria-label="検索"
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
