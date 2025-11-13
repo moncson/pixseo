@@ -322,40 +322,30 @@ export default function EditArticlePage({ params }: { params: { id: string } }) 
               />
 
               {/* タグ - AI自動生成ボタン付き */}
-              <div className="space-y-2">
-                <div className="flex items-end gap-2">
-                  <div className="flex-1">
-                    <FloatingMultiSelect
-                      label="タグ"
-                      values={formData.tagIds}
-                      onChange={(values) => setFormData({ ...formData, tagIds: values })}
-                      options={tags.map(tag => ({ value: tag.id, label: tag.name }))}
-                    />
-                  </div>
-                  <button
-                    type="button"
-                    onClick={generateTagsFromContent}
-                    disabled={generatingTags || (!formData.title && !formData.content)}
-                    className="px-4 py-2 bg-purple-600 text-white rounded-xl hover:bg-purple-700 h-12 mb-0.5 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
-                  >
-                    {generatingTags ? (
-                      <>
-                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                        生成中...
-                      </>
-                    ) : (
-                      <>
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
-                        </svg>
-                        AI生成
-                      </>
-                    )}
-                  </button>
+              <div className="flex gap-2">
+                <div className="flex-1">
+                  <FloatingMultiSelect
+                    label="タグ"
+                    values={formData.tagIds}
+                    onChange={(values) => setFormData({ ...formData, tagIds: values })}
+                    options={tags.map(tag => ({ value: tag.id, label: tag.name }))}
+                  />
                 </div>
-                <p className="text-xs text-gray-500">
-                  記事の内容から適切なタグを自動生成します（既存タグと統合、または新規作成）
-                </p>
+                <button
+                  type="button"
+                  onClick={generateTagsFromContent}
+                  disabled={generatingTags || (!formData.title && !formData.content)}
+                  className="w-12 h-12 mb-0.5 bg-purple-600 text-white rounded-xl hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+                  title="タグ自動生成"
+                >
+                  {generatingTags ? (
+                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                  ) : (
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+                    </svg>
+                  )}
+                </button>
               </div>
 
               {/* タイトル */}
@@ -380,9 +370,16 @@ export default function EditArticlePage({ params }: { params: { id: string } }) 
                   type="button"
                   onClick={handleGenerateSlug}
                   disabled={generatingSlug || !formData.title}
-                  className="px-4 py-2 bg-gray-600 text-white rounded-xl hover:bg-gray-700 h-12 mb-0.5 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="w-12 h-12 mb-0.5 bg-purple-600 text-white rounded-xl hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+                  title="スラッグ自動生成"
                 >
-                  {generatingSlug ? '生成中...' : '自動生成'}
+                  {generatingSlug ? (
+                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                  ) : (
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+                    </svg>
+                  )}
                 </button>
               </div>
 

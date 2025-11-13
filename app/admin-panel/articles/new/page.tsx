@@ -33,6 +33,7 @@ function NewArticlePageContent() {
   const [featuredImageAlt, setFeaturedImageAlt] = useState('');
   const [serpPreviewDevice, setSerpPreviewDevice] = useState<'pc' | 'sp'>('pc');
   const [generatingSlug, setGeneratingSlug] = useState(false);
+  const [generatingTags, setGeneratingTags] = useState(false);
   
   const [formData, setFormData] = useState({
     title: '',
@@ -214,6 +215,64 @@ function NewArticlePageContent() {
     }
   };
 
+  const generateTagsFromContent = async () => {
+    if (!formData.title && !formData.content) {
+      alert('タイトルまたは本文を入力してください');
+      return;
+    }
+
+    setGeneratingTags(true);
+    try {
+      const currentTenantId = typeof window !== 'undefined' 
+        ? localStorage.getItem('currentTenantId') 
+        : null;
+
+      const response = await fetch('/api/admin/articles/generate-tags', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-media-id': currentTenantId || '',
+        },
+        body: JSON.stringify({
+          title: formData.title,
+          content: formData.content,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('タグの生成に失敗しました');
+      }
+
+      const data = await response.json();
+      const tagIds = data.tags.map((tag: any) => tag.id);
+      
+      setFormData(prev => ({ ...prev, tagIds }));
+      
+      // 生成されたタグをtagsステートに追加（新規タグがある場合）
+      const newTags = data.tags.filter((tag: any) => !tag.isExisting);
+      if (newTags.length > 0) {
+        setTags(prevTags => [...prevTags, ...newTags.map((tag: any) => ({
+          id: tag.id,
+          mediaId: currentTenantId || '',
+          name: tag.name,
+          slug: tag.slug,
+        }))]);
+      }
+
+      alert(
+        `タグを生成しました！\n` +
+        `合計: ${data.summary.total}個\n` +
+        `既存タグ: ${data.summary.existing}個\n` +
+        `新規タグ: ${data.summary.new}個`
+      );
+    } catch (error) {
+      console.error('Error generating tags:', error);
+      alert('タグの生成に失敗しました');
+    } finally {
+      setGeneratingTags(false);
+    }
+  };
+
   return (
     <AuthGuard>
       <AdminLayout>
@@ -245,7 +304,32 @@ function NewArticlePageContent() {
                 options={categories.map(cat => ({ value: cat.id, label: cat.name }))}
               />
 
-              {/* タグは編集画面で設定 */}
+              {/* タグ - AI自動生成ボタン付き */}
+              <div className="flex gap-2">
+                <div className="flex-1">
+                  <FloatingMultiSelect
+                    label="タグ"
+                    values={formData.tagIds}
+                    onChange={(values) => setFormData({ ...formData, tagIds: values })}
+                    options={tags.map(tag => ({ value: tag.id, label: tag.name }))}
+                  />
+                </div>
+                <button
+                  type="button"
+                  onClick={generateTagsFromContent}
+                  disabled={generatingTags || (!formData.title && !formData.content)}
+                  className="w-12 h-12 mb-0.5 bg-purple-600 text-white rounded-xl hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+                  title="タグ自動生成"
+                >
+                  {generatingTags ? (
+                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                  ) : (
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+                    </svg>
+                  )}
+                </button>
+              </div>
 
               {/* タイトル */}
               <FloatingInput

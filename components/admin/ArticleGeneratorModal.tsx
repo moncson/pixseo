@@ -31,6 +31,7 @@ export default function ArticleGeneratorModal({
 }: ArticleGeneratorModalProps) {
   const [step, setStep] = useState<'input' | 'generating' | 'review' | 'rewriting'>('input');
   const [selectedCategoryIds, setSelectedCategoryIds] = useState<string[]>([]);
+  const [selectedTagIds, setSelectedTagIds] = useState<string[]>([]);
   const [topic, setTopic] = useState('');
   const [additionalContext, setAdditionalContext] = useState('');
   const [generatedArticle, setGeneratedArticle] = useState<{
@@ -41,6 +42,7 @@ export default function ArticleGeneratorModal({
     featuredImageAlt?: string;
   } | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [generatingTags, setGeneratingTags] = useState(false);
   const [duplicateCheck, setDuplicateCheck] = useState<{
     isDuplicate: boolean;
     duplicates: Array<{ articleId: string; title: string; titleSimilarity: number; contentSimilarity: number }>;
@@ -169,6 +171,50 @@ export default function ArticleGeneratorModal({
     }
   };
 
+  const generateTagsFromContent = async () => {
+    if (!generatedArticle) return;
+
+    setGeneratingTags(true);
+    try {
+      const currentTenantId = typeof window !== 'undefined' 
+        ? localStorage.getItem('currentTenantId') 
+        : null;
+
+      const response = await fetch('/api/admin/articles/generate-tags', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-media-id': currentTenantId || '',
+        },
+        body: JSON.stringify({
+          title: generatedArticle.title,
+          content: generatedArticle.content,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('タグの生成に失敗しました');
+      }
+
+      const data = await response.json();
+      const tagIds = data.tags.map((tag: any) => tag.id);
+      
+      setSelectedTagIds(tagIds);
+
+      alert(
+        `タグを生成しました！\n` +
+        `合計: ${data.summary.total}個\n` +
+        `既存タグ: ${data.summary.existing}個\n` +
+        `新規タグ: ${data.summary.new}個`
+      );
+    } catch (error) {
+      console.error('Error generating tags:', error);
+      setError('タグの生成に失敗しました');
+    } finally {
+      setGeneratingTags(false);
+    }
+  };
+
   const handleUseArticle = () => {
     if (!generatedArticle) return;
 
@@ -177,7 +223,7 @@ export default function ArticleGeneratorModal({
       excerpt: generatedArticle.excerpt,
       content: generatedArticle.content,
       categoryIds: selectedCategoryIds,
-      tagIds: [], // タグは編集画面で設定
+      tagIds: selectedTagIds,
       featuredImage: generatedArticle.featuredImage,
     });
 
@@ -188,11 +234,13 @@ export default function ArticleGeneratorModal({
   const handleClose = () => {
     setStep('input');
     setSelectedCategoryIds([]);
+    setSelectedTagIds([]);
     setTopic('');
     setAdditionalContext('');
     setGeneratedArticle(null);
     setError(null);
     setDuplicateCheck(null);
+    setGeneratingTags(false);
     onClose();
   };
 
@@ -358,6 +406,35 @@ export default function ArticleGeneratorModal({
                     imageGeneratorTitle={generatedArticle.title}
                     imageGeneratorContent={generatedArticle.content}
                   />
+                </div>
+
+                {/* タグ - AI自動生成ボタン付き */}
+                <div className="mb-4">
+                  <div className="flex gap-2">
+                    <div className="flex-1">
+                      <FloatingMultiSelect
+                        label="タグ"
+                        values={selectedTagIds}
+                        onChange={setSelectedTagIds}
+                        options={tags.map(tag => ({ value: tag.id, label: tag.name }))}
+                      />
+                    </div>
+                    <button
+                      type="button"
+                      onClick={generateTagsFromContent}
+                      disabled={generatingTags}
+                      className="w-12 h-12 mb-0.5 bg-purple-600 text-white rounded-xl hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+                      title="タグ自動生成"
+                    >
+                      {generatingTags ? (
+                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                      ) : (
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+                        </svg>
+                      )}
+                    </button>
+                  </div>
                 </div>
 
                 {/* 本文 */}
