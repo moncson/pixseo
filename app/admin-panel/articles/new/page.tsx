@@ -343,7 +343,6 @@ function NewArticlePageContent() {
                 values={formData.categoryIds}
                 onChange={(values) => setFormData({ ...formData, categoryIds: values })}
                 options={categories.map(cat => ({ value: cat.id, label: cat.name }))}
-                variant="badge"
                 badgeColor="green"
               />
 
@@ -355,7 +354,6 @@ function NewArticlePageContent() {
                     values={formData.tagIds}
                     onChange={(values) => setFormData({ ...formData, tagIds: values })}
                     options={tags.map(tag => ({ value: tag.id, label: tag.name }))}
-                    variant="badge"
                     badgeColor="blue"
                   />
                 </div>
@@ -485,7 +483,6 @@ function NewArticlePageContent() {
                   }
                 }}
                 options={articles.map(a => ({ value: a.id, label: a.title }))}
-                variant="badge"
                 badgeColor="gray"
               />
             </div>

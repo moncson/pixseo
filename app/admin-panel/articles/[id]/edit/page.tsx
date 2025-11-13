@@ -357,7 +357,6 @@ export default function EditArticlePage({ params }: { params: { id: string } }) 
                 values={formData.categoryIds}
                 onChange={(values) => setFormData({ ...formData, categoryIds: values })}
                 options={categories.map(cat => ({ value: cat.id, label: cat.name }))}
-                variant="badge"
                 badgeColor="green"
               />
 
@@ -369,7 +368,6 @@ export default function EditArticlePage({ params }: { params: { id: string } }) 
                     values={formData.tagIds}
                     onChange={(values) => setFormData({ ...formData, tagIds: values })}
                     options={tags.map(tag => ({ value: tag.id, label: tag.name }))}
-                    variant="badge"
                     badgeColor="blue"
                   />
                 </div>
@@ -504,7 +502,6 @@ export default function EditArticlePage({ params }: { params: { id: string } }) 
                   }
                 }}
                 options={articles.map(a => ({ value: a.id, label: a.title }))}
-                variant="badge"
                 badgeColor="gray"
               />
             </div>
