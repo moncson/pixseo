@@ -64,24 +64,25 @@ export async function POST(request: NextRequest) {
         messages: [
           {
             role: 'system',
-            content: `あなたはSEOに強いタグ生成の専門家です。記事の内容を分析し、SEOに効果的なタグを5-10個生成してください。
+            content: `あなたはSEOに強いタグ生成の専門家です。記事の内容を分析し、SEOに効果的な広義で汎用的なタグを5個生成してください。
 
-ルール:
-- 具体的で検索されやすいキーワード
-- 1-3単語程度の短いタグ
-- 記事の主要なトピックを表す
-- カテゴリーとは異なる、より詳細な側面を表す
-- 既存タグと類似する場合は既存タグ名を優先
+重要なルール:
+- 広く使われる一般的なキーワードを使用（細かすぎる分類は避ける）
+- 例：良い「AI」「マーケティング」、悪い「AI駆動UX」「AIツール統合」
+- 類似する概念は1つのタグに統合（例：「持続可能性」「持続可能なデザイン」→「サステナビリティ」）
+- SEOで検索されやすい汎用的なキーワードを優先
+- 1-2単語程度の短いタグ
+- 既存タグと類似する場合は既存タグ名を必ず使用
 
 既存タグ: ${existingTagNames || 'なし'}`,
           },
           {
             role: 'user',
-            content: `以下の記事からSEOに効果的なタグを5-10個生成してください。既存タグと類似する場合は既存タグ名を使用してください。\n\nタイトル: ${title}\n\n本文:\n${plainContent}\n\nタグをカンマ区切りで出力してください（説明は不要）。`,
+            content: `以下の記事から、検索されやすい広義で汎用的なタグを5個生成してください。細かすぎる分類は避け、広く使われる一般的なキーワードを使用してください。既存タグと類似する場合は既存タグ名を使用してください。\n\nタイトル: ${title}\n\n本文:\n${plainContent}\n\nタグをカンマ区切りで出力してください（説明は不要）。`,
           },
         ],
-        temperature: 0.3,
-        max_tokens: 200,
+        temperature: 0.2,
+        max_tokens: 100,
       }),
     });
 
@@ -109,7 +110,7 @@ export async function POST(request: NextRequest) {
       .split(/[,、]/)
       .map((tag: string) => tag.trim())
       .filter((tag: string) => tag.length > 0)
-      .slice(0, 10); // 最大10個
+      .slice(0, 5); // 最大5個に制限
 
     console.log('[API /admin/articles/generate-tags] 生成されたタグ候補:', suggestedTagNames);
 
@@ -128,10 +129,10 @@ export async function POST(request: NextRequest) {
           name: similarTag.tag.name,
           slug: similarTag.tag.slug,
           isExisting: true,
-        });
+        }        );
       } else {
-        // 新規タグとして作成
-        const slug = generateSlug(suggestedName);
+        // 新規タグとして作成（スラッグを英語で生成）
+        const slug = await generateEnglishSlug(suggestedName, openaiApiKey);
         
         // 同じスラッグのタグが既に存在しないかチェック
         const existingTagWithSlug = existingTags.find(t => t.slug === slug);
@@ -144,12 +145,20 @@ export async function POST(request: NextRequest) {
             isExisting: true,
           });
         } else {
+          // スラッグ重複チェック
+          let finalSlug = slug;
+          let counter = 2;
+          while (existingTags.some(t => t.slug === finalSlug) || finalTags.some(t => t.slug === finalSlug)) {
+            finalSlug = `${slug}-${counter}`;
+            counter++;
+          }
+
           // 新規タグを作成
-          console.log(`[新規タグ作成] "${suggestedName}"`);
+          console.log(`[新規タグ作成] "${suggestedName}" (slug: ${finalSlug})`);
           const newTagRef = await adminDb.collection('tags').add({
             mediaId,
             name: suggestedName,
-            slug,
+            slug: finalSlug,
             createdAt: new Date(),
             updatedAt: new Date(),
           });
@@ -157,7 +166,7 @@ export async function POST(request: NextRequest) {
           finalTags.push({
             id: newTagRef.id,
             name: suggestedName,
-            slug,
+            slug: finalSlug,
             isExisting: false,
           });
         }
@@ -268,12 +277,67 @@ function levenshteinDistance(str1: string, str2: string): number {
 }
 
 /**
- * タグ名からスラッグを生成
+ * OpenAI APIを使用してタグ名から英語のスラッグを生成
  */
-function generateSlug(name: string): string {
+async function generateEnglishSlug(tagName: string, openaiApiKey: string): Promise<string> {
+  try {
+    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${openaiApiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: 'gpt-4o',
+        messages: [
+          {
+            role: 'system',
+            content: '日本語のタグ名を、SEOに最適化された短く簡潔な英語のURLスラッグに変換してください。スラッグは小文字のみを使用し、単語間はハイフン(-)で区切ってください。最大3単語以内に収めてください。',
+          },
+          {
+            role: 'user',
+            content: `以下の日本語タグ名を英語のURLスラッグに変換してください。\n\nタグ名: ${tagName}\n\nスラッグのみを出力してください（説明は不要）。`,
+          },
+        ],
+        temperature: 0.2,
+        max_tokens: 50,
+      }),
+    });
+
+    if (!response.ok) {
+      console.error('[OpenAI Slug Generation Error]');
+      return generateFallbackSlug(tagName);
+    }
+
+    const data = await response.json();
+    let slug = data.choices?.[0]?.message?.content?.trim() || '';
+
+    if (!slug) {
+      return generateFallbackSlug(tagName);
+    }
+
+    // スラッグをクリーンアップ
+    slug = slug
+      .toLowerCase()
+      .replace(/[^a-z0-9-]/g, '-')
+      .replace(/-+/g, '-')
+      .replace(/^-+|-+$/g, '');
+
+    return slug;
+  } catch (error) {
+    console.error('[Error generating English slug]', error);
+    return generateFallbackSlug(tagName);
+  }
+}
+
+/**
+ * フォールバック用の簡易スラッグ生成
+ */
+function generateFallbackSlug(name: string): string {
   return name
     .toLowerCase()
     .replace(/[^a-z0-9\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FFF]+/g, '-')
-    .replace(/^-+|-+$/g, '');
+    .replace(/^-+|-+$/g, '')
+    .substring(0, 30);
 }
 
