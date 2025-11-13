@@ -66,7 +66,7 @@ export default function FloatingMultiSelect({
       case 'blue':
         return 'bg-blue-100 text-blue-800 hover:bg-blue-200';
       case 'gray':
-        return 'bg-gray-100 text-gray-800 hover:bg-gray-200';
+        return 'bg-gray-800 text-white hover:bg-gray-900';
       case 'purple':
         return 'bg-purple-100 text-purple-800 hover:bg-purple-200';
       default:
@@ -106,9 +106,7 @@ export default function FloatingMultiSelect({
                 </span>
               ))}
             </div>
-          ) : (
-            <span className="text-gray-400">{placeholder || `${label}を選択`}</span>
-          )}
+          ) : null}
         </div>
         
         <label
