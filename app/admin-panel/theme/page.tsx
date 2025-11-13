@@ -15,6 +15,7 @@ export default function ThemePage() {
   const [theme, setTheme] = useState<Theme>(defaultTheme);
   const [loading, setLoading] = useState(false);
   const [fetchLoading, setFetchLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState<'block' | 'color' | 'css'>('block');
 
   useEffect(() => {
     if (currentTenant) {
@@ -94,7 +95,6 @@ export default function ThemePage() {
           
           {/* テーマ選択 */}
           <div className="bg-white rounded-[1.75rem] p-8">
-            <h2 className="text-lg font-bold text-gray-900 mb-4">レイアウトテーマ</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {Object.values(THEME_LAYOUTS).map((layout) => (
                 <button
@@ -117,178 +117,177 @@ export default function ThemePage() {
                       </div>
                     )}
                   </div>
-                  <p className="text-sm text-gray-600 mb-3">{layout.description}</p>
-                  <div className="text-xs text-gray-500">
-                    <span className="font-semibold">ブロック配置場所:</span>{' '}
-                    {layout.blockPlacements.map(p => p.label).join('、')}
-                  </div>
+                  <p className="text-sm text-gray-600">{layout.description}</p>
                 </button>
               ))}
             </div>
-            <div className="mt-4 p-4 bg-blue-50 rounded-lg">
-              <p className="text-sm text-blue-800">
-                <strong>現在選択中:</strong> {selectedThemeLayout.displayName}
-              </p>
-              <p className="text-xs text-blue-600 mt-1">
-                ブロック作成時に、このテーマの配置場所が選択できます。
-              </p>
-            </div>
-          </div>
-          
-          {/* 基本カラー */}
-          <div className="bg-white rounded-[1.75rem] p-8">
-            <h2 className="text-lg font-bold text-gray-900 mb-4">基本カラー</h2>
-            <div className="grid grid-cols-3 gap-6">
-              <ColorPicker label="メインカラー" value={theme.primaryColor} onChange={(v) => updateTheme('primaryColor', v)} />
-              <ColorPicker label="サブカラー" value={theme.secondaryColor} onChange={(v) => updateTheme('secondaryColor', v)} />
-              <ColorPicker label="アクセントカラー" value={theme.accentColor} onChange={(v) => updateTheme('accentColor', v)} />
-            </div>
           </div>
 
-          {/* 背景色 */}
-          <div className="bg-white rounded-[1.75rem] p-8">
-            <h2 className="text-lg font-bold text-gray-900 mb-4">背景色</h2>
-            <div className="grid grid-cols-2 gap-6">
-              <ColorPicker label="全体背景色" value={theme.backgroundColor} onChange={(v) => updateTheme('backgroundColor', v)} />
-              <ColorPicker label="ヘッダー背景色" value={theme.headerBackgroundColor} onChange={(v) => updateTheme('headerBackgroundColor', v)} />
-              <ColorPicker label="フッター背景色" value={theme.footerBackgroundColor} onChange={(v) => updateTheme('footerBackgroundColor', v)} />
-              <ColorPicker label="ブロック背景色" value={theme.blockBackgroundColor} onChange={(v) => updateTheme('blockBackgroundColor', v)} />
+          {/* タブメニュー */}
+          <div className="bg-white rounded-[1.75rem] overflow-hidden">
+            <div className="border-b border-gray-200">
+              <div className="flex">
+                <button
+                  type="button"
+                  onClick={() => setActiveTab('block')}
+                  className={`flex-1 px-6 py-4 text-sm font-medium transition-colors ${
+                    activeTab === 'block'
+                      ? 'text-blue-600 border-b-2 border-blue-600 bg-blue-50'
+                      : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                  }`}
+                >
+                  ブロック
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setActiveTab('color')}
+                  className={`flex-1 px-6 py-4 text-sm font-medium transition-colors ${
+                    activeTab === 'color'
+                      ? 'text-blue-600 border-b-2 border-blue-600 bg-blue-50'
+                      : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                  }`}
+                >
+                  カラー
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setActiveTab('css')}
+                  className={`flex-1 px-6 py-4 text-sm font-medium transition-colors ${
+                    activeTab === 'css'
+                      ? 'text-blue-600 border-b-2 border-blue-600 bg-blue-50'
+                      : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                  }`}
+                >
+                  CSS
+                </button>
+              </div>
             </div>
-          </div>
 
-          {/* リンク */}
-          <div className="bg-white rounded-[1.75rem] p-8">
-            <h2 className="text-lg font-bold text-gray-900 mb-4">リンク</h2>
-            <div className="grid grid-cols-2 gap-6">
-              <ColorPicker label="リンクテキストカラー" value={theme.linkColor} onChange={(v) => updateTheme('linkColor', v)} />
-              <ColorPicker label="リンクホバーカラー" value={theme.linkHoverColor} onChange={(v) => updateTheme('linkHoverColor', v)} />
-            </div>
-          </div>
-
-          {/* 装飾 */}
-          <div className="bg-white rounded-[1.75rem] p-8">
-            <h2 className="text-lg font-bold text-gray-900 mb-4">装飾</h2>
-            <div className="grid grid-cols-2 gap-6">
-              <ColorPicker label="ボーダーカラー" value={theme.borderColor} onChange={(v) => updateTheme('borderColor', v)} />
-              <FloatingInput
-                label="シャドウカラー（RGBA形式）"
-                value={theme.shadowColor}
-                onChange={(v) => updateTheme('shadowColor', v)}
-                placeholder="rgba(0, 0, 0, 0.1)"
-              />
-            </div>
-          </div>
-
-          {/* 見出しデザイン（H2） */}
-          <div className="bg-white rounded-[1.75rem] p-8">
-            <h2 className="text-lg font-bold text-gray-900 mb-4">見出しデザイン（H2）</h2>
-            <div className="grid grid-cols-2 gap-6">
-              <ColorPicker label="H2 テキストカラー" value={theme.h2Color} onChange={(v) => updateTheme('h2Color', v)} />
-              <ColorPicker label="H2 背景色" value={theme.h2BackgroundColor || 'transparent'} onChange={(v) => updateTheme('h2BackgroundColor', v)} allowOff />
-              <ColorPicker label="H2 左ボーダーカラー" value={theme.h2LeftBorderColor || 'transparent'} onChange={(v) => updateTheme('h2LeftBorderColor', v)} allowOff />
-              <ColorPicker label="H2 下ボーダーカラー" value={theme.h2BottomBorderColor || 'transparent'} onChange={(v) => updateTheme('h2BottomBorderColor', v)} allowOff />
-            </div>
-          </div>
-
-          {/* 見出しデザイン（H3） */}
-          <div className="bg-white rounded-[1.75rem] p-8">
-            <h2 className="text-lg font-bold text-gray-900 mb-4">見出しデザイン（H3）</h2>
-            <div className="grid grid-cols-2 gap-6">
-              <ColorPicker label="H3 テキストカラー" value={theme.h3Color} onChange={(v) => updateTheme('h3Color', v)} />
-              <ColorPicker label="H3 背景色" value={theme.h3BackgroundColor || 'transparent'} onChange={(v) => updateTheme('h3BackgroundColor', v)} allowOff />
-              <ColorPicker label="H3 左ボーダーカラー" value={theme.h3LeftBorderColor || 'transparent'} onChange={(v) => updateTheme('h3LeftBorderColor', v)} allowOff />
-              <ColorPicker label="H3 下ボーダーカラー" value={theme.h3BottomBorderColor || 'transparent'} onChange={(v) => updateTheme('h3BottomBorderColor', v)} allowOff />
-            </div>
-          </div>
-
-          {/* 見出しデザイン（H4） */}
-          <div className="bg-white rounded-[1.75rem] p-8">
-            <h2 className="text-lg font-bold text-gray-900 mb-4">見出しデザイン（H4）</h2>
-            <div className="grid grid-cols-2 gap-6">
-              <ColorPicker label="H4 テキストカラー" value={theme.h4Color} onChange={(v) => updateTheme('h4Color', v)} />
-              <ColorPicker label="H4 背景色" value={theme.h4BackgroundColor || 'transparent'} onChange={(v) => updateTheme('h4BackgroundColor', v)} allowOff />
-              <ColorPicker label="H4 左ボーダーカラー" value={theme.h4LeftBorderColor || 'transparent'} onChange={(v) => updateTheme('h4LeftBorderColor', v)} allowOff />
-              <ColorPicker label="H4 下ボーダーカラー" value={theme.h4BottomBorderColor || 'transparent'} onChange={(v) => updateTheme('h4BottomBorderColor', v)} allowOff />
-            </div>
-          </div>
-
-          {/* カスタムCSS */}
-          <div className="bg-white rounded-[1.75rem] p-8">
-            <h2 className="text-lg font-bold text-gray-900 mb-4">カスタムCSS</h2>
-            <p className="text-sm text-gray-600 mb-4">
-              より細かいデザイン調整が必要な場合は、こちらにCSSを記述してください。
-            </p>
-            <textarea
-              value={theme.customCss || ''}
-              onChange={(e) => updateTheme('customCss', e.target.value)}
-              placeholder="例: .article-content p { line-height: 1.8; }"
-              className="w-full h-64 p-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono text-sm resize-none"
-            />
-          </div>
-
-          {/* フッターブロック */}
-          <div className="bg-white rounded-[1.75rem] p-8">
-            <h2 className="text-lg font-bold text-gray-900 mb-4">フッターブロック</h2>
-            <p className="text-sm text-gray-600 mb-6">
-              フッターエリアに表示するバナーを最大4つまで設定できます。
-            </p>
-            
-            <div className="space-y-8">
-              {[0, 1, 2, 3].map((index) => {
-                const block = theme.footerBlocks?.[index] || { imageUrl: '', alt: '', linkUrl: '' };
-                const hasImage = Boolean(block.imageUrl);
-                
-                return (
-                  <div key={index} className="p-6 border border-gray-200 rounded-xl">
-                    <div className="flex items-center justify-between mb-4">
-                      <h3 className="font-semibold text-gray-900">バナー {index + 1}</h3>
-                      {hasImage && (
-                        <button
-                          type="button"
-                          onClick={() => removeFooterBlock(index)}
-                          className="text-sm text-red-600 hover:text-red-700"
-                        >
-                          削除
-                        </button>
-                      )}
-                    </div>
+            {/* タブコンテンツ */}
+            <div className="p-8">
+              {/* ブロックタブ */}
+              {activeTab === 'block' && (
+                <div className="space-y-6">
+                  {[0, 1, 2, 3].map((index) => {
+                    const block = theme.footerBlocks?.[index] || { imageUrl: '', alt: '', linkUrl: '' };
+                    const hasImage = Boolean(block.imageUrl);
                     
-                    {/* 画像アップロード */}
-                    <div className="mb-4">
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        バナー画像
-                      </label>
-                      <FeaturedImageUpload
-                        value={block.imageUrl}
-                        onChange={(url) => updateFooterBlock(index, 'imageUrl', url)}
-                      />
-                    </div>
-
-                    {/* Alt属性 */}
-                    {hasImage && (
-                      <>
+                    return (
+                      <div key={index} className="p-6 border border-gray-200 rounded-xl">
+                        <div className="flex items-center justify-between mb-4">
+                          <h3 className="font-semibold text-gray-900">バナー {index + 1}</h3>
+                          {hasImage && (
+                            <button
+                              type="button"
+                              onClick={() => removeFooterBlock(index)}
+                              className="text-sm text-red-600 hover:text-red-700"
+                            >
+                              削除
+                            </button>
+                          )}
+                        </div>
+                        
                         <div className="mb-4">
-                          <FloatingInput
-                            label="Alt属性"
-                            value={block.alt}
-                            onChange={(value) => updateFooterBlock(index, 'alt', value)}
+                          <FeaturedImageUpload
+                            value={block.imageUrl}
+                            onChange={(url) => updateFooterBlock(index, 'imageUrl', url)}
+                            label={`バナー ${index + 1}`}
                           />
                         </div>
 
-                        {/* リンクURL */}
-                        <div>
-                          <FloatingInput
-                            label="リンク先URL（任意）"
-                            value={block.linkUrl}
-                            onChange={(value) => updateFooterBlock(index, 'linkUrl', value)}
-                            type="url"
-                          />
-                        </div>
-                      </>
-                    )}
+                        {hasImage && (
+                          <>
+                            <div className="mb-4">
+                              <FloatingInput
+                                label="Alt属性"
+                                value={block.alt}
+                                onChange={(value) => updateFooterBlock(index, 'alt', value)}
+                              />
+                            </div>
+
+                            <div>
+                              <FloatingInput
+                                label="リンク先URL（任意）"
+                                value={block.linkUrl}
+                                onChange={(value) => updateFooterBlock(index, 'linkUrl', value)}
+                                type="url"
+                              />
+                            </div>
+                          </>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+
+              {/* カラータブ */}
+              {activeTab === 'color' && (
+                <div className="space-y-8">
+                  <div className="grid grid-cols-3 gap-6">
+                    <ColorPicker label="メインカラー" value={theme.primaryColor} onChange={(v) => updateTheme('primaryColor', v)} />
+                    <ColorPicker label="サブカラー" value={theme.secondaryColor} onChange={(v) => updateTheme('secondaryColor', v)} />
+                    <ColorPicker label="アクセントカラー" value={theme.accentColor} onChange={(v) => updateTheme('accentColor', v)} />
                   </div>
-                );
-              })}
+
+                  <div className="grid grid-cols-2 gap-6">
+                    <ColorPicker label="全体背景色" value={theme.backgroundColor} onChange={(v) => updateTheme('backgroundColor', v)} />
+                    <ColorPicker label="ヘッダー背景色" value={theme.headerBackgroundColor} onChange={(v) => updateTheme('headerBackgroundColor', v)} />
+                    <ColorPicker label="フッター背景色" value={theme.footerBackgroundColor} onChange={(v) => updateTheme('footerBackgroundColor', v)} />
+                    <ColorPicker label="ブロック背景色" value={theme.blockBackgroundColor} onChange={(v) => updateTheme('blockBackgroundColor', v)} />
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-6">
+                    <ColorPicker label="リンクテキストカラー" value={theme.linkColor} onChange={(v) => updateTheme('linkColor', v)} />
+                    <ColorPicker label="リンクホバーカラー" value={theme.linkHoverColor} onChange={(v) => updateTheme('linkHoverColor', v)} />
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-6">
+                    <ColorPicker label="ボーダーカラー" value={theme.borderColor} onChange={(v) => updateTheme('borderColor', v)} />
+                    <FloatingInput
+                      label="シャドウカラー（RGBA形式）"
+                      value={theme.shadowColor}
+                      onChange={(v) => updateTheme('shadowColor', v)}
+                      placeholder="rgba(0, 0, 0, 0.1)"
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-6">
+                    <ColorPicker label="H2 テキストカラー" value={theme.h2Color} onChange={(v) => updateTheme('h2Color', v)} />
+                    <ColorPicker label="H2 背景色" value={theme.h2BackgroundColor || 'transparent'} onChange={(v) => updateTheme('h2BackgroundColor', v)} allowOff />
+                    <ColorPicker label="H2 左ボーダーカラー" value={theme.h2LeftBorderColor || 'transparent'} onChange={(v) => updateTheme('h2LeftBorderColor', v)} allowOff />
+                    <ColorPicker label="H2 下ボーダーカラー" value={theme.h2BottomBorderColor || 'transparent'} onChange={(v) => updateTheme('h2BottomBorderColor', v)} allowOff />
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-6">
+                    <ColorPicker label="H3 テキストカラー" value={theme.h3Color} onChange={(v) => updateTheme('h3Color', v)} />
+                    <ColorPicker label="H3 背景色" value={theme.h3BackgroundColor || 'transparent'} onChange={(v) => updateTheme('h3BackgroundColor', v)} allowOff />
+                    <ColorPicker label="H3 左ボーダーカラー" value={theme.h3LeftBorderColor || 'transparent'} onChange={(v) => updateTheme('h3LeftBorderColor', v)} allowOff />
+                    <ColorPicker label="H3 下ボーダーカラー" value={theme.h3BottomBorderColor || 'transparent'} onChange={(v) => updateTheme('h3BottomBorderColor', v)} allowOff />
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-6">
+                    <ColorPicker label="H4 テキストカラー" value={theme.h4Color} onChange={(v) => updateTheme('h4Color', v)} />
+                    <ColorPicker label="H4 背景色" value={theme.h4BackgroundColor || 'transparent'} onChange={(v) => updateTheme('h4BackgroundColor', v)} allowOff />
+                    <ColorPicker label="H4 左ボーダーカラー" value={theme.h4LeftBorderColor || 'transparent'} onChange={(v) => updateTheme('h4LeftBorderColor', v)} allowOff />
+                    <ColorPicker label="H4 下ボーダーカラー" value={theme.h4BottomBorderColor || 'transparent'} onChange={(v) => updateTheme('h4BottomBorderColor', v)} allowOff />
+                  </div>
+                </div>
+              )}
+
+              {/* CSSタブ */}
+              {activeTab === 'css' && (
+                <div>
+                  <FloatingInput
+                    label="カスタムCSS"
+                    value={theme.customCss || ''}
+                    onChange={(v) => updateTheme('customCss', v)}
+                    placeholder="例: .article-content p { line-height: 1.8; }"
+                    multiline
+                    rows={16}
+                  />
+                </div>
+              )}
             </div>
           </div>
 
