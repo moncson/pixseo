@@ -129,9 +129,23 @@ export default function EditCategoryPage({ params }: { params: { id: string } })
               <div>
                 <FeaturedImageUpload
                   value={formData.imageUrl}
-                  onChange={(url) => setFormData({ ...formData, imageUrl: url })}
+                  onChange={(url) => {
+                    console.log('[CategoryEdit] onChange called with URL:', url);
+                    setFormData(prev => {
+                      const newData = { ...prev, imageUrl: url };
+                      console.log('[CategoryEdit] New formData:', newData);
+                      return newData;
+                    });
+                  }}
                   alt={formData.imageAlt}
-                  onAltChange={(alt) => setFormData({ ...formData, imageAlt: alt })}
+                  onAltChange={(alt) => {
+                    console.log('[CategoryEdit] onAltChange called with alt:', alt);
+                    setFormData(prev => {
+                      const newData = { ...prev, imageAlt: alt };
+                      console.log('[CategoryEdit] New formData (alt):', newData);
+                      return newData;
+                    });
+                  }}
                   label="カテゴリー画像"
                   showImageGenerator={true}
                   imageGeneratorTitle={`${formData.name}カテゴリー`}
