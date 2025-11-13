@@ -69,6 +69,7 @@ export default function EditArticlePage({ params }: { params: { id: string } }) 
         ]);
         
         console.log('[EditArticlePage] Received article:', articleData);
+        console.log('[EditArticlePage] featuredImageAlt from DB:', articleData.featuredImageAlt);
         
         // 日付をDateオブジェクトに変換
         articleData.publishedAt = new Date(articleData.publishedAt);
@@ -76,6 +77,8 @@ export default function EditArticlePage({ params }: { params: { id: string } }) 
 
         setArticle(articleData);
         setFeaturedImageUrl(articleData.featuredImage || '');
+        setFeaturedImageAlt(articleData.featuredImageAlt || '');
+        console.log('[EditArticlePage] setFeaturedImageAlt called with:', articleData.featuredImageAlt || '');
         setFormData({
           title: articleData.title,
           content: articleData.content,
