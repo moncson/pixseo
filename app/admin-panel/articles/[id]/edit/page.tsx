@@ -35,6 +35,7 @@ export default function EditArticlePage({ params }: { params: { id: string } }) 
   const [generatingSlug, setGeneratingSlug] = useState(false);
   const [showSlugWarning, setShowSlugWarning] = useState(false);
   const [generatingTags, setGeneratingTags] = useState(false);
+  const [generatingMetaTitle, setGeneratingMetaTitle] = useState(false);
   
   const [formData, setFormData] = useState({
     title: '',
