@@ -340,9 +340,19 @@ export default function EditArticlePage({ params }: { params: { id: string } }) 
               <div className="bg-white rounded-xl p-6">
                 <FeaturedImageUpload
                   value={featuredImageUrl}
-                  onChange={setFeaturedImageUrl}
+                  onChange={(url) => {
+                    console.log('[ArticleEdit] onChange called with URL:', url);
+                    console.log('[ArticleEdit] Current featuredImageUrl:', featuredImageUrl);
+                    setFeaturedImageUrl(url);
+                    console.log('[ArticleEdit] setFeaturedImageUrl called');
+                  }}
                   alt={featuredImageAlt}
-                  onAltChange={setFeaturedImageAlt}
+                  onAltChange={(alt) => {
+                    console.log('[ArticleEdit] onAltChange called with alt:', alt);
+                    console.log('[ArticleEdit] Current featuredImageAlt:', featuredImageAlt);
+                    setFeaturedImageAlt(alt);
+                    console.log('[ArticleEdit] setFeaturedImageAlt called');
+                  }}
                   showImageGenerator={true}
                   imageGeneratorTitle={formData.title}
                   imageGeneratorContent={formData.content}

@@ -200,6 +200,10 @@ function NewArticlePageContent() {
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     
+    console.log('[ArticleNew] handleSubmit called');
+    console.log('[ArticleNew] featuredImageUrl:', featuredImageUrl);
+    console.log('[ArticleNew] featuredImageAlt:', featuredImageAlt);
+    
     if (!formData.title || !formData.content || !formData.slug || !formData.writerId) {
       alert('タイトル、本文、スラッグ、ライターは必須です');
       return;
@@ -326,9 +330,19 @@ function NewArticlePageContent() {
               <div className="bg-white rounded-xl p-6">
                 <FeaturedImageUpload
                   value={featuredImageUrl}
-                  onChange={setFeaturedImageUrl}
+                  onChange={(url) => {
+                    console.log('[ArticleNew] onChange called with URL:', url);
+                    console.log('[ArticleNew] Current featuredImageUrl:', featuredImageUrl);
+                    setFeaturedImageUrl(url);
+                    console.log('[ArticleNew] setFeaturedImageUrl called');
+                  }}
                   alt={featuredImageAlt}
-                  onAltChange={setFeaturedImageAlt}
+                  onAltChange={(alt) => {
+                    console.log('[ArticleNew] onAltChange called with alt:', alt);
+                    console.log('[ArticleNew] Current featuredImageAlt:', featuredImageAlt);
+                    setFeaturedImageAlt(alt);
+                    console.log('[ArticleNew] setFeaturedImageAlt called');
+                  }}
                   showImageGenerator={true}
                   imageGeneratorTitle={formData.title}
                   imageGeneratorContent={formData.content}
