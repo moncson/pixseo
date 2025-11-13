@@ -31,6 +31,9 @@ export async function GET(
     } as Article;
 
     console.log(`[API /admin/articles/${id}] Found article:`, article.title);
+    console.log(`[API /admin/articles/${id}] featuredImage:`, data.featuredImage);
+    console.log(`[API /admin/articles/${id}] featuredImageAlt:`, data.featuredImageAlt);
+    console.log(`[API /admin/articles/${id}] article object featuredImageAlt:`, article.featuredImageAlt);
     return NextResponse.json(article);
   } catch (error) {
     console.error(`[API /admin/articles] Error:`, error);

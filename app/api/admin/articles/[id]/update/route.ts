@@ -10,6 +10,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
     const { id } = params;
     const body = await request.json();
     console.log('[API] 更新データ:', body);
+    console.log('[API] featuredImageAlt:', body.featuredImageAlt);
 
     const articleRef = adminDb.collection('articles').doc(id);
     
@@ -20,6 +21,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
     };
 
     console.log('[API] Firestore更新実行中...');
+    console.log('[API] updateDataに含まれるfeaturedImageAlt:', updateData.featuredImageAlt);
     await articleRef.update(updateData);
     console.log('[API] Firestore更新完了');
 
