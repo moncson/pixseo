@@ -12,7 +12,6 @@ interface FloatingMultiSelectProps {
   values: string[];
   onChange: (values: string[]) => void;
   options: Option[];
-  placeholder?: string;
   badgeColor?: 'green' | 'blue' | 'gray' | 'purple'; // バッジの色（オプション）
 }
 
@@ -21,7 +20,6 @@ export default function FloatingMultiSelect({
   values,
   onChange,
   options,
-  placeholder,
   badgeColor = 'blue',
 }: FloatingMultiSelectProps) {
   const [isOpen, setIsOpen] = useState(false);

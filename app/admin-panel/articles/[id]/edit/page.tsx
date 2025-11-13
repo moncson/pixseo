@@ -296,6 +296,7 @@ export default function EditArticlePage({ params }: { params: { id: string } }) 
           content: cleanedContent, // クリーニング済みのコンテンツを使用
           writerId: formData.writerId, // ライターID（必須）
           featuredImage: featuredImageUrl,
+          featuredImageAlt: featuredImageAlt, // alt属性を追加
           mediaId: article.mediaId,
           tableOfContents,
           readingTime,

@@ -22,6 +22,7 @@ export interface Article {
   categoryIds: string[];
   tagIds: string[];
   featuredImage?: string;
+  featuredImageAlt?: string; // アイキャッチ画像のalt属性
   isPublished: boolean;
   isFeatured?: boolean;
   viewCount: number;
