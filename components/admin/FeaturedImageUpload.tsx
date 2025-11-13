@@ -55,6 +55,7 @@ export default function FeaturedImageUpload({
   const generateAltText = async (imageUrl: string) => {
     if (!autoGenerateAlt || !imageGeneratorTitle) return;
 
+    console.log('[FeaturedImageUpload] Starting alt text generation for:', imageUrl);
     setGeneratingAlt(true);
     try {
       const response = await fetch('/api/admin/images/generate-alt', {
@@ -76,10 +77,12 @@ export default function FeaturedImageUpload({
       const data = await response.json();
       const generatedAlt = data.alt;
 
+      console.log('[FeaturedImageUpload] Alt text generated:', generatedAlt);
       setAltText(generatedAlt);
       onAltChange?.(generatedAlt);
+      console.log('[FeaturedImageUpload] Alt text set and callback called');
     } catch (error) {
-      console.error('Error generating alt text:', error);
+      console.error('[FeaturedImageUpload] Error generating alt text:', error);
       // エラー時はフォールバック
       const fallbackAlt = imageGeneratorTitle ? `${imageGeneratorTitle}の画像` : label;
       setAltText(fallbackAlt);
@@ -270,14 +273,22 @@ export default function FeaturedImageUpload({
         <div className="p-4 border border-gray-200 rounded-lg">
           <ImageGenerator
             onImageGenerated={async (url) => {
+              console.log('[FeaturedImageUpload] Image generated:', url);
+              console.log('[FeaturedImageUpload] Calling onChange with URL');
               onChange(url);
+              console.log('[FeaturedImageUpload] Setting preview to:', url);
               setPreview(url);
+              console.log('[FeaturedImageUpload] Closing AI generator');
               setShowAIGenerator(false);
               
               // AI生成画像のalt属性を自動生成
               if (autoGenerateAlt) {
+                console.log('[FeaturedImageUpload] Auto-generating alt text');
                 await generateAltText(url);
+              } else {
+                console.log('[FeaturedImageUpload] Auto-generate alt is disabled');
               }
+              console.log('[FeaturedImageUpload] Image generation flow complete');
             }}
             articleTitle={imageGeneratorTitle}
             articleContent={imageGeneratorContent}
