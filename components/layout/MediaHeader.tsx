@@ -34,40 +34,50 @@ export default function MediaHeader({ siteName, categories = [] }: MediaHeaderPr
 
       {/* カテゴリーバー */}
       {categories.length > 0 && (
-        <section className="bg-white border-b">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-            <div className="flex gap-6 overflow-x-auto scrollbar-hide">
-              {categories.map((category) => (
-                <Link
-                  key={category.id}
-                  href={`/categories/${category.slug}`}
-                  className="flex-shrink-0 group"
-                >
-                  <div className="flex flex-col items-center gap-2 min-w-[100px]">
-                    {category.imageUrl ? (
-                      <div className="relative w-20 h-20 rounded-full overflow-hidden bg-gray-100 ring-2 ring-gray-200 group-hover:ring-blue-500 transition-all">
-                        <Image
-                          src={category.imageUrl}
-                          alt={category.imageAlt || category.name}
-                          fill
-                          className="object-cover"
-                          sizes="80px"
-                        />
-                      </div>
-                    ) : (
-                      <div className="w-20 h-20 rounded-full bg-gradient-to-br from-blue-100 to-blue-200 flex items-center justify-center ring-2 ring-gray-200 group-hover:ring-blue-500 transition-all">
-                        <span className="text-2xl font-bold text-blue-600">
-                          {category.name.charAt(0)}
-                        </span>
-                      </div>
-                    )}
-                    <span className="text-sm font-medium text-gray-700 group-hover:text-blue-600 transition-colors text-center">
-                      {category.name}
-                    </span>
-                  </div>
-                </Link>
-              ))}
-            </div>
+        <section className="bg-white border-b overflow-hidden">
+          <div className="flex overflow-x-auto scrollbar-hide">
+            {categories.map((category) => (
+              <Link
+                key={category.id}
+                href={`/categories/${category.slug}`}
+                className="relative flex-1 min-w-[150px] h-48 group overflow-hidden"
+              >
+                {category.imageUrl ? (
+                  <>
+                    {/* 背景画像 */}
+                    <div className="absolute inset-0">
+                      <Image
+                        src={category.imageUrl}
+                        alt={category.imageAlt || category.name}
+                        fill
+                        className="object-cover transition-all duration-300 group-hover:grayscale"
+                        sizes="(max-width: 768px) 150px, 200px"
+                      />
+                    </div>
+                    {/* グラデーションオーバーレイ */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent" />
+                  </>
+                ) : (
+                  <>
+                    {/* グラデーション背景（画像がない場合） */}
+                    <div className="absolute inset-0 bg-gradient-to-br from-blue-500 to-purple-600 transition-all duration-300 group-hover:grayscale" />
+                    {/* テキストオーバーレイ */}
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <span className="text-6xl font-bold text-white/30">
+                        {category.name.charAt(0)}
+                      </span>
+                    </div>
+                  </>
+                )}
+                
+                {/* カテゴリー名 */}
+                <div className="absolute inset-x-0 bottom-0 p-4">
+                  <h3 className="text-white font-bold text-lg text-center drop-shadow-lg">
+                    {category.name}
+                  </h3>
+                </div>
+              </Link>
+            ))}
           </div>
         </section>
       )}
