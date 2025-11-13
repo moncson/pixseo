@@ -174,10 +174,10 @@ export default async function MediaPage() {
                   className="flex-shrink-0 group"
                 >
                   <div className="flex flex-col items-center gap-2 min-w-[100px]">
-                    {category.image ? (
+                    {category.imageUrl ? (
                       <div className="relative w-20 h-20 rounded-full overflow-hidden bg-gray-100 ring-2 ring-gray-200 group-hover:ring-blue-500 transition-all">
                         <Image
-                          src={category.image}
+                          src={category.imageUrl}
                           alt={category.imageAlt || category.name}
                           fill
                           className="object-cover"
