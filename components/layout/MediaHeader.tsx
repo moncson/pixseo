@@ -40,7 +40,7 @@ export default function MediaHeader({ siteName, categories = [] }: MediaHeaderPr
               <Link
                 key={category.id}
                 href={`/categories/${category.slug}`}
-                className="relative flex-1 min-w-[150px] h-48 group overflow-hidden"
+                className="relative flex-1 min-w-[150px] h-96 group overflow-hidden"
               >
                 {category.imageUrl ? (
                   <>
