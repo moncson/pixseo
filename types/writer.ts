@@ -1,6 +1,7 @@
 export interface Writer {
   id: string;
   icon?: string; // アイコン画像（オプショナル）
+  iconAlt?: string; // アイコン画像のalt属性
   handleName: string; // ハンドルネーム
   bio?: string; // 紹介文（オプショナル）
   mediaId: string; // サービスID

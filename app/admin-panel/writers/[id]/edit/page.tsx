@@ -14,6 +14,7 @@ export default function EditWriterPage({ params }: { params: { id: string } }) {
   const [fetchLoading, setFetchLoading] = useState(true);
   const [formData, setFormData] = useState({
     iconUrl: '',
+    iconAlt: '',
     handleName: '',
     bio: '',
   });
@@ -26,6 +27,7 @@ export default function EditWriterPage({ params }: { params: { id: string } }) {
           const data: Writer = await response.json();
           setFormData({
             iconUrl: data.icon || '',
+            iconAlt: data.iconAlt || '',
             handleName: data.handleName || '',
             bio: data.bio || '',
           });
@@ -85,6 +87,8 @@ export default function EditWriterPage({ params }: { params: { id: string } }) {
               <FeaturedImageUpload
                 value={formData.iconUrl}
                 onChange={(url) => setFormData({ ...formData, iconUrl: url })}
+                alt={formData.iconAlt}
+                onAltChange={(alt) => setFormData({ ...formData, iconAlt: alt })}
                 label="アイコン画像"
               />
 

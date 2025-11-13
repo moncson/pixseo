@@ -14,6 +14,7 @@ export default function NewWriterPage() {
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     iconUrl: '',
+    iconAlt: '',
     handleName: '',
     bio: '',
   });
@@ -36,6 +37,7 @@ export default function NewWriterPage() {
         },
         body: JSON.stringify({
           icon: formData.iconUrl,
+          iconAlt: formData.iconAlt,
           handleName: formData.handleName,
           bio: formData.bio,
           mediaId: currentTenant.id,
@@ -67,6 +69,8 @@ export default function NewWriterPage() {
               <FeaturedImageUpload
                 value={formData.iconUrl}
                 onChange={(url) => setFormData({ ...formData, iconUrl: url })}
+                alt={formData.iconAlt}
+                onAltChange={(alt) => setFormData({ ...formData, iconAlt: alt })}
                 label="アイコン画像"
               />
 
