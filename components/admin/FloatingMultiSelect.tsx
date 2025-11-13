@@ -94,7 +94,9 @@ export default function FloatingMultiSelect({
                   <button
                     type="button"
                     onClick={(e) => handleRemove(option.value, e)}
-                    className="flex items-center justify-center w-4 h-4 rounded-full hover:bg-white/50 transition-colors"
+                    className={`flex items-center justify-center w-4 h-4 rounded-full transition-colors ${
+                      badgeColor === 'gray' ? 'hover:bg-white/20' : 'hover:bg-white/50'
+                    }`}
                     title="削除"
                   >
                     <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -111,7 +113,7 @@ export default function FloatingMultiSelect({
           className={`absolute left-3 transition-all pointer-events-none ${
             selectedOptions.length > 0 || isOpen
               ? '-top-2 text-xs bg-white px-1 text-blue-600'
-              : 'top-3 text-base text-gray-500'
+              : 'top-3 text-sm text-gray-500'
           }`}
         >
           {label}
