@@ -62,7 +62,7 @@ const ColorPicker: React.FC<ColorPickerProps> = ({ label, value, onChange, allow
       
       {/* ON/OFFトグル（フィールド内右端） */}
       {allowOff && (
-        <label className="absolute right-3 top-[50%] -translate-y-[50%] cursor-pointer">
+        <label className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer flex items-center">
           <div className="relative inline-block w-14 h-8">
             <input
               type="checkbox"

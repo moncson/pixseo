@@ -75,18 +75,53 @@ export default function DesignPage() {
         {fetchLoading ? null : (
           <div className="animate-fadeIn pb-32 space-y-6">
           
-          {/* 背景色 */}
+          {/* 基本カラー */}
           <div className="bg-white rounded-[1.75rem] p-8">
+            <h2 className="text-lg font-semibold text-gray-800 mb-6">基本カラー</h2>
             <div className="grid grid-cols-3 gap-6">
-              <ColorPicker label="全体背景色" value={theme.backgroundColor} onChange={(v) => updateTheme('backgroundColor', v)} />
-              <ColorPicker label="ヘッダー背景色" value={theme.headerBackgroundColor} onChange={(v) => updateTheme('headerBackgroundColor', v)} />
-              <ColorPicker label="フッター背景色" value={theme.footerBackgroundColor} onChange={(v) => updateTheme('footerBackgroundColor', v)} />
-              <ColorPicker label="パネル背景色" value={theme.panelBackgroundColor} onChange={(v) => updateTheme('panelBackgroundColor', v)} />
+              <ColorPicker label="メインカラー" value={theme.primaryColor} onChange={(v) => updateTheme('primaryColor', v)} />
+              <ColorPicker label="サブカラー" value={theme.secondaryColor} onChange={(v) => updateTheme('secondaryColor', v)} />
+              <ColorPicker label="アクセントカラー" value={theme.accentColor} onChange={(v) => updateTheme('accentColor', v)} />
             </div>
           </div>
 
-          {/* H2 */}
+          {/* 背景色 */}
           <div className="bg-white rounded-[1.75rem] p-8">
+            <h2 className="text-lg font-semibold text-gray-800 mb-6">背景色</h2>
+            <div className="grid grid-cols-2 gap-6">
+              <ColorPicker label="全体背景色" value={theme.backgroundColor} onChange={(v) => updateTheme('backgroundColor', v)} />
+              <ColorPicker label="ヘッダー背景色" value={theme.headerBackgroundColor} onChange={(v) => updateTheme('headerBackgroundColor', v)} />
+              <ColorPicker label="フッター背景色" value={theme.footerBackgroundColor} onChange={(v) => updateTheme('footerBackgroundColor', v)} />
+              <ColorPicker label="ブロック背景色" value={theme.blockBackgroundColor} onChange={(v) => updateTheme('blockBackgroundColor', v)} />
+            </div>
+          </div>
+
+          {/* テキスト・リンク */}
+          <div className="bg-white rounded-[1.75rem] p-8">
+            <h2 className="text-lg font-semibold text-gray-800 mb-6">テキスト・リンク</h2>
+            <div className="grid grid-cols-2 gap-6">
+              <ColorPicker label="リンクテキストカラー" value={theme.linkColor} onChange={(v) => updateTheme('linkColor', v)} />
+              <ColorPicker label="リンクホバーカラー" value={theme.linkHoverColor} onChange={(v) => updateTheme('linkHoverColor', v)} />
+            </div>
+          </div>
+
+          {/* 装飾 */}
+          <div className="bg-white rounded-[1.75rem] p-8">
+            <h2 className="text-lg font-semibold text-gray-800 mb-6">装飾</h2>
+            <div className="grid grid-cols-2 gap-6">
+              <ColorPicker label="ボーダーカラー" value={theme.borderColor} onChange={(v) => updateTheme('borderColor', v)} />
+              <FloatingInput
+                label="シャドウカラー（RGBA形式）"
+                value={theme.shadowColor}
+                onChange={(v) => updateTheme('shadowColor', v)}
+                placeholder="rgba(0, 0, 0, 0.1)"
+              />
+            </div>
+          </div>
+
+          {/* 見出しデザイン（H2） */}
+          <div className="bg-white rounded-[1.75rem] p-8">
+            <h2 className="text-lg font-semibold text-gray-800 mb-6">見出しデザイン（H2）</h2>
             <div className="flex gap-6 items-start">
               {/* 左：アイコン */}
               <div className="w-32 aspect-square flex-shrink-0">
@@ -94,6 +129,7 @@ export default function DesignPage() {
                   value={theme.h2Icon || ''}
                   onChange={(url) => updateTheme('h2Icon', url)}
                   label="H2 アイコン画像"
+                  autoGenerateAlt={false}
                 />
               </div>
               {/* 右：カラーピッカー 2x2 */}
@@ -106,8 +142,9 @@ export default function DesignPage() {
             </div>
           </div>
 
-          {/* H3 */}
+          {/* 見出しデザイン（H3） */}
           <div className="bg-white rounded-[1.75rem] p-8">
+            <h2 className="text-lg font-semibold text-gray-800 mb-6">見出しデザイン（H3）</h2>
             <div className="flex gap-6 items-start">
               {/* 左：アイコン */}
               <div className="w-32 aspect-square flex-shrink-0">
@@ -115,6 +152,7 @@ export default function DesignPage() {
                   value={theme.h3Icon || ''}
                   onChange={(url) => updateTheme('h3Icon', url)}
                   label="H3 アイコン画像"
+                  autoGenerateAlt={false}
                 />
               </div>
               {/* 右：カラーピッカー 2x2 */}
@@ -127,8 +165,9 @@ export default function DesignPage() {
             </div>
           </div>
 
-          {/* H4 */}
+          {/* 見出しデザイン（H4） */}
           <div className="bg-white rounded-[1.75rem] p-8">
+            <h2 className="text-lg font-semibold text-gray-800 mb-6">見出しデザイン（H4）</h2>
             <div className="flex gap-6 items-start">
               {/* 左：アイコン */}
               <div className="w-32 aspect-square flex-shrink-0">
@@ -136,6 +175,7 @@ export default function DesignPage() {
                   value={theme.h4Icon || ''}
                   onChange={(url) => updateTheme('h4Icon', url)}
                   label="H4 アイコン画像"
+                  autoGenerateAlt={false}
                 />
               </div>
               {/* 右：カラーピッカー 2x2 */}
@@ -148,67 +188,18 @@ export default function DesignPage() {
             </div>
           </div>
 
-          {/* テキストカラー */}
+          {/* カスタムCSS */}
           <div className="bg-white rounded-[1.75rem] p-8">
-            <div className="grid grid-cols-3 gap-6">
-              <ColorPicker label="本文テキスト" value={theme.textColor} onChange={(v) => updateTheme('textColor', v)} />
-              <ColorPicker label="リンクカラー" value={theme.linkColor} onChange={(v) => updateTheme('linkColor', v)} />
-              <ColorPicker label="リンクホバーカラー" value={theme.linkHoverColor} onChange={(v) => updateTheme('linkHoverColor', v)} />
-            </div>
-          </div>
-
-          {/* ボタンカラー */}
-          <div className="bg-white rounded-[1.75rem] p-8">
-            <div className="grid grid-cols-2 gap-6">
-              <ColorPicker label="プライマリボタン 背景色" value={theme.primaryButtonColor} onChange={(v) => updateTheme('primaryButtonColor', v)} />
-              <ColorPicker label="プライマリボタン テキスト色" value={theme.primaryButtonTextColor} onChange={(v) => updateTheme('primaryButtonTextColor', v)} />
-              <ColorPicker label="セカンダリボタン 背景色" value={theme.secondaryButtonColor} onChange={(v) => updateTheme('secondaryButtonColor', v)} />
-              <ColorPicker label="セカンダリボタン テキスト色" value={theme.secondaryButtonTextColor} onChange={(v) => updateTheme('secondaryButtonTextColor', v)} />
-            </div>
-          </div>
-
-          {/* 引用 */}
-          <div className="bg-white rounded-[1.75rem] p-8">
-            <div className="grid grid-cols-3 gap-6">
-              <ColorPicker label="引用 背景色" value={theme.quoteBackgroundColor} onChange={(v) => updateTheme('quoteBackgroundColor', v)} />
-              <ColorPicker label="引用 ボーダーカラー" value={theme.quoteBorderColor} onChange={(v) => updateTheme('quoteBorderColor', v)} />
-              <ColorPicker label="引用 テキストカラー" value={theme.quoteTextColor} onChange={(v) => updateTheme('quoteTextColor', v)} />
-            </div>
-          </div>
-
-          {/* 参照 */}
-          <div className="bg-white rounded-[1.75rem] p-8">
-            <div className="grid grid-cols-3 gap-6">
-              <ColorPicker label="参照 背景色" value={theme.referenceBackgroundColor} onChange={(v) => updateTheme('referenceBackgroundColor', v)} />
-              <ColorPicker label="参照 ボーダーカラー" value={theme.referenceBorderColor} onChange={(v) => updateTheme('referenceBorderColor', v)} />
-              <ColorPicker label="参照 テキストカラー" value={theme.referenceTextColor} onChange={(v) => updateTheme('referenceTextColor', v)} />
-            </div>
-          </div>
-
-          {/* 表 */}
-          <div className="bg-white rounded-[1.75rem] p-8">
-            <div className="grid grid-cols-2 gap-6">
-              <ColorPicker label="表 ヘッダー背景色" value={theme.tableHeaderBackgroundColor} onChange={(v) => updateTheme('tableHeaderBackgroundColor', v)} />
-              <ColorPicker label="表 ヘッダーテキスト色" value={theme.tableHeaderTextColor} onChange={(v) => updateTheme('tableHeaderTextColor', v)} />
-              <ColorPicker label="表 ボーダーカラー" value={theme.tableBorderColor} onChange={(v) => updateTheme('tableBorderColor', v)} />
-              <ColorPicker label="表 ストライプ背景色" value={theme.tableStripedColor} onChange={(v) => updateTheme('tableStripedColor', v)} />
-            </div>
-          </div>
-
-          {/* その他 */}
-          <div className="bg-white rounded-[1.75rem] p-8">
-            <div className="grid grid-cols-2 gap-6">
-              <ColorPicker label="汎用ボーダーカラー" value={theme.borderColor} onChange={(v) => updateTheme('borderColor', v)} />
-              <ColorPicker label="区切り線カラー" value={theme.dividerColor} onChange={(v) => updateTheme('dividerColor', v)} />
-            </div>
-            <div className="mt-6">
-              <FloatingInput
-                label="シャドウカラー（RGBA形式）"
-                value={theme.shadowColor}
-                onChange={(v) => updateTheme('shadowColor', v)}
-                placeholder="rgba(0, 0, 0, 0.1)"
-              />
-            </div>
+            <h2 className="text-lg font-semibold text-gray-800 mb-6">カスタムCSS</h2>
+            <p className="text-sm text-gray-600 mb-4">
+              より細かいデザイン調整が必要な場合は、こちらにCSSを記述してください。
+            </p>
+            <textarea
+              value={theme.customCss || ''}
+              onChange={(e) => updateTheme('customCss', e.target.value)}
+              placeholder="例: .article-content p { line-height: 1.8; }"
+              className="w-full h-64 p-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono text-sm resize-none"
+            />
           </div>
 
           {/* フローティングボタン */}

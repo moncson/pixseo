@@ -2,124 +2,114 @@ export interface Theme {
   // レイアウトテーマ
   layoutTheme: 'theme1'; // 将来的に theme2, theme3 などを追加可能
   
+  // 基本カラー
+  primaryColor: string;             // メインカラー
+  secondaryColor: string;           // サブカラー
+  accentColor: string;              // アクセントカラー
+  
   // 背景色
   backgroundColor: string;          // 全体背景色
   headerBackgroundColor: string;    // ヘッダー背景色
   footerBackgroundColor: string;    // フッター背景色
-  panelBackgroundColor: string;     // パネル（カード）背景色
+  blockBackgroundColor: string;     // ブロック背景色
   
-  // 見出しデザイン
+  // テキスト・リンク
+  linkColor: string;                // リンクテキストカラー
+  linkHoverColor: string;           // リンクホバーカラー
+  
+  // 装飾
+  borderColor: string;              // ボーダーカラー
+  shadowColor: string;              // シャドウカラー（RGBA形式）
+  
+  // 見出しデザイン（H2）
   h2Color: string;
   h2BackgroundColor?: string;
   h2LeftBorderColor?: string;
   h2BottomBorderColor?: string;
   h2Icon?: string;
   
+  // 見出しデザイン（H3）
   h3Color: string;
   h3BackgroundColor?: string;
   h3LeftBorderColor?: string;
   h3BottomBorderColor?: string;
   h3Icon?: string;
   
+  // 見出しデザイン（H4）
   h4Color: string;
   h4BackgroundColor?: string;
   h4LeftBorderColor?: string;
   h4BottomBorderColor?: string;
   h4Icon?: string;
   
-  // テキスト
-  textColor: string;                // 本文テキストカラー
-  linkColor: string;                // リンクカラー
-  linkHoverColor: string;           // リンクホバーカラー
+  // カスタムCSS
+  customCss?: string;               // 自由なCSS記述エリア
   
-  // ボタン
-  primaryButtonColor: string;       // ボタンカラー1（背景）
-  primaryButtonTextColor: string;   // ボタンカラー1（テキスト）
-  secondaryButtonColor: string;     // ボタンカラー2（背景）
-  secondaryButtonTextColor: string; // ボタンカラー2（テキスト）
-  
-  // 引用・参照
-  quoteBackgroundColor: string;     // 引用背景色
-  quoteBorderColor: string;         // 引用ボーダー色
-  quoteTextColor: string;           // 引用テキスト色
-  
-  referenceBackgroundColor: string; // 参照背景色
-  referenceBorderColor: string;     // 参照ボーダー色
-  referenceTextColor: string;       // 参照テキスト色
-  
-  // 表（テーブル）
-  tableHeaderBackgroundColor: string; // 表ヘッダー背景色
-  tableHeaderTextColor: string;       // 表ヘッダーテキスト色
-  tableBorderColor: string;           // 表ボーダー色
-  tableStripedColor: string;          // 表ストライプ背景色（奇数行）
-  
-  // その他
-  borderColor: string;              // 汎用ボーダー色
-  dividerColor: string;             // 区切り線色
-  shadowColor: string;              // シャドウ色
+  // 🔄 後方互換性のために残す（オプショナル）
+  panelBackgroundColor?: string;
+  textColor?: string;
+  primaryButtonColor?: string;
+  primaryButtonTextColor?: string;
+  secondaryButtonColor?: string;
+  secondaryButtonTextColor?: string;
+  quoteBackgroundColor?: string;
+  quoteBorderColor?: string;
+  quoteTextColor?: string;
+  referenceBackgroundColor?: string;
+  referenceBorderColor?: string;
+  referenceTextColor?: string;
+  tableHeaderBackgroundColor?: string;
+  tableHeaderTextColor?: string;
+  tableBorderColor?: string;
+  tableStripedColor?: string;
+  dividerColor?: string;
 }
 
 // デフォルトテーマ（レイアウトテーマ1）
 export const defaultTheme: Theme = {
   layoutTheme: 'theme1',
   
-  // 背景色
-  backgroundColor: '#f9fafb',       // gray-50
-  headerBackgroundColor: '#ffffff', // white
-  footerBackgroundColor: '#1f2937', // gray-800
-  panelBackgroundColor: '#ffffff',  // white
+  // 基本カラー
+  primaryColor: '#3b82f6',          // blue-500（メインカラー）
+  secondaryColor: '#6b7280',        // gray-500（サブカラー）
+  accentColor: '#8b5cf6',           // purple-500（アクセントカラー）
   
-  // H2
+  // 背景色
+  backgroundColor: '#f9fafb',       // gray-50（全体背景）
+  headerBackgroundColor: '#ffffff', // white（ヘッダー背景）
+  footerBackgroundColor: '#1f2937', // gray-800（フッター背景）
+  blockBackgroundColor: '#ffffff',  // white（ブロック背景）
+  
+  // テキスト・リンク
+  linkColor: '#2563eb',             // blue-600（リンクカラー）
+  linkHoverColor: '#1d4ed8',        // blue-700（リンクホバーカラー）
+  
+  // 装飾
+  borderColor: '#e5e7eb',           // gray-200（ボーダーカラー）
+  shadowColor: 'rgba(0, 0, 0, 0.1)', // シャドウカラー
+  
+  // 見出しデザイン（H2）
   h2Color: '#111827',               // gray-900
   h2BackgroundColor: '#f3f4f6',     // gray-100
   h2LeftBorderColor: '#3b82f6',     // blue-500
   h2BottomBorderColor: 'transparent',
   h2Icon: '',
   
-  // H3
+  // 見出しデザイン（H3）
   h3Color: '#1f2937',               // gray-800
   h3BackgroundColor: '#ffffff',
   h3LeftBorderColor: 'transparent',
   h3BottomBorderColor: '#9ca3af',   // gray-400
   h3Icon: '',
   
-  // H4
+  // 見出しデザイン（H4）
   h4Color: '#374151',               // gray-700
   h4BackgroundColor: '#ffffff',
   h4LeftBorderColor: 'transparent',
   h4BottomBorderColor: 'transparent',
   h4Icon: '',
   
-  // テキスト
-  textColor: '#374151',             // gray-700
-  linkColor: '#2563eb',             // blue-600
-  linkHoverColor: '#1d4ed8',        // blue-700
-  
-  // ボタン
-  primaryButtonColor: '#3b82f6',    // blue-500
-  primaryButtonTextColor: '#ffffff',
-  secondaryButtonColor: '#6b7280',  // gray-500
-  secondaryButtonTextColor: '#ffffff',
-  
-  // 引用
-  quoteBackgroundColor: '#f3f4f6',  // gray-100
-  quoteBorderColor: '#9ca3af',      // gray-400
-  quoteTextColor: '#4b5563',        // gray-600
-  
-  // 参照
-  referenceBackgroundColor: '#eff6ff', // blue-50
-  referenceBorderColor: '#3b82f6',     // blue-500
-  referenceTextColor: '#1e40af',       // blue-800
-  
-  // 表
-  tableHeaderBackgroundColor: '#f3f4f6', // gray-100
-  tableHeaderTextColor: '#111827',       // gray-900
-  tableBorderColor: '#d1d5db',           // gray-300
-  tableStripedColor: '#f9fafb',          // gray-50
-  
-  // その他
-  borderColor: '#e5e7eb',           // gray-200
-  dividerColor: '#d1d5db',          // gray-300
-  shadowColor: 'rgba(0, 0, 0, 0.1)',
+  // カスタムCSS
+  customCss: '',
 };
 
