@@ -2,7 +2,8 @@ import { Metadata } from 'next';
 import { headers } from 'next/headers';
 import { getRecentArticlesServer, getPopularArticlesServer } from '@/lib/firebase/articles-server';
 import { getCategoriesServer } from '@/lib/firebase/categories-server';
-import { adminDb } from '@/lib/firebase/admin';
+import { getMediaIdFromHost, getSiteInfo } from '@/lib/firebase/media-tenant-helper';
+import { getTheme, getCombinedStyles } from '@/lib/firebase/theme-helper';
 import MediaHeader from '@/components/layout/MediaHeader';
 import SearchBar from '@/components/search/SearchBar';
 import ArticleCard from '@/components/articles/ArticleCard';
@@ -16,101 +17,53 @@ export const dynamic = 'force-dynamic';
 
 // 動的にメタデータを生成
 export async function generateMetadata(): Promise<Metadata> {
-  const headersList = headers();
-  const mediaId = headersList.get('x-media-id');
+  const mediaId = await getMediaIdFromHost();
   
-  let allowIndexing = false;
-  let siteName = 'ふらっと。';
-  let siteDescription = 'おでかけ・外出に役立つバリアフリー情報を探す';
-  
-  // mediaIdがある場合、テナント情報を取得
-  if (mediaId) {
-    try {
-      const tenantDoc = await adminDb.collection('mediaTenants').doc(mediaId).get();
-      if (tenantDoc.exists) {
-        const data = tenantDoc.data();
-        allowIndexing = data?.allowIndexing || false;
-        siteName = data?.name || siteName;
-        siteDescription = data?.settings?.siteDescription || siteDescription;
-      }
-    } catch (error) {
-      console.error('[Media Page] Error fetching tenant info:', error);
-    }
+  if (!mediaId) {
+    return {
+      title: 'ふらっと。 | バリアフリー情報メディア',
+      description: 'おでかけ・外出に役立つバリアフリー情報を探す',
+    };
   }
+
+  const siteInfo = await getSiteInfo(mediaId);
   
   return {
-    title: `${siteName} | バリアフリー情報メディア`,
-    description: siteDescription,
+    title: siteInfo.mainTitle || `${siteInfo.name} | バリアフリー情報メディア`,
+    description: siteInfo.description || 'おでかけ・外出に役立つバリアフリー情報を探す',
     robots: {
-      index: allowIndexing,
-      follow: allowIndexing,
+      index: siteInfo.allowIndexing,
+      follow: siteInfo.allowIndexing,
     },
+    icons: siteInfo.faviconUrl ? {
+      icon: siteInfo.faviconUrl,
+      apple: siteInfo.faviconUrl,
+    } : undefined,
     openGraph: {
-      title: `${siteName} | バリアフリー情報メディア`,
-      description: siteDescription,
+      title: siteInfo.mainTitle || `${siteInfo.name} | バリアフリー情報メディア`,
+      description: siteInfo.description || 'おでかけ・外出に役立つバリアフリー情報を探す',
+      images: siteInfo.ogImageUrl ? [siteInfo.ogImageUrl] : undefined,
     },
   };
 }
 
 export default async function MediaPage() {
-  // mediaIdを取得（複数の方法を試す）
+  // mediaIdを取得
+  const mediaId = await getMediaIdFromHost();
   const headersList = headers();
-  const mediaIdFromHeader = headersList.get('x-media-id');
   const host = headersList.get('host') || '';
   
-  // ホスト名からスラッグを抽出してmediaIdを取得
-  let mediaId = mediaIdFromHeader;
-  
-  if (!mediaId && host.endsWith('.pixseo.cloud') && host !== 'admin.pixseo.cloud') {
-    const slug = host.replace('.pixseo.cloud', '');
-    
-    // Firestoreからスラッグに対応するmediaIdを取得
-    try {
-      const tenantsSnapshot = await adminDb
-        .collection('mediaTenants')
-        .where('slug', '==', slug)
-        .limit(1)
-        .get();
-      
-      if (!tenantsSnapshot.empty) {
-        mediaId = tenantsSnapshot.docs[0].id;
-      }
-    } catch (error) {
-      console.error('[Media Page] Error fetching mediaId:', error);
-    }
-  }
-  
-  // サイト設定を取得
-  let siteSettings = {
-    name: 'メディアサイト',
-    description: 'メディアサイトの説明',
-    mainTitle: '',
-    mainSubtitle: '',
-  };
-  
-  if (mediaId) {
-    try {
-      const tenantDoc = await adminDb.collection('mediaTenants').doc(mediaId).get();
-      if (tenantDoc.exists) {
-        const data = tenantDoc.data();
-        siteSettings = {
-          name: data?.name || 'メディアサイト',
-          description: data?.siteDescription || 'メディアサイトの説明',
-          mainTitle: data?.mainTitle || data?.siteDescription || 'メディアサイト',
-          mainSubtitle: data?.mainSubtitle || '',
-        };
-      }
-    } catch (error) {
-      console.error('[Media Page] Error fetching site settings:', error);
-    }
-  }
-  
-  // 記事データとカテゴリーを並列取得（サーバーサイド）
-  const [recentArticles, popularArticles, allCategories] = await Promise.all([
+  // サイト設定とThemeを並列取得
+  const [siteInfo, theme, recentArticles, popularArticles, allCategories] = await Promise.all([
+    getSiteInfo(mediaId || ''),
+    getTheme(mediaId || ''),
     getRecentArticlesServer(10, mediaId || undefined),
     getPopularArticlesServer(10, mediaId || undefined),
     getCategoriesServer(),
   ]);
+  
+  // ThemeスタイルとカスタムCSSを生成
+  const combinedStyles = getCombinedStyles(theme);
   
   // mediaIdでカテゴリーをフィルタリング
   const categories = mediaId 
@@ -121,8 +74,8 @@ export default async function MediaPage() {
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'WebSite',
-    name: siteSettings.name,
-    description: siteSettings.description,
+    name: siteInfo.name,
+    description: siteInfo.description,
     url: `https://${host}`,
     potentialAction: {
       '@type': 'SearchAction',
@@ -132,7 +85,10 @@ export default async function MediaPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen" style={{ backgroundColor: theme.backgroundColor }}>
+      {/* Themeスタイル注入 */}
+      <style dangerouslySetInnerHTML={{ __html: combinedStyles }} />
+
       {/* JSON-LD構造化データ */}
       <script
         type="application/ld+json"
@@ -140,7 +96,7 @@ export default async function MediaPage() {
       />
 
       {/* ヘッダー＆カテゴリーバー */}
-      <MediaHeader siteName={siteSettings.name} categories={categories} />
+      <MediaHeader siteName={siteInfo.name} categories={categories} siteInfo={siteInfo} />
 
       {/* メインコンテンツ */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -204,17 +160,17 @@ export default async function MediaPage() {
       </main>
 
       {/* フッター */}
-      <footer className="bg-gray-800 text-white mt-16">
+      <footer style={{ backgroundColor: theme.footerBackgroundColor }} className="text-white mt-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <div className="text-center space-y-4">
-            <h3 className="text-2xl font-bold">{siteSettings.name}</h3>
-            {siteSettings.description && (
+            <h3 className="text-2xl font-bold">{siteInfo.name}</h3>
+            {siteInfo.description && (
               <p className="text-gray-300 max-w-2xl mx-auto">
-                {siteSettings.description}
+                {siteInfo.description}
               </p>
             )}
             <p className="text-gray-400 text-sm pt-4">
-              © {new Date().getFullYear()} {siteSettings.name}. All rights reserved.
+              © {new Date().getFullYear()} {siteInfo.name}. All rights reserved.
             </p>
           </div>
         </div>

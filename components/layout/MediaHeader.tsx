@@ -1,30 +1,45 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { Category } from '@/types/article';
+import { SiteInfo } from '@/lib/firebase/media-tenant-helper';
 
 interface MediaHeaderProps {
   siteName: string;
   categories?: Category[];
+  siteInfo?: SiteInfo;
 }
 
-export default function MediaHeader({ siteName, categories = [] }: MediaHeaderProps) {
+export default function MediaHeader({ siteName, categories = [], siteInfo }: MediaHeaderProps) {
   return (
     <>
       {/* ヘッダー */}
-      <header className="bg-white shadow-sm">
+      <header className="bg-white shadow-sm" style={{ backgroundColor: 'var(--header-background-color, #ffffff)' }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
-            <Link href="/" className="text-2xl font-bold text-gray-900">
-              {siteName}
+            <Link href="/" className="flex items-center space-x-3">
+              {siteInfo?.logoUrl ? (
+                <Image
+                  src={siteInfo.logoUrl}
+                  alt={siteName}
+                  width={150}
+                  height={40}
+                  className="h-10 w-auto"
+                  priority
+                />
+              ) : (
+                <span className="text-2xl font-bold text-gray-900">
+                  {siteName}
+                </span>
+              )}
             </Link>
             <nav className="hidden md:flex space-x-6">
-              <Link href="/" className="text-gray-700 hover:text-gray-900">
+              <Link href="/" className="hover:opacity-75" style={{ color: 'var(--link-color, #374151)' }}>
                 トップ
               </Link>
-              <Link href="/articles" className="text-gray-700 hover:text-gray-900">
+              <Link href="/articles" className="hover:opacity-75" style={{ color: 'var(--link-color, #374151)' }}>
                 記事一覧
               </Link>
-              <Link href="/search" className="text-gray-700 hover:text-gray-900">
+              <Link href="/search" className="hover:opacity-75" style={{ color: 'var(--link-color, #374151)' }}>
                 検索
               </Link>
             </nav>

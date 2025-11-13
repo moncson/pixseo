@@ -1,9 +1,9 @@
 import { notFound } from 'next/navigation';
 import { Metadata } from 'next';
-import { headers } from 'next/headers';
 import { getCategoryServer, getCategoriesServer } from '@/lib/firebase/categories-server';
 import { getArticlesServer } from '@/lib/firebase/articles-server';
-import { adminDb } from '@/lib/firebase/admin';
+import { getMediaIdFromHost, getSiteInfo } from '@/lib/firebase/media-tenant-helper';
+import { getTheme, getCombinedStyles } from '@/lib/firebase/theme-helper';
 import MediaHeader from '@/components/layout/MediaHeader';
 import ArticleCard from '@/components/articles/ArticleCard';
 import SearchBar from '@/components/search/SearchBar';
@@ -18,7 +18,10 @@ interface PageProps {
 }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
-  const category = await getCategoryServer(params.slug);
+  const [category, mediaId] = await Promise.all([
+    getCategoryServer(params.slug),
+    getMediaIdFromHost(),
+  ]);
   
   if (!category) {
     return {
@@ -26,69 +29,58 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     };
   }
 
+  const siteInfo = mediaId ? await getSiteInfo(mediaId) : { name: 'ふらっと。', allowIndexing: false, faviconUrl: undefined };
+
   return {
-    title: `${category.name}の記事一覧 | ふらっと。`,
+    title: `${category.name}の記事一覧 | ${siteInfo.name}`,
     description: category.description || `${category.name}に関するバリアフリー情報記事一覧`,
+    robots: {
+      index: siteInfo.allowIndexing,
+      follow: siteInfo.allowIndexing,
+    },
+    icons: siteInfo.faviconUrl ? {
+      icon: siteInfo.faviconUrl,
+      apple: siteInfo.faviconUrl,
+    } : undefined,
     openGraph: {
-      title: `${category.name}の記事一覧 | ふらっと。`,
+      title: `${category.name}の記事一覧 | ${siteInfo.name}`,
       description: category.description || `${category.name}に関するバリアフリー情報記事一覧`,
     },
   };
 }
 
 export default async function CategoryPage({ params }: PageProps) {
-  const category = await getCategoryServer(params.slug);
+  const [category, mediaId] = await Promise.all([
+    getCategoryServer(params.slug),
+    getMediaIdFromHost(),
+  ]);
 
   if (!category) {
     notFound();
   }
 
-  const headersList = headers();
-  const mediaIdFromHeader = headersList.get('x-media-id');
-  const host = headersList.get('host') || '';
-  
-  let mediaId = mediaIdFromHeader;
-  if (!mediaId && host.endsWith('.pixseo.cloud') && host !== 'admin.pixseo.cloud') {
-    const slug = host.replace('.pixseo.cloud', '');
-    try {
-      const tenantsSnapshot = await adminDb
-        .collection('mediaTenants')
-        .where('slug', '==', slug)
-        .limit(1)
-        .get();
-      if (!tenantsSnapshot.empty) {
-        mediaId = tenantsSnapshot.docs[0].id;
-      }
-    } catch (error) {
-      console.error('[Category Page] Error fetching mediaId:', error);
-    }
-  }
-  
-  let siteName = 'メディアサイト';
-  if (mediaId) {
-    try {
-      const tenantDoc = await adminDb.collection('mediaTenants').doc(mediaId).get();
-      if (tenantDoc.exists) {
-        siteName = tenantDoc.data()?.name || 'メディアサイト';
-      }
-    } catch (error) {
-      console.error('[Category Page] Error fetching site name:', error);
-    }
-  }
-
-  const [articles, allCategories] = await Promise.all([
+  // サイト設定、Theme、記事、カテゴリーを並列取得
+  const [siteInfo, theme, articles, allCategories] = await Promise.all([
+    getSiteInfo(mediaId || ''),
+    getTheme(mediaId || ''),
     getArticlesServer({ categoryId: category.id, limit: 30 }),
     getCategoriesServer(),
   ]);
+  
+  // ThemeスタイルとカスタムCSSを生成
+  const combinedStyles = getCombinedStyles(theme);
   
   const categories = mediaId 
     ? allCategories.filter(cat => cat.mediaId === mediaId)
     : allCategories;
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen" style={{ backgroundColor: theme.backgroundColor }}>
+      {/* Themeスタイル注入 */}
+      <style dangerouslySetInnerHTML={{ __html: combinedStyles }} />
+
       {/* ヘッダー＆カテゴリーバー */}
-      <MediaHeader siteName={siteName} categories={categories} />
+      <MediaHeader siteName={siteInfo.name} categories={categories} siteInfo={siteInfo} />
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* 検索バー */}
@@ -126,10 +118,10 @@ export default async function CategoryPage({ params }: PageProps) {
       </main>
 
       {/* フッター */}
-      <footer className="bg-gray-800 text-white mt-16">
+      <footer style={{ backgroundColor: theme.footerBackgroundColor }} className="text-white mt-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="text-center">
-            <p className="text-gray-400">© 2024 Ayumi. All rights reserved.</p>
+            <p className="text-gray-400">© {new Date().getFullYear()} {siteInfo.name}. All rights reserved.</p>
           </div>
         </div>
       </footer>

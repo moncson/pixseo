@@ -62,16 +62,25 @@ export async function getMediaIdFromHost(): Promise<string | null> {
   }
 }
 
+export interface SiteInfo {
+  allowIndexing: boolean;
+  name: string;
+  description?: string;
+  faviconUrl?: string;
+  logoUrl?: string;
+  symbolUrl?: string;
+  ogImageUrl?: string;
+  mainTitle?: string;
+  mainSubtitle?: string;
+}
+
 /**
  * mediaIdからサイト情報を取得（キャッシュ付き）
  * @param mediaId 
- * @returns { allowIndexing: boolean, name: string }
+ * @returns SiteInfo
  */
-export async function getSiteInfo(mediaId: string): Promise<{
-  allowIndexing: boolean;
-  name: string;
-}> {
-  const defaultInfo = {
+export async function getSiteInfo(mediaId: string): Promise<SiteInfo> {
+  const defaultInfo: SiteInfo = {
     allowIndexing: false,
     name: 'ふらっと。',
   };
@@ -85,7 +94,7 @@ export async function getSiteInfo(mediaId: string): Promise<{
     const cacheKey = `siteInfo:${mediaId}`;
 
     // キャッシュから取得（5分間有効）
-    const cachedInfo = cacheManager.get<{ allowIndexing: boolean; name: string }>(
+    const cachedInfo = cacheManager.get<SiteInfo>(
       cacheKey,
       5 * 60 * 1000
     );
@@ -101,9 +110,16 @@ export async function getSiteInfo(mediaId: string): Promise<{
     }
 
     const data = tenantDoc.data();
-    const siteInfo = {
+    const siteInfo: SiteInfo = {
       allowIndexing: data?.allowIndexing || false,
       name: data?.name || defaultInfo.name,
+      description: data?.siteDescription || undefined,
+      faviconUrl: data?.faviconImage || undefined,
+      logoUrl: data?.logotypeImage || undefined,
+      symbolUrl: data?.symbolImage || undefined,
+      ogImageUrl: data?.ogImage || undefined,
+      mainTitle: data?.mainTitle || undefined,
+      mainSubtitle: data?.mainSubtitle || undefined,
     };
 
     // キャッシュに保存
