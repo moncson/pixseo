@@ -96,9 +96,13 @@ export default function FeaturedImageUpload({
 
   // altTextが変わったら親に通知
   const handleAltChange = (newAlt: string) => {
+    console.log('[FeaturedImageUpload] handleAltChange called with:', newAlt);
     setAltText(newAlt);
     if (onAltChange) {
+      console.log('[FeaturedImageUpload] Calling onAltChange callback');
       onAltChange(newAlt);
+    } else {
+      console.log('[FeaturedImageUpload] No onAltChange callback provided');
     }
   };
 
@@ -311,7 +315,14 @@ export default function FeaturedImageUpload({
           {autoGenerateAlt && imageGeneratorTitle && (
             <button
               type="button"
-              onClick={() => preview && generateAltText(preview)}
+              onClick={() => {
+                console.log('[FeaturedImageUpload] Alt generation button clicked');
+                console.log('[FeaturedImageUpload] preview:', preview);
+                console.log('[FeaturedImageUpload] imageGeneratorTitle:', imageGeneratorTitle);
+                if (preview) {
+                  generateAltText(preview);
+                }
+              }}
               disabled={generatingAlt || !preview}
               className="w-12 h-12 mb-0.5 bg-purple-600 text-white rounded-xl hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
               title="alt属性自動生成"
