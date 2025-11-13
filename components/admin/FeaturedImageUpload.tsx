@@ -43,11 +43,13 @@ export default function FeaturedImageUpload({
 
   // valueが変わったらpreviewを更新
   useEffect(() => {
+    console.log('[FeaturedImageUpload] useEffect - value changed to:', value);
     setPreview(value);
   }, [value]);
 
   // altが変わったらaltTextを更新
   useEffect(() => {
+    console.log('[FeaturedImageUpload] useEffect - alt changed to:', alt);
     setAltText(alt);
   }, [alt]);
 
