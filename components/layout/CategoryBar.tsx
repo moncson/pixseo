@@ -17,6 +17,9 @@ export default function CategoryBar({ categories, excludeCategoryId }: CategoryB
     return null;
   }
 
+  // カテゴリページ（excludeCategoryIdが指定されている）では高さを半分に
+  const categoryHeight = excludeCategoryId ? 'h-48' : 'h-96';
+
   return (
     <section className="relative z-20 pt-12 pb-8 rounded-t-3xl" style={{ backgroundColor: 'var(--background-color, #f9fafb)' }}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -25,7 +28,7 @@ export default function CategoryBar({ categories, excludeCategoryId }: CategoryB
             <Link
               key={category.id}
               href={`/categories/${category.slug}`}
-              className={`relative flex-1 min-w-[150px] h-96 group overflow-hidden ${
+              className={`relative flex-1 min-w-[150px] ${categoryHeight} group overflow-hidden ${
                 index === 0 ? 'rounded-tl-3xl rounded-bl-3xl' : ''
               } ${
                 index === filteredCategories.length - 1 ? 'rounded-tr-3xl rounded-br-3xl' : ''
