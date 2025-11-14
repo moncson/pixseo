@@ -377,7 +377,7 @@ export default function ThemePage() {
                     return (
                       <div key={sectionIndex}>
                         {sectionIndex === 1 && (
-                          <div className="border-t border-gray-200 -mt-4 mb-8" />
+                          <div className="border-t border-gray-200 -mt-4 mb-4" />
                         )}
                         <div className="space-y-4">
                           <FloatingInput

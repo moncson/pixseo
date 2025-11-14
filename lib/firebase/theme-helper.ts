@@ -48,6 +48,7 @@ export async function getTheme(mediaId: string): Promise<Theme> {
 export function generateThemeStyles(theme: Theme): string {
   return `
     :root {
+      --color-primary: ${theme.primaryColor};
       --primary-color: ${theme.primaryColor};
       --secondary-color: ${theme.secondaryColor};
       --accent-color: ${theme.accentColor};

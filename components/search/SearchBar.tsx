@@ -22,7 +22,7 @@ export default function SearchBar() {
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           placeholder="キーワードで検索"
-          className="w-full px-6 py-4 pr-16 text-lg bg-gray-100 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-200"
+          className="w-full px-6 py-4 pr-16 text-lg bg-gray-100 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-200 placeholder:text-base"
         />
         <button
           type="submit"
