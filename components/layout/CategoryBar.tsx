@@ -12,20 +12,19 @@ export default function CategoryBar({ categories }: CategoryBarProps) {
   }
 
   return (
-    <section className="relative z-10">
+    <section className="relative z-10 bg-white rounded-t-3xl shadow-lg">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="bg-white rounded-t-3xl shadow-lg overflow-hidden">
-          <div className="flex overflow-x-auto scrollbar-hide">
-            {categories.map((category, index) => (
-              <Link
-                key={category.id}
-                href={`/categories/${category.slug}`}
-                className={`relative flex-1 min-w-[150px] h-96 group overflow-hidden ${
-                  index === 0 ? 'rounded-tl-3xl rounded-bl-3xl' : ''
-                } ${
-                  index === categories.length - 1 ? 'rounded-tr-3xl rounded-br-3xl' : ''
-                }`}
-              >
+        <div className="flex overflow-x-auto scrollbar-hide">
+          {categories.map((category, index) => (
+            <Link
+              key={category.id}
+              href={`/categories/${category.slug}`}
+              className={`relative flex-1 min-w-[150px] h-96 group overflow-hidden ${
+                index === 0 ? 'rounded-tl-3xl rounded-bl-3xl' : ''
+              } ${
+                index === categories.length - 1 ? 'rounded-tr-3xl rounded-br-3xl' : ''
+              }`}
+            >
               {category.imageUrl ? (
                 <>
                   {/* 背景画像 */}
@@ -62,7 +61,6 @@ export default function CategoryBar({ categories }: CategoryBarProps) {
               </div>
             </Link>
           ))}
-          </div>
         </div>
       </div>
     </section>
