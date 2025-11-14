@@ -25,24 +25,38 @@ export default function MediaHeader({
   menuTextColor = '#ffffff',
 }: MediaHeaderProps) {
   return (
-    <header className="sticky top-0 z-50 bg-white shadow-sm" style={{ backgroundColor: 'var(--header-background-color, #ffffff)' }}>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+    <header className="sticky top-0 z-50 bg-white shadow-sm rounded-b-2xl -mb-4" style={{ backgroundColor: 'var(--header-background-color, #ffffff)' }}>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2">
         <div className="flex items-center justify-between">
           <Link href="/media" className="flex items-center space-x-3">
-            {siteInfo?.logoUrl ? (
-              <Image
-                src={siteInfo.logoUrl}
-                alt={siteName}
-                width={150}
-                height={40}
-                className="h-10 w-auto"
-                priority
-              />
-            ) : (
-              <span className="text-2xl font-bold text-gray-900">
-                {siteName}
-              </span>
-            )}
+            <div className="flex items-center gap-3">
+              {siteInfo?.faviconUrl && (
+                <Image
+                  src={siteInfo.faviconUrl}
+                  alt={`${siteName} アイコン`}
+                  width={32}
+                  height={32}
+                  className="w-8 h-8"
+                  priority
+                  unoptimized={siteInfo.faviconUrl.endsWith('.svg')}
+                />
+              )}
+              {siteInfo?.logoUrl ? (
+                <Image
+                  src={siteInfo.logoUrl}
+                  alt={siteName}
+                  width={120}
+                  height={32}
+                  className="h-8 w-auto"
+                  priority
+                  unoptimized={siteInfo.logoUrl.endsWith('.svg')}
+                />
+              ) : (
+                <span className="text-xl font-bold text-gray-900">
+                  {siteName}
+                </span>
+              )}
+            </div>
           </Link>
           <HamburgerMenu
             menuSettings={menuSettings}

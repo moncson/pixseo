@@ -54,15 +54,15 @@ export default function FirstView({ settings }: FirstViewProps) {
       </div>
       
       {/* テキストコンテンツ（通常スクロール） */}
-      <div className="relative z-10 flex flex-col items-center justify-center text-white px-4 pt-16" style={{ height: '600px' }}>
+      <div className="relative z-10 flex flex-col items-center justify-center text-white px-4 pt-24" style={{ height: '600px' }}>
         {settings.catchphrase && (
-          <h1 className="text-5xl md:text-6xl font-bold text-center mb-4 drop-shadow-lg">
+          <h1 className="text-3xl md:text-4xl font-bold text-center mb-4 drop-shadow-lg">
             {settings.catchphrase}
           </h1>
         )}
         
         {settings.description && (
-          <p className="text-lg md:text-xl text-center max-w-3xl drop-shadow-md whitespace-pre-line">
+          <p className="text-base md:text-lg text-center max-w-3xl drop-shadow-md whitespace-pre-line leading-relaxed tracking-wide">
             {settings.description}
           </p>
         )}

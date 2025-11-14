@@ -129,7 +129,7 @@ export default async function MediaPage() {
       <CategoryBar categories={categories} />
 
       {/* メインコンテンツ */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-8">
         {/* おすすめカテゴリー */}
         <section className="mb-12">
           <RecommendedCategories />
@@ -197,10 +197,33 @@ export default async function MediaPage() {
       <footer style={{ backgroundColor: theme.footerBackgroundColor }} className="text-white">
         {footerTextLinkSections.length > 0 ? (
           <div className="py-12">
-            <div className={`max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-2 ${footerTextLinkSections.length === 1 ? 'lg:grid-cols-2' : 'lg:grid-cols-3'} gap-8 pb-8`}>
+            <div className={`max-w-7xl mx-auto px-2 sm:px-4 grid grid-cols-1 md:grid-cols-2 ${footerTextLinkSections.length === 1 ? 'lg:grid-cols-2' : 'lg:grid-cols-3'} gap-8 pb-8`}>
               {/* 左カラム: ロゴとディスクリプション */}
               <div className="text-left">
-                <h3 className="text-2xl font-bold mb-4">{siteInfo.name}</h3>
+                <div className="flex items-center gap-3 mb-4">
+                  {siteInfo.faviconUrl && (
+                    <Image
+                      src={siteInfo.faviconUrl}
+                      alt={`${siteInfo.name} アイコン`}
+                      width={32}
+                      height={32}
+                      className="w-8 h-8"
+                      unoptimized={siteInfo.faviconUrl.endsWith('.svg')}
+                    />
+                  )}
+                  {siteInfo.logoUrl ? (
+                    <Image
+                      src={siteInfo.logoUrl}
+                      alt={siteInfo.name}
+                      width={120}
+                      height={32}
+                      className="h-8 w-auto brightness-0 invert"
+                      unoptimized={siteInfo.logoUrl.endsWith('.svg')}
+                    />
+                  ) : (
+                    <h3 className="text-2xl font-bold">{siteInfo.name}</h3>
+                  )}
+                </div>
                 {siteInfo.description && (
                   <p className="text-gray-300 text-sm leading-relaxed whitespace-pre-line">
                     {siteInfo.description}
@@ -242,14 +265,14 @@ export default async function MediaPage() {
             </div>
 
             {/* コピーライト */}
-            <div className="w-full border-t border-gray-700 pt-6">
+            <div className="w-full border-t border-gray-700 pt-6 pb-6">
               <p className="text-gray-400 text-sm text-center">
                 © {new Date().getFullYear()} {siteInfo.name}. All rights reserved.
               </p>
             </div>
           </div>
         ) : (
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          <div className="max-w-7xl mx-auto px-2 sm:px-4 py-12">
             <div className="text-center space-y-4">
               <h3 className="text-2xl font-bold">{siteInfo.name}</h3>
               {siteInfo.description && (
