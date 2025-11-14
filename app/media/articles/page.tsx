@@ -1,6 +1,6 @@
 import { Metadata } from 'next';
 import Image from 'next/image';
-import { getArticlesServer } from '@/lib/firebase/articles-server';
+import { getArticlesServer, getPopularArticlesServer } from '@/lib/firebase/articles-server';
 import { getCategoriesServer } from '@/lib/firebase/categories-server';
 import { getMediaIdFromHost, getSiteInfo } from '@/lib/firebase/media-tenant-helper';
 import { getTheme, getCombinedStyles } from '@/lib/firebase/theme-helper';
@@ -12,6 +12,10 @@ import BlockRenderer from '@/components/blocks/BlockRenderer';
 import FooterContentRenderer from '@/components/blocks/FooterContentRenderer';
 import FooterTextLinksRenderer from '@/components/blocks/FooterTextLinksRenderer';
 import ScrollToTopButton from '@/components/common/ScrollToTopButton';
+import PopularArticles from '@/components/common/PopularArticles';
+import RecommendedArticles from '@/components/common/RecommendedArticles';
+import TwitterTimeline from '@/components/common/TwitterTimeline';
+import SidebarBanners from '@/components/common/SidebarBanners';
 
 // ISR: 60秒ごとに再生成
 export const revalidate = 60;
@@ -48,10 +52,11 @@ export default async function ArticlesPage() {
   const mediaId = await getMediaIdFromHost();
   
   // サイト設定、Theme、記事、カテゴリーを並列取得
-  const [siteInfo, theme, articles, allCategories] = await Promise.all([
+  const [siteInfo, theme, articles, popularArticles, allCategories] = await Promise.all([
     getSiteInfo(mediaId || ''),
     getTheme(mediaId || ''),
     getArticlesServer({ limit: 30 }),
+    getPopularArticlesServer(10, mediaId || undefined),
     getCategoriesServer(),
   ]);
   
@@ -91,31 +96,46 @@ export default async function ArticlesPage() {
       <CategoryBar categories={categories} />
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8" style={{ backgroundColor: theme.backgroundColor }}>
-        {/* 記事一覧 */}
-        <section>
-          <div className="text-center mb-8">
-            <h1 className="text-xl font-bold text-gray-900 mb-1">記事一覧</h1>
-            <p className="text-xs text-gray-500 uppercase tracking-wider">All Articles</p>
+        <div className="flex flex-col lg:flex-row gap-8">
+          {/* メインカラム（70%） */}
+          <div className="flex-1 lg:w-[70%]">
+            {/* 記事一覧 */}
+            <section>
+              <div className="text-center mb-8">
+                <h1 className="text-xl font-bold text-gray-900 mb-1">記事一覧</h1>
+                <p className="text-xs text-gray-500 uppercase tracking-wider">All Articles</p>
+              </div>
+              {articles.length > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {articles.map((article) => (
+                    <ArticleCard key={article.id} article={article} />
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-12">
+                  <p className="text-gray-600">記事がまだありません</p>
+                </div>
+              )}
+            </section>
           </div>
-          {articles.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {articles.map((article) => (
-                <ArticleCard key={article.id} article={article} />
-              ))}
-            </div>
-          ) : (
-            <div className="text-center py-12">
-              <p className="text-gray-600">記事がまだありません</p>
-            </div>
-          )}
-        </section>
 
-        {/* ブロック表示エリア（フッター上部） */}
-        {footerBlocks.length > 0 && (
-          <section className="mb-12">
-            <BlockRenderer blocks={footerBlocks} />
-          </section>
-        )}
+          {/* サイドバー（30%） */}
+          <aside className="w-full lg:w-[30%] space-y-6">
+            {/* 人気記事 */}
+            <PopularArticles articles={popularArticles} />
+
+            {/* おすすめ記事 */}
+            <RecommendedArticles articles={articles} />
+
+            {/* バナーエリア */}
+            {footerBlocks.length > 0 && (
+              <SidebarBanners blocks={footerBlocks} />
+            )}
+
+            {/* Xタイムライン */}
+            <TwitterTimeline username="moncson" />
+          </aside>
+        </div>
       </main>
 
       {/* フッターコンテンツ（画面横いっぱい） */}
