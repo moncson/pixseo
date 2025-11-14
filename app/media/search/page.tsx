@@ -4,8 +4,7 @@ import SearchContent from '@/components/search/SearchContent';
 import MediaHeader from '@/components/layout/MediaHeader';
 import FooterContentRenderer from '@/components/blocks/FooterContentRenderer';
 import FooterTextLinksRenderer from '@/components/blocks/FooterTextLinksRenderer';
-import { getMediaIdFromHost } from '@/lib/firebase/media-id-helper';
-import { getSiteInfo } from '@/lib/firebase/media-tenant-helper';
+import { getMediaIdFromHost, getSiteInfo } from '@/lib/firebase/media-tenant-helper';
 import { getTheme, getCombinedStyles } from '@/lib/firebase/theme-helper';
 import { getCategoriesServer } from '@/lib/firebase/categories-server';
 
