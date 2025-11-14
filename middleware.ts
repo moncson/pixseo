@@ -38,8 +38,16 @@ export async function middleware(request: NextRequest) {
         return new NextResponse('Service not found', { status: 404 });
       }
 
-      // /media 配下のパスはそのまま（内部パス用）
+      // /media 配下のパスをチェック
       if (pathname.startsWith('/media')) {
+        // ルート /media または /media/ への直接アクセスは / にリダイレクト
+        if (pathname === '/media' || pathname === '/media/') {
+          const url = request.nextUrl.clone();
+          url.pathname = '/';
+          return NextResponse.redirect(url, 301); // 永久リダイレクト
+        }
+        
+        // その他の /media/* パスはそのまま（内部パス用）
         const response = NextResponse.next();
         response.headers.set('x-media-id', mediaId);
         return response;
