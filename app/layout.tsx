@@ -12,8 +12,8 @@ const notoSansJP = Noto_Sans_JP({
 });
 
 export const metadata: Metadata = {
-  title: "ふらっと。 | Ayumi Media",
-  description: "バリアフリー情報メディア",
+  title: "PixSEO",
+  description: "マルチメディア対応SEOプラットフォーム",
 };
 
 export default function RootLayout({

@@ -21,22 +21,97 @@ export async function GET(request: NextRequest) {
     // orderByはクライアント側で行う（複合インデックスを避けるため）
     const snapshot = await query.get();
     
-    const media = snapshot.docs.map((doc) => {
-      const data = doc.data();
-      return {
-        id: doc.id,
-        ...data,
-        createdAt: data.createdAt?.toDate?.()?.toISOString() || new Date().toISOString(),
-        updatedAt: data.updatedAt?.toDate?.()?.toISOString() || new Date().toISOString(),
-      };
-    });
+    // 各メディアの使用数を計算
+    const mediaWithUsage = await Promise.all(
+      snapshot.docs.map(async (doc) => {
+        const data = doc.data();
+        const mediaUrl = data.url;
+        
+        // 使用数をカウント
+        let usageCount = 0;
+        const usageDetails: string[] = [];
+        
+        // 記事での使用をチェック
+        const articlesSnapshot = await adminDb.collection('articles')
+          .where('featuredImage', '==', mediaUrl)
+          .get();
+        if (articlesSnapshot.size > 0) {
+          usageCount += articlesSnapshot.size;
+          usageDetails.push(`記事 (${articlesSnapshot.size})`);
+        }
+        
+        // カテゴリーでの使用をチェック
+        const categoriesSnapshot = await adminDb.collection('categories')
+          .where('imageUrl', '==', mediaUrl)
+          .get();
+        if (categoriesSnapshot.size > 0) {
+          usageCount += categoriesSnapshot.size;
+          usageDetails.push(`カテゴリー (${categoriesSnapshot.size})`);
+        }
+        
+        // ライターでの使用をチェック
+        const writersSnapshot = await adminDb.collection('writers')
+          .where('iconUrl', '==', mediaUrl)
+          .get();
+        if (writersSnapshot.size > 0) {
+          usageCount += writersSnapshot.size;
+          usageDetails.push(`ライター (${writersSnapshot.size})`);
+        }
+        
+        // テーマ（フッターブロック、フッターコンテンツ）での使用をチェック
+        const tenantsSnapshot = await adminDb.collection('mediaTenants').get();
+        let themeUsage = 0;
+        for (const tenantDoc of tenantsSnapshot.docs) {
+          const tenant = tenantDoc.data();
+          const theme = tenant.theme || {};
+          
+          // フッターブロック
+          if (theme.footerBlocks) {
+            const blockUsage = theme.footerBlocks.filter((block: any) => block.imageUrl === mediaUrl).length;
+            themeUsage += blockUsage;
+          }
+          
+          // フッターコンテンツ
+          if (theme.footerContents) {
+            const contentUsage = theme.footerContents.filter((content: any) => content.imageUrl === mediaUrl).length;
+            themeUsage += contentUsage;
+          }
+        }
+        if (themeUsage > 0) {
+          usageCount += themeUsage;
+          usageDetails.push(`テーマ (${themeUsage})`);
+        }
+        
+        // サイト設定での使用をチェック
+        let siteUsage = 0;
+        for (const tenantDoc of tenantsSnapshot.docs) {
+          const tenant = tenantDoc.data();
+          if (tenant.logoUrl === mediaUrl || tenant.symbolUrl === mediaUrl || tenant.faviconUrl === mediaUrl || tenant.ogImageUrl === mediaUrl) {
+            siteUsage++;
+          }
+        }
+        if (siteUsage > 0) {
+          usageCount += siteUsage;
+          usageDetails.push(`サイト (${siteUsage})`);
+        }
+        
+        return {
+          id: doc.id,
+          ...data,
+          usageCount,
+          usageDetails,
+          createdAt: data.createdAt?.toDate?.()?.toISOString() || new Date().toISOString(),
+          updatedAt: data.updatedAt?.toDate?.()?.toISOString() || new Date().toISOString(),
+        };
+      })
+    );
 
     // クライアント側でソートする代わりに、ここでソート
-    media.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+    mediaWithUsage.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
 
-    console.log('[API Media] 取得したメディア数:', media.length);
+    console.log('[API Media] 取得したメディア数:', mediaWithUsage.length);
     
-    return NextResponse.json(media);
+    return NextResponse.json(mediaWithUsage);
   } catch (error: any) {
     console.error('[API Media] エラー:', error);
     return NextResponse.json({ error: 'Failed to fetch media' }, { status: 500 });
