@@ -1,178 +1,28 @@
-'use client';
-
-import { useState, useEffect, Suspense } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { Suspense } from 'react';
 import SearchBar from '@/components/search/SearchBar';
-import FilterSearch from '@/components/search/FilterSearch';
-import ArticleCard from '@/components/articles/ArticleCard';
+import SearchContent from '@/components/search/SearchContent';
 import MediaHeader from '@/components/layout/MediaHeader';
 import FooterContentRenderer from '@/components/blocks/FooterContentRenderer';
 import FooterTextLinksRenderer from '@/components/blocks/FooterTextLinksRenderer';
-import { Article, Category } from '@/types/article';
-import { Theme } from '@/types/theme';
-import { SiteInfo } from '@/lib/firebase/media-tenant-helper';
-import { searchArticles } from '@/lib/firebase/search';
+import { getMediaIdFromHost } from '@/lib/firebase/media-id-helper';
+import { getSiteInfo } from '@/lib/firebase/media-tenant-helper';
+import { getTheme, getCombinedStyles } from '@/lib/firebase/theme-helper';
+import { getCategoriesServer } from '@/lib/firebase/categories-server';
 
-function SearchContent() {
-  const searchParams = useSearchParams();
-  const query = searchParams.get('q') || '';
-  const [articles, setArticles] = useState<Article[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [filters, setFilters] = useState({
-    categoryId: '',
-    tagId: '',
-    keyword: query,
-  });
+export default async function SearchPage() {
+  // サーバーサイドでデータを取得
+  const mediaId = await getMediaIdFromHost();
+  const [siteInfo, theme] = await Promise.all([
+    getSiteInfo(mediaId),
+    getTheme(mediaId),
+  ]);
 
-  useEffect(() => {
-    if (query) {
-      handleSearch(query);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [query]);
+  // カテゴリーを取得してmediaIdでフィルタリング
+  const allCategories = await getCategoriesServer();
+  const categories = allCategories.filter(cat => cat.mediaId === mediaId);
 
-  const handleSearch = async (keyword: string) => {
-    setLoading(true);
-    try {
-      const results = await searchArticles({
-        keyword,
-        categoryId: filters.categoryId || undefined,
-        tagId: filters.tagId || undefined,
-      });
-      setArticles(results);
-    } catch (error) {
-      console.error('Search error:', error);
-      setArticles([]);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleFilterChange = (newFilters: typeof filters) => {
-    setFilters(newFilters);
-    if (newFilters.keyword || newFilters.categoryId || newFilters.tagId) {
-      handleSearch(newFilters.keyword);
-    }
-  };
-
-  return (
-    <>
-      {/* 検索バー */}
-      <section className="mb-8">
-        <SearchBar />
-      </section>
-
-      {/* 絞り込み検索 */}
-      <section className="mb-8">
-        <FilterSearch
-          filters={filters}
-          onChange={handleFilterChange}
-        />
-      </section>
-
-      {/* 検索結果 */}
-      <section>
-        {loading ? (
-          <div className="text-center py-12">
-            <p className="text-gray-600">検索中...</p>
-          </div>
-        ) : articles.length > 0 ? (
-          <>
-            <div className="mb-4">
-              <p className="text-gray-600">
-                {articles.length}件の記事が見つかりました
-              </p>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {articles.map((article) => (
-                <ArticleCard key={article.id} article={article} />
-              ))}
-            </div>
-          </>
-        ) : (
-          <div className="text-center py-12">
-            <p className="text-gray-600">
-              {query || filters.categoryId || filters.tagId
-                ? '記事が見つかりませんでした'
-                : '検索キーワードを入力してください'}
-            </p>
-          </div>
-        )}
-      </section>
-    </>
-  );
-}
-
-export default function SearchPage() {
-  const [siteInfo, setSiteInfo] = useState<SiteInfo | null>(null);
-  const [theme, setTheme] = useState<Theme | null>(null);
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        // Get mediaId from window.location.hostname
-        const hostname = window.location.hostname;
-        const mediaId = hostname.split('.')[0];
-        
-        // Fetch site info, theme, and categories
-        const [siteInfoRes, themeRes, categoriesRes] = await Promise.all([
-          fetch(`/api/media/${mediaId}/info`),
-          fetch(`/api/media/${mediaId}/theme`),
-          fetch(`/api/media/${mediaId}/categories`)
-        ]);
-
-        if (siteInfoRes.ok) {
-          const siteData = await siteInfoRes.json();
-          setSiteInfo(siteData);
-        }
-
-        if (themeRes.ok) {
-          const themeData = await themeRes.json();
-          setTheme(themeData);
-        }
-
-        if (categoriesRes.ok) {
-          const categoriesData = await categoriesRes.json();
-          setCategories(categoriesData.categories || []);
-        }
-      } catch (error) {
-        console.error('Error fetching data:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
-  }, []);
-
-  if (loading || !theme || !siteInfo) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <p className="text-gray-600">読み込み中...</p>
-      </div>
-    );
-  }
-
-  const combinedStyles = `
-    :root {
-      --color-primary: ${theme.primaryColor};
-      --primary-color: ${theme.primaryColor};
-      --secondary-color: ${theme.secondaryColor};
-      --accent-color: ${theme.accentColor};
-      --background-color: ${theme.backgroundColor};
-      --header-background-color: ${theme.headerBackgroundColor};
-      --footer-background-color: ${theme.footerBackgroundColor};
-      --block-background-color: ${theme.blockBackgroundColor};
-      --link-color: ${theme.linkColor};
-      --link-hover-color: ${theme.linkHoverColor};
-      --border-color: ${theme.borderColor};
-      --shadow-color: ${theme.shadowColor};
-    }
-    ${theme.customCss || ''}
-  `;
-
+  // スタイルとフッター情報を準備
+  const combinedStyles = getCombinedStyles(theme);
   const footerContents = theme.footerContents?.filter(content => content.imageUrl) || [];
   const footerTextLinkSections = theme.footerTextLinkSections?.filter(section => section.title || section.links?.length > 0) || [];
 
@@ -207,6 +57,12 @@ export default function SearchPage() {
         />
 
         <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          {/* 検索バー */}
+          <section className="mb-8">
+            <SearchBar />
+          </section>
+
+          {/* 検索コンテンツ */}
           <Suspense fallback={<div className="text-center py-12">読み込み中...</div>}>
             <SearchContent />
           </Suspense>
