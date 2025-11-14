@@ -7,7 +7,8 @@ import {
   getCategoriesServer,
   getTagsServer,
   getWriterServer,
-  getAdjacentArticlesServer 
+  getAdjacentArticlesServer,
+  getPopularArticlesServer 
 } from '@/lib/firebase/articles-server';
 import { getCategoriesServer as getAllCategoriesServer } from '@/lib/firebase/categories-server';
 import { getMediaIdFromHost, getSiteInfo } from '@/lib/firebase/media-tenant-helper';
@@ -30,6 +31,10 @@ import ArticleNavigation from '@/components/articles/ArticleNavigation';
 import AuthorProfile from '@/components/articles/AuthorProfile';
 import ScrollToTopButton from '@/components/common/ScrollToTopButton';
 import FooterContentRenderer from '@/components/blocks/FooterContentRenderer';
+import PopularArticles from '@/components/common/PopularArticles';
+import RecommendedArticles from '@/components/common/RecommendedArticles';
+import TwitterTimeline from '@/components/common/TwitterTimeline';
+import SidebarBanners from '@/components/common/SidebarBanners';
 import Image from 'next/image';
 
 // 動的レンダリング + Firestoreキャッシュで高速化
@@ -136,8 +141,8 @@ export default async function ArticlePage({ params }: PageProps) {
   ]);
   const siteName = siteInfo.name;
 
-  // カテゴリー、タグ、ライター、前後の記事、関連記事、全カテゴリーを並行取得
-  const [categories, tags, writer, adjacentArticles, relatedArticles, allCategories] = await Promise.all([
+  // カテゴリー、タグ、ライター、前後の記事、関連記事、全カテゴリー、人気記事を並行取得
+  const [categories, tags, writer, adjacentArticles, relatedArticles, allCategories, popularArticles] = await Promise.all([
     // カテゴリー情報を取得
     getCategoriesServer(article.categoryIds || []).catch((error) => {
       console.error('[Article Page] Error fetching categories:', error);
@@ -168,6 +173,11 @@ export default async function ArticlePage({ params }: PageProps) {
       console.error('[Article Page] Error fetching all categories:', error);
       return [];
     }),
+    // 人気記事を取得（サイドバー用）
+    getPopularArticlesServer(10, mediaId || undefined).catch((error) => {
+      console.error('[Article Page] Error fetching popular articles:', error);
+      return [];
+    }),
   ]);
   
   // mediaIdでカテゴリーをフィルタリング
@@ -179,6 +189,7 @@ export default async function ArticlePage({ params }: PageProps) {
   const combinedStyles = getCombinedStyles(theme);
   
   // フッターデータを取得
+  const footerBlocks = theme.footerBlocks?.filter((block: any) => block.imageUrl) || [];
   const footerContents = theme.footerContents?.filter((content: FooterContent) => content.imageUrl) || [];
   const footerTextLinkSections = theme.footerTextLinkSections?.filter((section: FooterTextLinkSection) => section.title || section.links?.length > 0) || [];
   
@@ -262,74 +273,96 @@ export default async function ArticlePage({ params }: PageProps) {
       {/* カテゴリーバー */}
       <CategoryBar categories={headerCategories} />
 
-      <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* パンくずリスト */}
-        <Breadcrumbs article={article} category={category} />
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="flex flex-col lg:flex-row gap-8">
+          {/* メインカラム（70%） */}
+          <div className="flex-1 lg:w-[70%]">
+            {/* パンくずリスト */}
+            <Breadcrumbs article={article} category={category} />
 
-        {/* カテゴリー・タグバッジ */}
-        <CategoryTagBadges categories={categories} tags={tags} />
+            {/* カテゴリー・タグバッジ */}
+            <CategoryTagBadges categories={categories} tags={tags} />
 
-        {/* 記事ヘッダー */}
-        <ArticleHeader article={article} writer={writer} />
+            {/* 記事ヘッダー */}
+            <ArticleHeader article={article} writer={writer} />
 
-        {/* 読了時間 */}
-        {article.readingTime && (
-          <div className="mb-6">
-            <ReadingTime minutes={article.readingTime} />
+            {/* 読了時間 */}
+            {article.readingTime && (
+              <div className="mb-6">
+                <ReadingTime minutes={article.readingTime} />
+              </div>
+            )}
+
+            {/* 目次 */}
+            {Array.isArray(article.tableOfContents) && article.tableOfContents.length > 0 && (
+              <TableOfContents items={article.tableOfContents} />
+            )}
+
+            {/* 記事本文 */}
+            <article className="bg-white rounded-lg shadow-md p-6 md:p-8 mb-8">
+              <ArticleContent 
+                content={typeof article.content === 'string' ? article.content : ''} 
+                tableOfContents={Array.isArray(article.tableOfContents) ? article.tableOfContents : []} 
+              />
+            </article>
+
+            {/* SNSシェアボタン */}
+            <SocialShare title={typeof article.title === 'string' ? article.title : ''} />
+
+            {/* 著者プロフィール */}
+            {writer && <AuthorProfile writer={writer} />}
+
+            {/* Googleマイマップ */}
+            {article.googleMapsUrl && (
+              <div className="bg-white rounded-lg shadow-md p-6 mb-8">
+                <h2 className="text-xl font-bold text-gray-900 mb-4">地図情報</h2>
+                <GoogleMapsEmbed url={article.googleMapsUrl} />
+              </div>
+            )}
+
+            {/* 認証店予約ボタン */}
+            {article.reservationUrl && (
+              <div className="bg-white rounded-lg shadow-md p-6 mb-8 text-center">
+                <a
+                  href={article.reservationUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-block bg-blue-600 text-white px-8 py-3 rounded-lg hover:bg-blue-700 transition-colors font-semibold"
+                >
+                  予約する
+                </a>
+              </div>
+            )}
+
+            {/* 前後の記事ナビゲーション */}
+            <ArticleNavigation 
+              previousArticle={adjacentArticles.previousArticle} 
+              nextArticle={adjacentArticles.nextArticle} 
+            />
+
+            {/* 関連記事 */}
+            {relatedArticles.length > 0 && (
+              <RelatedArticles articles={relatedArticles} />
+            )}
           </div>
-        )}
 
-        {/* 目次 */}
-        {Array.isArray(article.tableOfContents) && article.tableOfContents.length > 0 && (
-          <TableOfContents items={article.tableOfContents} />
-        )}
+          {/* サイドバー（30%） */}
+          <aside className="w-full lg:w-[30%] space-y-6">
+            {/* 人気記事 */}
+            <PopularArticles articles={popularArticles} />
 
-        {/* 記事本文 */}
-        <article className="bg-white rounded-lg shadow-md p-6 md:p-8 mb-8">
-          <ArticleContent 
-            content={typeof article.content === 'string' ? article.content : ''} 
-            tableOfContents={Array.isArray(article.tableOfContents) ? article.tableOfContents : []} 
-          />
-        </article>
+            {/* おすすめ記事 */}
+            <RecommendedArticles articles={relatedArticles} />
 
-        {/* SNSシェアボタン */}
-        <SocialShare title={typeof article.title === 'string' ? article.title : ''} />
+            {/* バナーエリア */}
+            {footerBlocks.length > 0 && (
+              <SidebarBanners blocks={footerBlocks} />
+            )}
 
-        {/* 著者プロフィール */}
-        {writer && <AuthorProfile writer={writer} />}
-
-        {/* Googleマイマップ */}
-        {article.googleMapsUrl && (
-          <div className="bg-white rounded-lg shadow-md p-6 mb-8">
-            <h2 className="text-xl font-bold text-gray-900 mb-4">地図情報</h2>
-            <GoogleMapsEmbed url={article.googleMapsUrl} />
-          </div>
-        )}
-
-        {/* 認証店予約ボタン */}
-        {article.reservationUrl && (
-          <div className="bg-white rounded-lg shadow-md p-6 mb-8 text-center">
-            <a
-              href={article.reservationUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-block bg-blue-600 text-white px-8 py-3 rounded-lg hover:bg-blue-700 transition-colors font-semibold"
-            >
-              予約する
-            </a>
-          </div>
-        )}
-
-        {/* 前後の記事ナビゲーション */}
-        <ArticleNavigation 
-          previousArticle={adjacentArticles.previousArticle} 
-          nextArticle={adjacentArticles.nextArticle} 
-        />
-
-        {/* 関連記事 */}
-        {relatedArticles.length > 0 && (
-          <RelatedArticles articles={relatedArticles} />
-        )}
+            {/* Xタイムライン */}
+            <TwitterTimeline username="moncson" />
+          </aside>
+        </div>
       </main>
 
       {/* フッターコンテンツ（画面横いっぱい） */}
