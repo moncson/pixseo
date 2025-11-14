@@ -12,9 +12,9 @@ export default function CategoryBar({ categories }: CategoryBarProps) {
   }
 
   return (
-    <section className="bg-white border-b">
+    <section className="bg-transparent">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex overflow-x-auto scrollbar-hide rounded-lg overflow-hidden">
+        <div className="flex overflow-x-auto scrollbar-hide rounded-t-lg overflow-hidden">
           {categories.map((category, index) => (
             <Link
               key={category.id}

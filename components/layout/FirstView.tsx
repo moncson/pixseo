@@ -29,12 +29,12 @@ export default function FirstView({ settings }: FirstViewProps) {
   const parallaxOffset = scrollY * 0.5;
 
   return (
-    <div className="relative w-full overflow-hidden -mb-16">
+    <div className="relative w-full overflow-hidden -mb-24">
       {/* 背景画像 */}
       <div 
         className="relative w-full" 
         style={{ 
-          height: '400px',
+          height: '500px',
           transform: `translateY(${parallaxOffset}px)`,
           transition: 'transform 0.1s ease-out'
         }}
