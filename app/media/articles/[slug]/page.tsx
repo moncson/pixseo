@@ -20,7 +20,6 @@ import CategoryBar from '@/components/layout/CategoryBar';
 import FirstView from '@/components/layout/FirstView';
 import ArticleContent from '@/components/articles/ArticleContent';
 import RelatedArticles from '@/components/articles/RelatedArticles';
-import ArticleHeader from '@/components/articles/ArticleHeader';
 import GoogleMapsEmbed from '@/components/common/GoogleMapsEmbed';
 import TableOfContents from '@/components/articles/TableOfContents';
 import ReadingTime from '@/components/articles/ReadingTime';
@@ -292,8 +291,16 @@ export default async function ArticlePage({ params }: PageProps) {
             {/* カテゴリー・タグバッジ */}
             <CategoryTagBadges categories={categories} tags={tags} />
 
-            {/* 記事ヘッダー */}
-            <ArticleHeader article={article} writer={writer} />
+            {/* 公開・更新・閲覧数情報 */}
+            <div className="text-center text-sm text-gray-600 mb-8">
+              公開: {article.publishedAt ? new Date(article.publishedAt.toDate()).toLocaleDateString('ja-JP', { year: 'numeric', month: 'numeric', day: 'numeric' }) : '日付不明'}
+              {article.updatedAt && (
+                <> • 更新: {new Date(article.updatedAt.toDate()).toLocaleDateString('ja-JP', { year: 'numeric', month: 'numeric', day: 'numeric' })}</>
+              )}
+              {article.views !== undefined && (
+                <> • {article.views} views</>
+              )}
+            </div>
 
             {/* 読了時間 */}
             {article.readingTime && (
@@ -317,9 +324,6 @@ export default async function ArticlePage({ params }: PageProps) {
 
             {/* SNSシェアボタン */}
             <SocialShare title={typeof article.title === 'string' ? article.title : ''} />
-
-            {/* 著者プロフィール */}
-            {writer && <AuthorProfile writer={writer} />}
 
             {/* Googleマイマップ */}
             {article.googleMapsUrl && (
@@ -357,6 +361,9 @@ export default async function ArticlePage({ params }: PageProps) {
 
           {/* サイドバー（30%） */}
           <aside className="w-full lg:w-[30%] space-y-6">
+            {/* 著者プロフィール */}
+            {writer && <AuthorProfile writer={writer} />}
+
             {/* 人気記事 */}
             <PopularArticles articles={popularArticles} />
 
