@@ -65,9 +65,9 @@ export default function CategoryBar({ categories, excludeCategoryId, variant = '
               
               {/* カテゴリー名 */}
               <div className="absolute inset-x-0 bottom-0 p-4">
-                <h3 className="text-white font-bold text-lg text-center drop-shadow-lg">
+                <span className="text-white font-bold text-lg text-center drop-shadow-lg block">
                   {category.name}
-                </h3>
+                </span>
               </div>
             </Link>
           ))}
