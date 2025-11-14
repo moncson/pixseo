@@ -79,8 +79,8 @@ export default function HamburgerMenu({ menuSettings, menuBackgroundColor, menuT
           isOpen ? 'translate-x-0' : 'translate-x-full'
         }`}
         style={{ 
-          backgroundColor: menuBackgroundColor, 
-          color: menuTextColor,
+          backgroundColor: menuBackgroundColor || '#1f2937', 
+          color: menuTextColor || '#ffffff',
           zIndex: 60
         }}
       >
