@@ -28,6 +28,7 @@ import Breadcrumbs from '@/components/articles/Breadcrumbs';
 import CategoryTagBadges from '@/components/articles/CategoryTagBadges';
 import ArticleNavigation from '@/components/articles/ArticleNavigation';
 import AuthorProfile from '@/components/articles/AuthorProfile';
+import ScrollToTopButton from '@/components/common/ScrollToTopButton';
 
 // 動的レンダリング + Firestoreキャッシュで高速化
 // headers()を使用しているため、完全な静的生成はできない
@@ -338,6 +339,9 @@ export default async function ArticlePage({ params }: PageProps) {
           </div>
         </div>
       </footer>
+
+      {/* 上に戻るボタン */}
+      <ScrollToTopButton primaryColor={theme.primaryColor} />
     </div>
   );
 }

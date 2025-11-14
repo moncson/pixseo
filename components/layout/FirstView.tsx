@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import { FirstViewSettings } from '@/types/theme';
 
@@ -8,15 +9,36 @@ interface FirstViewProps {
 }
 
 export default function FirstView({ settings }: FirstViewProps) {
+  const [scrollY, setScrollY] = useState(0);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrollY(window.scrollY);
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
   // FV画像が設定されていない場合は表示しない
   if (!settings.imageUrl) {
     return null;
   }
 
+  // パララックス効果: スクロール量の50%で画像を移動
+  const parallaxOffset = scrollY * 0.5;
+
   return (
-    <div className="relative w-full overflow-hidden">
+    <div className="relative w-full overflow-hidden -mb-16">
       {/* 背景画像 */}
-      <div className="relative w-full" style={{ height: '400px' }}>
+      <div 
+        className="relative w-full" 
+        style={{ 
+          height: '400px',
+          transform: `translateY(${parallaxOffset}px)`,
+          transition: 'transform 0.1s ease-out'
+        }}
+      >
         <Image
           src={settings.imageUrl}
           alt="First View"
@@ -30,7 +52,7 @@ export default function FirstView({ settings }: FirstViewProps) {
         <div className="absolute inset-0 bg-black bg-opacity-30" />
         
         {/* テキストコンテンツ */}
-        <div className="absolute inset-0 flex flex-col items-center justify-center text-white px-4">
+        <div className="absolute inset-0 flex flex-col items-center justify-center text-white px-4 pt-16">
           {settings.catchphrase && (
             <h1 className="text-5xl md:text-6xl font-bold text-center mb-4 drop-shadow-lg">
               {settings.catchphrase}

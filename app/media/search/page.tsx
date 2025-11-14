@@ -6,6 +6,7 @@ import CategoryBar from '@/components/layout/CategoryBar';
 import FirstView from '@/components/layout/FirstView';
 import FooterContentRenderer from '@/components/blocks/FooterContentRenderer';
 import FooterTextLinksRenderer from '@/components/blocks/FooterTextLinksRenderer';
+import ScrollToTopButton from '@/components/common/ScrollToTopButton';
 import { getMediaIdFromHost, getSiteInfo } from '@/lib/firebase/media-tenant-helper';
 import { getTheme, getCombinedStyles } from '@/lib/firebase/theme-helper';
 import { getCategoriesServer } from '@/lib/firebase/categories-server';
@@ -122,6 +123,9 @@ export default async function SearchPage() {
             )}
           </div>
         </footer>
+
+        {/* 上に戻るボタン */}
+        <ScrollToTopButton primaryColor={theme.primaryColor} />
       </div>
     </>
   );

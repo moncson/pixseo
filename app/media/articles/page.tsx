@@ -11,6 +11,7 @@ import BlockRenderer from '@/components/blocks/BlockRenderer';
 import FooterContentRenderer from '@/components/blocks/FooterContentRenderer';
 import FooterTextLinksRenderer from '@/components/blocks/FooterTextLinksRenderer';
 import SearchBar from '@/components/search/SearchBar';
+import ScrollToTopButton from '@/components/common/ScrollToTopButton';
 
 // ISR: 60秒ごとに再生成
 export const revalidate = 60;
@@ -200,6 +201,9 @@ export default async function ArticlesPage() {
           </div>
         )}
       </footer>
+
+      {/* 上に戻るボタン */}
+      <ScrollToTopButton primaryColor={theme.primaryColor} />
     </div>
   );
 }

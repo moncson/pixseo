@@ -14,6 +14,7 @@ import FooterContentRenderer from '@/components/blocks/FooterContentRenderer';
 import FooterTextLinksRenderer from '@/components/blocks/FooterTextLinksRenderer';
 import ExternalLinks from '@/components/common/ExternalLinks';
 import RecommendedCategories from '@/components/common/RecommendedCategories';
+import ScrollToTopButton from '@/components/common/ScrollToTopButton';
 
 // 動的レンダリング + Firestoreキャッシュで高速化
 // headers()を使用しているため、完全な静的生成はできない
@@ -263,6 +264,9 @@ export default async function MediaPage() {
           </div>
         )}
       </footer>
+
+      {/* 上に戻るボタン */}
+      <ScrollToTopButton primaryColor={theme.primaryColor} />
     </div>
   );
 }
