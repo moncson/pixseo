@@ -41,7 +41,7 @@ export default function MediaHeader({
   return (
     <header className="fixed top-4 left-0 right-0 z-50">
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="rounded-full shadow-lg backdrop-blur-md bg-white/70 px-6 py-3" style={{ backgroundColor: 'rgba(255, 255, 255, 0.7)' }}>
+        <div className="rounded-full shadow-lg backdrop-blur-md bg-white/80 px-6 py-3" style={{ backgroundColor: 'rgba(255, 255, 255, 0.85)' }}>
           {/* ロゴ、検索、ハンバーガーを横並び */}
           <div className="flex items-center gap-4">
             {/* ロゴ */}
@@ -84,7 +84,7 @@ export default function MediaHeader({
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="キーワードで検索"
-                  className="w-full px-4 py-2 pr-12 text-sm text-gray-900 bg-white/80 backdrop-blur-sm rounded-full focus:outline-none focus:ring-2 focus:ring-blue-200 placeholder:text-xs"
+                  className="w-full px-4 py-2 pr-12 text-sm text-gray-900 bg-gray-100 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-200 placeholder:text-xs"
                 />
                 <button
                   type="submit"

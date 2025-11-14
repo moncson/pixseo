@@ -75,13 +75,17 @@ export default function HamburgerMenu({ menuSettings, menuBackgroundColor, menuT
 
       {/* メニューパネル */}
       <div
-        className={`fixed top-0 right-0 h-full w-80 shadow-2xl transform transition-transform duration-300 ease-in-out ${
-          isOpen ? 'translate-x-0' : 'translate-x-full'
-        }`}
         style={{ 
+          position: 'fixed',
+          top: 0,
+          right: isOpen ? 0 : '-320px',
+          height: '100vh',
+          width: '320px',
           backgroundColor: menuBackgroundColor || '#1f2937', 
           color: menuTextColor || '#ffffff',
-          zIndex: 60
+          zIndex: 60,
+          boxShadow: '-4px 0 12px rgba(0, 0, 0, 0.3)',
+          transition: 'right 300ms ease-in-out'
         }}
       >
         <div className="flex flex-col h-full">
