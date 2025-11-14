@@ -41,7 +41,8 @@ export default function HamburgerMenu({ menuSettings, menuBackgroundColor, menuT
       {/* ハンバーガーボタン */}
       <button
         onClick={toggleMenu}
-        className="relative z-50 w-12 h-12 flex flex-col items-center justify-center gap-1.5 hover:opacity-80 transition-opacity"
+        className="relative w-12 h-12 flex flex-col items-center justify-center gap-1.5 hover:opacity-80 transition-opacity"
+        style={{ zIndex: 61 }}
         aria-label="メニュー"
       >
         <span

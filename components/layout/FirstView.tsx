@@ -57,7 +57,7 @@ export default function FirstView({ settings, customTitle, customSubtitle, showC
       </div>
       
              {/* テキストコンテンツ（通常スクロール） */}
-             <div className="relative z-10 flex flex-col items-center justify-center text-white px-4 h-full" style={{ paddingTop: '280px' }}>
+             <div className="relative z-10 flex flex-col items-center justify-center text-white px-4 h-full" style={{ paddingTop: '240px' }}>
         {showCustomContent ? (
           <>
             {customTitle && (
