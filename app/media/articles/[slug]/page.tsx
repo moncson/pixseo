@@ -16,6 +16,7 @@ import { Article } from '@/types/article';
 import MediaHeader from '@/components/layout/MediaHeader';
 import CategoryBar from '@/components/layout/CategoryBar';
 import FirstView from '@/components/layout/FirstView';
+import SearchBar from '@/components/search/SearchBar';
 import ArticleContent from '@/components/articles/ArticleContent';
 import RelatedArticles from '@/components/articles/RelatedArticles';
 import ArticleHeader from '@/components/articles/ArticleHeader';
@@ -250,6 +251,11 @@ export default async function ArticlePage({ params }: PageProps) {
       {theme.firstView && (
         <FirstView settings={theme.firstView} />
       )}
+
+      {/* 検索バー */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <SearchBar />
+      </div>
 
       {/* カテゴリーバー */}
       <CategoryBar categories={headerCategories} />

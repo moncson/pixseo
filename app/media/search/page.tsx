@@ -68,15 +68,15 @@ export default async function SearchPage() {
           <FirstView settings={theme.firstView} />
         )}
 
+        {/* 検索バー */}
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <SearchBar />
+        </div>
+
         {/* カテゴリーバー */}
         <CategoryBar categories={categories} />
 
         <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          {/* 検索バー */}
-          <section className="mb-8">
-            <SearchBar />
-          </section>
-
           {/* 検索コンテンツ */}
           <Suspense fallback={<div className="text-center py-12">読み込み中...</div>}>
             <SearchContent />
