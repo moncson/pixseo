@@ -29,42 +29,43 @@ export default function FirstView({ settings }: FirstViewProps) {
   const parallaxOffset = scrollY * 0.5;
 
   return (
-    <div className="relative w-full overflow-hidden -mb-24">
-      {/* 背景画像 */}
-      <div 
-        className="relative w-full" 
-        style={{ 
-          height: '500px',
-          transform: `translateY(${parallaxOffset}px)`,
-          transition: 'transform 0.1s ease-out'
-        }}
-      >
-        <Image
-          src={settings.imageUrl}
-          alt="First View"
-          fill
-          priority
-          className="object-cover"
-          sizes="100vw"
-        />
-        
-        {/* オーバーレイ */}
-        <div className="absolute inset-0 bg-black bg-opacity-30" />
-        
-        {/* テキストコンテンツ */}
-        <div className="absolute inset-0 flex flex-col items-center justify-center text-white px-4 pt-16">
-          {settings.catchphrase && (
-            <h1 className="text-5xl md:text-6xl font-bold text-center mb-4 drop-shadow-lg">
-              {settings.catchphrase}
-            </h1>
-          )}
+    <div className="relative w-full -mb-24">
+      {/* 背景画像（パララックス効果あり） */}
+      <div className="absolute inset-0 overflow-hidden">
+        <div 
+          className="relative w-full h-full" 
+          style={{ 
+            transform: `translateY(${parallaxOffset}px)`,
+            transition: 'transform 0.1s ease-out'
+          }}
+        >
+          <Image
+            src={settings.imageUrl}
+            alt="First View"
+            fill
+            priority
+            className="object-cover"
+            sizes="100vw"
+          />
           
-          {settings.description && (
-            <p className="text-lg md:text-xl text-center max-w-3xl drop-shadow-md whitespace-pre-line">
-              {settings.description}
-            </p>
-          )}
+          {/* オーバーレイ */}
+          <div className="absolute inset-0 bg-black bg-opacity-30" />
         </div>
+      </div>
+      
+      {/* テキストコンテンツ（通常スクロール） */}
+      <div className="relative z-10 flex flex-col items-center justify-center text-white px-4 pt-16" style={{ height: '500px' }}>
+        {settings.catchphrase && (
+          <h1 className="text-5xl md:text-6xl font-bold text-center mb-4 drop-shadow-lg">
+            {settings.catchphrase}
+          </h1>
+        )}
+        
+        {settings.description && (
+          <p className="text-lg md:text-xl text-center max-w-3xl drop-shadow-md whitespace-pre-line">
+            {settings.description}
+          </p>
+        )}
       </div>
     </div>
   );

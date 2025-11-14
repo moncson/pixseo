@@ -12,18 +12,14 @@ export default function CategoryBar({ categories }: CategoryBarProps) {
   }
 
   return (
-    <section className="bg-transparent">
+    <section className="relative z-10">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex overflow-x-auto scrollbar-hide rounded-t-lg overflow-hidden">
+        <div className="flex overflow-x-auto scrollbar-hide rounded-t-lg overflow-hidden bg-white shadow-lg">
           {categories.map((category, index) => (
             <Link
               key={category.id}
               href={`/categories/${category.slug}`}
-              className={`relative flex-1 min-w-[150px] h-96 group overflow-hidden ${
-                index === 0 ? 'rounded-l-lg' : ''
-              } ${
-                index === categories.length - 1 ? 'rounded-r-lg' : ''
-              }`}
+              className="relative flex-1 min-w-[150px] h-96 group overflow-hidden"
             >
               {category.imageUrl ? (
                 <>
