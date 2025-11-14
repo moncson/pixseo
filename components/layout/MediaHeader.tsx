@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -29,14 +29,28 @@ export default function MediaHeader({
   menuTextColor = '#ffffff',
 }: MediaHeaderProps) {
   const [searchQuery, setSearchQuery] = useState('');
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
   const router = useRouter();
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
       router.push(`/media/search?q=${encodeURIComponent(searchQuery.trim())}`);
+      setIsSearchOpen(false);
+      setSearchQuery('');
     }
   };
+
+  const toggleSearch = () => {
+    setIsSearchOpen(!isSearchOpen);
+  };
+
+  useEffect(() => {
+    if (isSearchOpen && inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, [isSearchOpen]);
 
   return (
     <header className="fixed top-4 left-0 right-0 z-50">
@@ -76,28 +90,41 @@ export default function MediaHeader({
               </div>
             </Link>
 
-            {/* キーワード検索 */}
-            <form onSubmit={handleSearch} className="flex-1">
-              <div className="relative">
-                <input
-                  type="text"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="キーワードで検索"
-                  className="w-full px-4 py-2 pr-12 text-sm text-gray-900 bg-black/20 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-200 placeholder:text-xs placeholder:text-gray-600"
-                />
+            {/* 検索エリア */}
+            <div className="flex-1 flex items-center justify-end">
+              <div className="relative flex items-center" style={{ 
+                width: isSearchOpen ? '100%' : 'auto',
+                transition: 'width 300ms ease-in-out'
+              }}>
+                {/* 検索フィールド（展開時） */}
+                {isSearchOpen && (
+                  <form onSubmit={handleSearch} className="flex-1 mr-2">
+                    <input
+                      ref={inputRef}
+                      type="text"
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      placeholder="キーワードで検索"
+                      className="w-full pb-2 text-base text-gray-900 bg-transparent border-b-[3px] border-black focus:outline-none placeholder:text-sm placeholder:text-gray-500"
+                      style={{
+                        animation: 'slideIn 300ms ease-in-out'
+                      }}
+                    />
+                  </form>
+                )}
+
+                {/* 虫眼鏡アイコンボタン */}
                 <button
-                  type="submit"
-                  className="absolute right-2 top-1/2 -translate-y-1/2 text-white w-8 h-8 rounded-full hover:opacity-90 transition-opacity flex items-center justify-center"
-                  style={{ backgroundColor: 'var(--color-primary)' }}
+                  onClick={toggleSearch}
+                  className="relative w-12 h-12 flex items-center justify-center hover:opacity-70 transition-opacity flex-shrink-0"
                   aria-label="検索"
                 >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-6 h-6 text-gray-800" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                   </svg>
                 </button>
               </div>
-            </form>
+            </div>
 
             {/* ハンバーガーメニュー */}
             <div className="flex-shrink-0">
@@ -110,6 +137,20 @@ export default function MediaHeader({
           </div>
         </div>
       </div>
+
+      {/* アニメーション用のスタイル */}
+      <style jsx>{`
+        @keyframes slideIn {
+          from {
+            opacity: 0;
+            transform: translateX(20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateX(0);
+          }
+        }
+      `}</style>
     </header>
   );
 }
