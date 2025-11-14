@@ -15,7 +15,7 @@ export default function ThemePage() {
   const [theme, setTheme] = useState<Theme>(defaultTheme);
   const [loading, setLoading] = useState(false);
   const [fetchLoading, setFetchLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<'banner' | 'footer-content' | 'footer-section' | 'menu' | 'color' | 'css'>('banner');
+  const [activeTab, setActiveTab] = useState<'fv' | 'banner' | 'footer-content' | 'footer-section' | 'menu' | 'color' | 'css'>('fv');
 
   useEffect(() => {
     if (currentTenant) {
@@ -175,6 +175,18 @@ export default function ThemePage() {
     }));
   };
 
+  // FV設定関連の関数
+  const updateFirstView = (field: 'imageUrl' | 'catchphrase' | 'description', value: string) => {
+    setTheme(prev => ({
+      ...prev,
+      firstView: {
+        imageUrl: field === 'imageUrl' ? value : prev.firstView?.imageUrl || '',
+        catchphrase: field === 'catchphrase' ? value : prev.firstView?.catchphrase || '',
+        description: field === 'description' ? value : prev.firstView?.description || '',
+      },
+    }));
+  };
+
   const selectedThemeLayout = THEME_LAYOUTS[theme.layoutTheme as ThemeLayoutId] || THEME_LAYOUTS.cobi;
 
   return (
@@ -217,6 +229,18 @@ export default function ThemePage() {
           <div className="bg-white rounded-[1.75rem] overflow-hidden">
             <div className="border-b border-gray-200">
               <div className="flex">
+                <button
+                  type="button"
+                  onClick={() => setActiveTab('fv')}
+                  className={`flex-1 px-6 py-4 text-sm font-medium transition-colors ${
+                    activeTab === 'fv'
+                      ? 'text-blue-600 border-b-2 border-blue-600'
+                      : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                  }`}
+                  style={activeTab === 'fv' ? { backgroundColor: '#f9fafb' } : {}}
+                >
+                  FV
+                </button>
                 <button
                   type="button"
                   onClick={() => setActiveTab('banner')}
@@ -298,6 +322,31 @@ export default function ThemePage() {
 
             {/* タブコンテンツ */}
             <div className="p-8">
+              {/* FVタブ */}
+              {activeTab === 'fv' && (
+                <div className="space-y-6">
+                  <FeaturedImageUpload
+                    value={theme.firstView?.imageUrl || ''}
+                    onChange={(url) => updateFirstView('imageUrl', url)}
+                    label="FV画像"
+                  />
+                  
+                  <FloatingInput
+                    label="キャッチコピー"
+                    value={theme.firstView?.catchphrase || ''}
+                    onChange={(value) => updateFirstView('catchphrase', value)}
+                  />
+                  
+                  <FloatingInput
+                    label="ディスクリプション"
+                    value={theme.firstView?.description || ''}
+                    onChange={(value) => updateFirstView('description', value)}
+                    multiline
+                    rows={3}
+                  />
+                </div>
+              )}
+
               {/* バナーエリアタブ */}
               {activeTab === 'banner' && (
                 <div className="grid grid-cols-2 gap-8">

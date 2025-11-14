@@ -5,6 +5,7 @@ import { getCategoriesServer } from '@/lib/firebase/categories-server';
 import { getMediaIdFromHost, getSiteInfo } from '@/lib/firebase/media-tenant-helper';
 import { getTheme, getCombinedStyles } from '@/lib/firebase/theme-helper';
 import MediaHeader from '@/components/layout/MediaHeader';
+import FirstView from '@/components/layout/FirstView';
 import SearchBar from '@/components/search/SearchBar';
 import ArticleCard from '@/components/articles/ArticleCard';
 import BlockRenderer from '@/components/blocks/BlockRenderer';
@@ -113,9 +114,14 @@ export default async function MediaPage() {
         menuTextColor={theme.menuTextColor}
       />
 
+      {/* FV（ファーストビュー） */}
+      {theme.firstView && (
+        <FirstView settings={theme.firstView} />
+      )}
+
       {/* メインコンテンツ */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* ファーストビュー: 検索バー */}
+        {/* 検索バー */}
         <section className="mb-12">
           <SearchBar />
         </section>

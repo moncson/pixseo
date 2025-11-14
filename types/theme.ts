@@ -71,9 +71,19 @@ export interface MenuSettings {
   customMenus: MenuItem[];    // 追加メニュー1-5
 }
 
+// FV（ファーストビュー）設定の定義
+export interface FirstViewSettings {
+  imageUrl: string;           // FV画像
+  catchphrase: string;        // キャッチコピー
+  description: string;        // ディスクリプション
+}
+
 export interface Theme {
   // レイアウトテーマ
   layoutTheme: ThemeLayoutId; // 'cobi' | 'furatto'
+  
+  // FV設定
+  firstView?: FirstViewSettings;
   
   // フッターブロック（最大4つ）
   footerBlocks?: FooterBlock[];
