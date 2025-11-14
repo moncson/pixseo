@@ -51,7 +51,7 @@ export async function GET(request: NextRequest) {
         
         // ライターでの使用をチェック
         const writersSnapshot = await adminDb.collection('writers')
-          .where('iconUrl', '==', mediaUrl)
+          .where('icon', '==', mediaUrl)
           .get();
         if (writersSnapshot.size > 0) {
           usageCount += writersSnapshot.size;
