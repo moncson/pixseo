@@ -40,7 +40,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
   return {
     title: `${category.name}の記事一覧 | ${siteInfo.name}`,
-    description: category.description || `${category.name}に関するバリアフリー情報記事一覧`,
+    description: category.description || `${category.name}に関する記事一覧`,
     robots: {
       index: siteInfo.allowIndexing,
       follow: siteInfo.allowIndexing,
@@ -51,7 +51,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     } : undefined,
     openGraph: {
       title: `${category.name}の記事一覧 | ${siteInfo.name}`,
-      description: category.description || `${category.name}に関するバリアフリー情報記事一覧`,
+      description: category.description || `${category.name}に関する記事一覧`,
     },
   };
 }

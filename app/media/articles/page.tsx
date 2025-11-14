@@ -23,8 +23,8 @@ export async function generateMetadata(): Promise<Metadata> {
   
   if (!mediaId) {
     return {
-      title: '記事一覧 | ふらっと。',
-      description: 'バリアフリー情報記事一覧',
+      title: '記事一覧',
+      description: '',
     };
   }
 
@@ -32,7 +32,7 @@ export async function generateMetadata(): Promise<Metadata> {
   
   return {
     title: `記事一覧 | ${siteInfo.name}`,
-    description: siteInfo.description || 'バリアフリー情報記事一覧',
+    description: siteInfo.description || '記事一覧',
     robots: {
       index: siteInfo.allowIndexing,
       follow: siteInfo.allowIndexing,

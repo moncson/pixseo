@@ -41,7 +41,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
   return {
     title: `${tag.name}の記事一覧 | ${siteInfo.name}`,
-    description: `${tag.name}に関するバリアフリー情報記事一覧`,
+    description: `${tag.name}に関する記事一覧`,
     robots: {
       index: siteInfo.allowIndexing,
       follow: siteInfo.allowIndexing,
@@ -52,7 +52,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     } : undefined,
     openGraph: {
       title: `${tag.name}の記事一覧 | ${siteInfo.name}`,
-      description: `${tag.name}に関するバリアフリー情報記事一覧`,
+      description: `${tag.name}に関する記事一覧`,
     },
   };
 }

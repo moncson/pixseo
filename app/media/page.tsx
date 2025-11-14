@@ -28,16 +28,19 @@ export async function generateMetadata(): Promise<Metadata> {
   
   if (!mediaId) {
     return {
-      title: 'ふらっと。 | バリアフリー情報メディア',
-      description: 'おでかけ・外出に役立つバリアフリー情報を探す',
+      title: 'PixSEO Media',
+      description: '',
     };
   }
 
   const siteInfo = await getSiteInfo(mediaId);
   
+  // タイトルの優先順位: mainTitle > mainSubtitle > name
+  const pageTitle = siteInfo.mainTitle || siteInfo.mainSubtitle || siteInfo.name;
+  
   return {
-    title: siteInfo.mainTitle || `${siteInfo.name} | バリアフリー情報メディア`,
-    description: siteInfo.description || 'おでかけ・外出に役立つバリアフリー情報を探す',
+    title: pageTitle,
+    description: siteInfo.description || '',
     robots: {
       index: siteInfo.allowIndexing,
       follow: siteInfo.allowIndexing,
@@ -47,8 +50,8 @@ export async function generateMetadata(): Promise<Metadata> {
       apple: siteInfo.faviconUrl,
     } : undefined,
     openGraph: {
-      title: siteInfo.mainTitle || `${siteInfo.name} | バリアフリー情報メディア`,
-      description: siteInfo.description || 'おでかけ・外出に役立つバリアフリー情報を探す',
+      title: pageTitle,
+      description: siteInfo.description || '',
       images: siteInfo.ogImageUrl ? [siteInfo.ogImageUrl] : undefined,
     },
   };
