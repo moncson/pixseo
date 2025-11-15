@@ -10,9 +10,10 @@ interface FirstViewProps {
   customSubtitle?: string;
   showCustomContent?: boolean;
   customMeta?: string; // 記事の公開日・更新日・閲覧数などのメタ情報
+  writerIcon?: string; // ライターアイコン
 }
 
-export default function FirstView({ settings, customTitle, customSubtitle, showCustomContent = false, customMeta }: FirstViewProps) {
+export default function FirstView({ settings, customTitle, customSubtitle, showCustomContent = false, customMeta, writerIcon }: FirstViewProps) {
   const [scrollY, setScrollY] = useState(0);
 
   useEffect(() => {
@@ -61,6 +62,16 @@ export default function FirstView({ settings, customTitle, customSubtitle, showC
              <div className="relative z-10 flex flex-col items-center justify-center text-white px-4 h-full" style={{ paddingTop: '240px' }}>
         {showCustomContent ? (
           <>
+            {writerIcon && (
+              <div className="relative w-32 h-32 rounded-full overflow-hidden border-4 border-white shadow-lg mb-6">
+                <Image
+                  src={writerIcon}
+                  alt="Writer Icon"
+                  fill
+                  className="object-cover"
+                />
+              </div>
+            )}
             {customTitle && (
               <h1 className="text-3xl md:text-4xl font-bold text-center mb-4 drop-shadow-lg">
                 {customTitle}
