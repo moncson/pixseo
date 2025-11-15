@@ -32,7 +32,7 @@ import ScrollToTopButton from '@/components/common/ScrollToTopButton';
 import FooterContentRenderer from '@/components/blocks/FooterContentRenderer';
 import PopularArticles from '@/components/common/PopularArticles';
 import RecommendedArticles from '@/components/common/RecommendedArticles';
-import TwitterTimeline from '@/components/common/TwitterTimeline';
+import XLink from '@/components/common/XLink';
 import SidebarBanners from '@/components/common/SidebarBanners';
 import Image from 'next/image';
 
@@ -380,7 +380,7 @@ export default async function ArticlePage({ params }: PageProps) {
             )}
 
             {/* Xタイムライン */}
-            <TwitterTimeline username="moncson" />
+            <XLink username="moncson" />
           </aside>
         </div>
       </main>

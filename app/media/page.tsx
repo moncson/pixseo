@@ -17,7 +17,7 @@ import RecommendedCategories from '@/components/common/RecommendedCategories';
 import ScrollToTopButton from '@/components/common/ScrollToTopButton';
 import PopularArticles from '@/components/common/PopularArticles';
 import RecommendedArticles from '@/components/common/RecommendedArticles';
-import TwitterTimeline from '@/components/common/TwitterTimeline';
+import XLink from '@/components/common/XLink';
 import SidebarBanners from '@/components/common/SidebarBanners';
 
 // 動的レンダリング + Firestoreキャッシュで高速化
@@ -192,8 +192,8 @@ export default async function MediaPage() {
               <SidebarBanners blocks={footerBlocks} />
             )}
 
-            {/* Xタイムライン */}
-            <TwitterTimeline username="moncson" />
+            {/* Xリンク */}
+            <XLink username="moncson" />
           </aside>
         </div>
       </main>

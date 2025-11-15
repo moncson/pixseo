@@ -15,7 +15,7 @@ import FooterTextLinksRenderer from '@/components/blocks/FooterTextLinksRenderer
 import ScrollToTopButton from '@/components/common/ScrollToTopButton';
 import PopularArticles from '@/components/common/PopularArticles';
 import RecommendedArticles from '@/components/common/RecommendedArticles';
-import TwitterTimeline from '@/components/common/TwitterTimeline';
+import XLink from '@/components/common/XLink';
 import SidebarBanners from '@/components/common/SidebarBanners';
 
 // ISR: 60秒ごとに再生成
@@ -168,7 +168,7 @@ export default async function CategoryPage({ params }: PageProps) {
             )}
 
             {/* Xタイムライン */}
-            <TwitterTimeline username="moncson" />
+            <XLink username="moncson" />
           </aside>
         </div>
       </main>

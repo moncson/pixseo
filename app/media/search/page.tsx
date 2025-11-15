@@ -12,7 +12,7 @@ import { getCategoriesServer } from '@/lib/firebase/categories-server';
 import { getArticlesServer, getPopularArticlesServer } from '@/lib/firebase/articles-server';
 import PopularArticles from '@/components/common/PopularArticles';
 import RecommendedArticles from '@/components/common/RecommendedArticles';
-import TwitterTimeline from '@/components/common/TwitterTimeline';
+import XLink from '@/components/common/XLink';
 import SidebarBanners from '@/components/common/SidebarBanners';
 
 export const dynamic = 'force-dynamic';
@@ -114,7 +114,7 @@ export default async function SearchPage() {
               )}
 
               {/* Xタイムライン */}
-              <TwitterTimeline username="moncson" />
+              <XLink username="moncson" />
             </aside>
           </div>
         </main>
