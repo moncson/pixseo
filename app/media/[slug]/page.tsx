@@ -160,10 +160,10 @@ export default async function PageDetail({ params }: PageProps) {
           {/* サイドバー（30%） */}
           <aside className="w-full lg:w-[30%] space-y-6">
             {/* 人気記事 */}
-            <PopularArticles articles={popularArticles} />
+            <PopularArticles articles={popularArticles} categories={allCategories} />
 
             {/* おすすめ記事 */}
-            <RecommendedArticles articles={popularArticles} />
+            <RecommendedArticles articles={popularArticles} categories={allCategories} />
 
             {/* バナーエリア */}
             {footerBlocks.length > 0 && (
