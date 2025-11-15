@@ -135,17 +135,18 @@ export const getPages = async (mediaId?: string): Promise<Page[]> => {
     let q;
     
     // mediaIdでフィルタリング（指定がある場合）
+    // orderByはクライアント側で実行（複合インデックス不要）
     if (mediaId) {
-      q = query(pagesRef, where('mediaId', '==', mediaId), orderBy('order', 'asc'));
+      q = query(pagesRef, where('mediaId', '==', mediaId));
     } else {
-      q = query(pagesRef, orderBy('order', 'asc'));
+      q = pagesRef;
     }
     
     console.log('[getPages] Querying pages with mediaId:', mediaId);
     const querySnapshot = await getDocs(q);
     console.log('[getPages] Found', querySnapshot.docs.length, 'pages');
     
-    return querySnapshot.docs.map((doc) => {
+    const pages = querySnapshot.docs.map((doc) => {
       const data = doc.data();
       return {
         id: doc.id,
@@ -154,10 +155,13 @@ export const getPages = async (mediaId?: string): Promise<Page[]> => {
         updatedAt: data.updatedAt?.toDate?.() || new Date(),
       } as Page;
     });
+    
+    // クライアント側でソート（複合インデックス不要）
+    return pages.sort((a, b) => (a.order || 0) - (b.order || 0));
   } catch (error) {
     console.error('[getPages] Error:', error);
     console.error('[getPages] Error message:', error instanceof Error ? error.message : String(error));
-    // エラー時は空配列を返す（Firestoreインデックスが必要な場合など）
+    // エラー時は空配列を返す
     return [];
   }
 };
