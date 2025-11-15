@@ -5,6 +5,7 @@ import { createPortal } from 'react-dom';
 import Link from 'next/link';
 import { MenuSettings } from '@/types/theme';
 import { Lang } from '@/types/lang';
+import LanguageSelector from '@/components/common/LanguageSelector';
 
 interface HamburgerMenuProps {
   isOpen: boolean;
@@ -154,6 +155,11 @@ export default function HamburgerMenu({ isOpen, onClose, menuSettings, menuBackg
               ))}
             </ul>
           </nav>
+
+          {/* 言語セレクター */}
+          <div className="px-8 py-6 border-t" style={{ borderColor: `${menuTextColor}33` }}>
+            <LanguageSelector currentLang={lang} variant="sidebar" />
+          </div>
         </div>
       </div>
     </>
