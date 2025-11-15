@@ -1,4 +1,4 @@
-import { adminDb } from './admin-config';
+import { adminDb } from './admin';
 import { Page } from '@/types/page';
 
 /**
