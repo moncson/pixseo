@@ -188,9 +188,6 @@ export default async function WriterPage({ params }: PageProps) {
                   <ArticleCard
                     key={article.id}
                     article={article}
-                    categories={allCategories.filter(cat => 
-                      article.categoryIds?.includes(cat.id)
-                    )}
                   />
                 ))}
               </div>
