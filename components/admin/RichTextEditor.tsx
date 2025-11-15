@@ -35,7 +35,7 @@ export default function RichTextEditor({ value, onChange, placeholder }: RichTex
         const currentTenantId = localStorage.getItem('currentTenantId');
         if (!currentTenantId) return;
 
-        const response = await fetch('/api/admin/design', {
+        const response = await fetch('/api/admin/theme', {
           headers: {
             'x-media-id': currentTenantId,
           },

@@ -30,8 +30,14 @@ export const createPage = async (pageData: Omit<Page, 'id' | 'publishedAt' | 'up
 
   try {
     const now = Timestamp.now();
+    
+    // undefinedフィールドを除去（Firestoreはundefinedを許可しない）
+    const cleanData = Object.fromEntries(
+      Object.entries(pageData).filter(([_, value]) => value !== undefined)
+    );
+    
     const docRef = await addDoc(collection(db, 'pages'), {
-      ...pageData,
+      ...cleanData,
       publishedAt: now,
       updatedAt: now,
     });
@@ -52,9 +58,14 @@ export const updatePage = async (id: string, pageData: Partial<Page>): Promise<v
   }
 
   try {
+    // undefinedフィールドを除去（Firestoreはundefinedを許可しない）
+    const cleanData = Object.fromEntries(
+      Object.entries(pageData).filter(([_, value]) => value !== undefined)
+    );
+    
     const pageRef = doc(db, 'pages', id);
     await updateDoc(pageRef, {
-      ...pageData,
+      ...cleanData,
       updatedAt: serverTimestamp(),
     });
   } catch (error) {
