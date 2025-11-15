@@ -140,7 +140,6 @@ export default async function WriterPage({ params }: PageProps) {
       {/* カテゴリーバー */}
       <CategoryBar 
         categories={headerCategories}
-        currentCategorySlug=""
       />
 
       {/* メインコンテンツ */}
