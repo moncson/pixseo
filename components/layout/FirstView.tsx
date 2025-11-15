@@ -25,8 +25,8 @@ export default function FirstView({ settings, customTitle, customSubtitle, showC
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // FV画像が設定されていない場合は表示しない
-  if (!settings.imageUrl) {
+  // FV画像が設定されていない場合、ライターアイコンがあれば表示、なければ非表示
+  if (!settings.imageUrl && !writerIcon) {
     return null;
   }
 
@@ -44,17 +44,26 @@ export default function FirstView({ settings, customTitle, customSubtitle, showC
             transition: 'transform 0.1s ease-out'
           }}
         >
-          <Image
-            src={settings.imageUrl}
-            alt="First View"
-            fill
-            priority
-            className="object-cover"
-            sizes="100vw"
-          />
-          
-          {/* オーバーレイ */}
-          <div className="absolute inset-0 bg-black bg-opacity-30" />
+          {settings.imageUrl ? (
+            <>
+              <Image
+                src={settings.imageUrl}
+                alt="First View"
+                fill
+                priority
+                className="object-cover"
+                sizes="100vw"
+              />
+              
+              {/* オーバーレイ */}
+              <div className="absolute inset-0 bg-black bg-opacity-30" />
+            </>
+          ) : (
+            <div 
+              className="w-full h-full" 
+              style={{ backgroundColor: 'var(--primary-color, #3b82f6)' }}
+            />
+          )}
         </div>
       </div>
       
