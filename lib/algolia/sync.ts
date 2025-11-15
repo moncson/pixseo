@@ -7,7 +7,7 @@ export interface AlgoliaArticleRecord {
   title: string;
   slug: string;
   excerpt?: string;
-  content: string;
+  contentText?: string; // HTMLタグを除去したテキスト（検索用、最大3000文字）
   mediaId: string;
   categories: string[]; // カテゴリー名の配列
   tags: string[]; // タグ名の配列
@@ -32,12 +32,27 @@ export async function syncArticleToAlgolia(
   }
 
   try {
+    // HTMLタグを除去してテキストのみ抽出（検索用）
+    let contentText = '';
+    if (article.content) {
+      contentText = article.content
+        .replace(/<[^>]*>/g, '') // HTMLタグを削除
+        .replace(/&nbsp;/g, ' ') // &nbsp;をスペースに変換
+        .replace(/&amp;/g, '&') // &amp;を&に変換
+        .replace(/&lt;/g, '<') // &lt;を<に変換
+        .replace(/&gt;/g, '>') // &gt;を>に変換
+        .replace(/&quot;/g, '"') // &quot;を"に変換
+        .replace(/\s+/g, ' ') // 連続した空白を1つに
+        .trim()
+        .substring(0, 3000); // 最初の3000文字のみ（約3KB、安全マージン）
+    }
+
     const record: AlgoliaArticleRecord = {
       objectID: article.id,
       title: article.title,
       slug: article.slug,
       excerpt: article.excerpt,
-      content: article.content || '',
+      contentText, // HTMLタグを除去したテキスト
       mediaId: article.mediaId,
       categories: categoryNames,
       tags: tagNames,
