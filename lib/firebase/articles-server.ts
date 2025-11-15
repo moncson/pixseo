@@ -519,78 +519,117 @@ export const getAdjacentArticlesServer = async (
     console.log('[getAdjacentArticlesServer] Starting...');
     console.log('[getAdjacentArticlesServer] Current article:', currentArticle.id, currentArticle.title);
     console.log('[getAdjacentArticlesServer] Current publishedAt:', currentArticle.publishedAt);
+    console.log('[getAdjacentArticlesServer] Current publishedAt type:', typeof currentArticle.publishedAt, currentArticle.publishedAt instanceof Date);
     console.log('[getAdjacentArticlesServer] mediaId:', mediaId);
     
+    // Date を Firestore Timestamp に変換
+    const currentPublishedAt = currentArticle.publishedAt instanceof Date 
+      ? adminDb.Timestamp.fromDate(currentArticle.publishedAt)
+      : currentArticle.publishedAt;
+    
+    console.log('[getAdjacentArticlesServer] Converted publishedAt:', currentPublishedAt);
+    
     const articlesRef = adminDb.collection('articles');
-    let baseQuery = articlesRef.where('isPublished', '==', true);
     
-    // mediaIdフィルタリング
-    if (mediaId) {
-      baseQuery = baseQuery.where('mediaId', '==', mediaId) as any;
-    }
-    
-    // 前の記事（公開日が古い順で現在の記事より前）
+    // 前の記事を取得
     console.log('[getAdjacentArticlesServer] Querying for previous article...');
-    const prevQuery = await baseQuery
-      .where('publishedAt', '<', currentArticle.publishedAt)
+    const prevQueryBuilder = articlesRef
+      .where('isPublished', '==', true)
+      .where('publishedAt', '<', currentPublishedAt)
       .orderBy('publishedAt', 'desc')
-      .limit(1)
-      .get();
-    console.log('[getAdjacentArticlesServer] Previous query result count:', prevQuery.size);
+      .limit(1);
     
-    // 次の記事（公開日が新しい順で現在の記事より後）
-    console.log('[getAdjacentArticlesServer] Querying for next article...');
-    const nextQuery = await baseQuery
-      .where('publishedAt', '>', currentArticle.publishedAt)
-      .orderBy('publishedAt', 'asc')
-      .limit(1)
-      .get();
-    console.log('[getAdjacentArticlesServer] Next query result count:', nextQuery.size);
-    
-    let previousArticle: Article | null = null;
-    let nextArticle: Article | null = null;
-    
-    if (!prevQuery.empty) {
-      const doc = prevQuery.docs[0];
-      const data = doc.data();
-      previousArticle = {
-        id: doc.id,
-        ...data,
-        publishedAt: convertTimestamp(data.publishedAt),
-        updatedAt: convertTimestamp(data.updatedAt),
-        tableOfContents: Array.isArray(data.tableOfContents) ? data.tableOfContents : [],
-        relatedArticleIds: Array.isArray(data.relatedArticleIds) ? data.relatedArticleIds : [],
-        readingTime: typeof data.readingTime === 'number' ? data.readingTime : undefined,
-      } as Article;
-      console.log('[getAdjacentArticlesServer] Previous article found:', previousArticle.id, previousArticle.title);
+    if (mediaId) {
+      // mediaIdフィルタを追加する場合は、別のクエリを作成
+      const prevQuery = await articlesRef
+        .where('isPublished', '==', true)
+        .where('mediaId', '==', mediaId)
+        .where('publishedAt', '<', currentPublishedAt)
+        .orderBy('publishedAt', 'desc')
+        .limit(1)
+        .get();
+      console.log('[getAdjacentArticlesServer] Previous query result count:', prevQuery.size);
+      
+      // 次の記事を取得
+      console.log('[getAdjacentArticlesServer] Querying for next article...');
+      const nextQuery = await articlesRef
+        .where('isPublished', '==', true)
+        .where('mediaId', '==', mediaId)
+        .where('publishedAt', '>', currentPublishedAt)
+        .orderBy('publishedAt', 'asc')
+        .limit(1)
+        .get();
+      console.log('[getAdjacentArticlesServer] Next query result count:', nextQuery.size);
+      
+      return await buildAdjacentArticlesResult(prevQuery, nextQuery);
+    } else {
+      const prevQuery = await prevQueryBuilder.get();
+      console.log('[getAdjacentArticlesServer] Previous query result count:', prevQuery.size);
+      
+      // 次の記事を取得
+      console.log('[getAdjacentArticlesServer] Querying for next article...');
+      const nextQuery = await articlesRef
+        .where('isPublished', '==', true)
+        .where('publishedAt', '>', currentPublishedAt)
+        .orderBy('publishedAt', 'asc')
+        .limit(1)
+        .get();
+      console.log('[getAdjacentArticlesServer] Next query result count:', nextQuery.size);
+      
+      return await buildAdjacentArticlesResult(prevQuery, nextQuery);
     }
-    
-    if (!nextQuery.empty) {
-      const doc = nextQuery.docs[0];
-      const data = doc.data();
-      nextArticle = {
-        id: doc.id,
-        ...data,
-        publishedAt: convertTimestamp(data.publishedAt),
-        updatedAt: convertTimestamp(data.updatedAt),
-        tableOfContents: Array.isArray(data.tableOfContents) ? data.tableOfContents : [],
-        relatedArticleIds: Array.isArray(data.relatedArticleIds) ? data.relatedArticleIds : [],
-        readingTime: typeof data.readingTime === 'number' ? data.readingTime : undefined,
-      } as Article;
-      console.log('[getAdjacentArticlesServer] Next article found:', nextArticle.id, nextArticle.title);
-    }
-    
-    console.log('[getAdjacentArticlesServer] Returning:', {
-      previousArticle: previousArticle ? previousArticle.id : null,
-      nextArticle: nextArticle ? nextArticle.id : null,
-    });
-    
-    return { previousArticle, nextArticle };
   } catch (error) {
     console.error('[getAdjacentArticlesServer] Error:', error);
     console.error('[getAdjacentArticlesServer] Error details:', error instanceof Error ? error.message : String(error));
+    console.error('[getAdjacentArticlesServer] Error stack:', error instanceof Error ? error.stack : '');
     return { previousArticle: null, nextArticle: null };
   }
 };
+
+// 前後の記事の結果を構築するヘルパー関数
+async function buildAdjacentArticlesResult(
+  prevQuery: FirebaseFirestore.QuerySnapshot,
+  nextQuery: FirebaseFirestore.QuerySnapshot
+): Promise<{ previousArticle: Article | null; nextArticle: Article | null }> {
+  let previousArticle: Article | null = null;
+  let nextArticle: Article | null = null;
+  
+  if (!prevQuery.empty) {
+    const doc = prevQuery.docs[0];
+    const data = doc.data();
+    previousArticle = {
+      id: doc.id,
+      ...data,
+      publishedAt: convertTimestamp(data.publishedAt),
+      updatedAt: convertTimestamp(data.updatedAt),
+      tableOfContents: Array.isArray(data.tableOfContents) ? data.tableOfContents : [],
+      relatedArticleIds: Array.isArray(data.relatedArticleIds) ? data.relatedArticleIds : [],
+      readingTime: typeof data.readingTime === 'number' ? data.readingTime : undefined,
+    } as Article;
+    console.log('[getAdjacentArticlesServer] Previous article found:', previousArticle.id, previousArticle.title);
+  }
+  
+  if (!nextQuery.empty) {
+    const doc = nextQuery.docs[0];
+    const data = doc.data();
+    nextArticle = {
+      id: doc.id,
+      ...data,
+      publishedAt: convertTimestamp(data.publishedAt),
+      updatedAt: convertTimestamp(data.updatedAt),
+      tableOfContents: Array.isArray(data.tableOfContents) ? data.tableOfContents : [],
+      relatedArticleIds: Array.isArray(data.relatedArticleIds) ? data.relatedArticleIds : [],
+      readingTime: typeof data.readingTime === 'number' ? data.readingTime : undefined,
+    } as Article;
+    console.log('[getAdjacentArticlesServer] Next article found:', nextArticle.id, nextArticle.title);
+  }
+  
+  console.log('[getAdjacentArticlesServer] Returning:', {
+    previousArticle: previousArticle ? previousArticle.id : null,
+    nextArticle: nextArticle ? nextArticle.id : null,
+  });
+  
+  return { previousArticle, nextArticle };
+}
 
 
