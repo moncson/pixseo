@@ -618,4 +618,58 @@ async function buildAdjacentArticlesResult(
   return { previousArticle, nextArticle };
 }
 
+// ライター別の記事一覧を取得（サーバーサイド用）
+export const getArticlesByWriterServer = async (
+  writerId: string,
+  mediaId?: string,
+  limitCount: number = 20
+): Promise<Article[]> => {
+  try {
+    // キャッシュキー生成
+    const cacheKey = generateCacheKey('articles-by-writer', writerId, mediaId, limitCount.toString());
+    
+    // キャッシュから取得
+    const cached = cacheManager.get<Article[]>(cacheKey, CACHE_TTL.SHORT);
+    if (cached) {
+      return cached;
+    }
+    
+    // Firestoreから取得
+    const articlesRef = adminDb.collection('articles');
+    let query = articlesRef
+      .where('writerId', '==', writerId)
+      .where('isPublished', '==', true)
+      .orderBy('publishedAt', 'desc')
+      .limit(limitCount);
+    
+    // mediaIdが指定されている場合はフィルタリング
+    if (mediaId) {
+      query = query.where('mediaId', '==', mediaId) as any;
+    }
+    
+    const snapshot = await query.get();
+    
+    const articles = snapshot.docs.map((doc) => {
+      const data = doc.data();
+      return {
+        id: doc.id,
+        ...data,
+        publishedAt: convertTimestamp(data.publishedAt),
+        updatedAt: convertTimestamp(data.updatedAt),
+        tableOfContents: Array.isArray(data.tableOfContents) ? data.tableOfContents : [],
+        relatedArticleIds: Array.isArray(data.relatedArticleIds) ? data.relatedArticleIds : [],
+        readingTime: typeof data.readingTime === 'number' ? data.readingTime : undefined,
+      } as Article;
+    });
+    
+    // キャッシュに保存
+    cacheManager.set(cacheKey, articles);
+    
+    return articles;
+  } catch (error) {
+    console.error('Error fetching articles by writer:', error);
+    return [];
+  }
+};
+
 

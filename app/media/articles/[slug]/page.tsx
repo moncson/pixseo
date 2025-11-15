@@ -204,6 +204,9 @@ export default async function ArticlePage({ params }: PageProps) {
   const category = categories.length > 0 ? categories[0] : null;
 
   // JSON-LD 構造化データ（SEO強化）
+  const headersList = headers();
+  const host = headersList.get('host') || '';
+  
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'Article',
@@ -212,21 +215,27 @@ export default async function ArticlePage({ params }: PageProps) {
     image: article.featuredImage || '',
     datePublished: article.publishedAt instanceof Date ? article.publishedAt.toISOString() : new Date().toISOString(),
     dateModified: article.updatedAt instanceof Date ? article.updatedAt.toISOString() : new Date().toISOString(),
-    author: {
+    author: writer ? {
       '@type': 'Person',
-      name: writer?.handleName || '匿名',
+      name: writer.handleName,
+      url: `https://${host}/writers/${writer.id}`,
+      image: writer.icon || '',
+      description: writer.bio || '',
+    } : {
+      '@type': 'Person',
+      name: '匿名',
     },
     publisher: {
       '@type': 'Organization',
-      name: 'ふらっと。',
-      logo: {
+      name: siteName,
+      logo: siteInfo.logoUrl ? {
         '@type': 'ImageObject',
-        url: 'https://the-ayumi.jp/logo.png',
-      },
+        url: siteInfo.logoUrl,
+      } : undefined,
     },
     mainEntityOfPage: {
       '@type': 'WebPage',
-      '@id': `https://the-ayumi.jp/media/articles/${article.slug || ''}`,
+      '@id': `https://${host}/articles/${article.slug || ''}`,
     },
   };
 

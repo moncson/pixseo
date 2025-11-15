@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import Link from 'next/link';
 import { Writer } from '@/types/writer';
 
 interface AuthorProfileProps {
@@ -49,9 +50,17 @@ export default function AuthorProfile({ writer }: AuthorProfileProps) {
 
       {/* 著者情報エリア（下部） */}
       <div className="p-6 pt-8">
-        <h3 className="text-lg font-bold text-gray-900 mb-2 text-center">
-          {writer.handleName}
-        </h3>
+        <Link 
+          href={`/writers/${writer.id}`}
+          className="block group"
+        >
+          <h3 className="text-lg font-bold text-center mb-2 transition-colors" style={{ color: 'var(--link-text-color, #1f2937)' }}>
+            <span className="group-hover:hidden">{writer.handleName}</span>
+            <span className="hidden group-hover:inline" style={{ color: 'var(--link-hover-color, #2563eb)' }}>
+              {writer.handleName}
+            </span>
+          </h3>
+        </Link>
         {writer.bio && (
           <p className="text-sm text-gray-600 leading-relaxed text-center">
             {writer.bio}
