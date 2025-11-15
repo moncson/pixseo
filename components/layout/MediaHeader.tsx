@@ -5,6 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { SiteInfo } from '@/lib/firebase/media-tenant-helper';
 import { MenuSettings } from '@/types/theme';
+import { Lang } from '@/types/lang';
 import HamburgerMenu from './HamburgerMenu';
 import SearchPanel from './SearchPanel';
 
@@ -14,6 +15,7 @@ interface MediaHeaderProps {
   menuSettings?: MenuSettings;
   menuBackgroundColor?: string;
   menuTextColor?: string;
+  lang?: Lang;
 }
 
 export default function MediaHeader({ 
@@ -27,6 +29,7 @@ export default function MediaHeader({
   },
   menuBackgroundColor = '#1f2937',
   menuTextColor = '#ffffff',
+  lang = 'ja',
 }: MediaHeaderProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -62,7 +65,7 @@ export default function MediaHeader({
               </button>
 
               {/* 中央：ロゴ */}
-              <Link href="/media" className="absolute left-1/2 -translate-x-1/2 flex items-center">
+              <Link href={`/${lang}`} className="absolute left-1/2 -translate-x-1/2 flex items-center">
                 <div className="flex items-center gap-3">
                   {siteInfo?.faviconUrl && (
                     <Image
@@ -119,12 +122,14 @@ export default function MediaHeader({
         menuSettings={menuSettings}
         menuBackgroundColor={menuBackgroundColor}
         menuTextColor={menuTextColor}
+        lang={lang}
       />
 
       {/* 検索パネル（左から） */}
       <SearchPanel
         isOpen={isSearchOpen}
         onClose={() => setIsSearchOpen(false)}
+        lang={lang}
       />
     </>
   );

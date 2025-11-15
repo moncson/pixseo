@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import Link from 'next/link';
 import { MenuSettings } from '@/types/theme';
+import { Lang } from '@/types/lang';
 
 interface HamburgerMenuProps {
   isOpen: boolean;
@@ -11,9 +12,10 @@ interface HamburgerMenuProps {
   menuSettings: MenuSettings;
   menuBackgroundColor: string;
   menuTextColor: string;
+  lang?: Lang;
 }
 
-export default function HamburgerMenu({ isOpen, onClose, menuSettings, menuBackgroundColor, menuTextColor }: HamburgerMenuProps) {
+export default function HamburgerMenu({ isOpen, onClose, menuSettings, menuBackgroundColor, menuTextColor, lang = 'ja' }: HamburgerMenuProps) {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -99,7 +101,7 @@ export default function HamburgerMenu({ isOpen, onClose, menuSettings, menuBackg
               {/* トップ */}
               <li>
                 <Link
-                  href="/media"
+                  href={`/${lang}`}
                   onClick={onClose}
                   className="block text-lg font-medium hover:opacity-70 transition-opacity"
                 >
@@ -110,7 +112,7 @@ export default function HamburgerMenu({ isOpen, onClose, menuSettings, menuBackg
               {/* 記事一覧 */}
               <li>
                 <Link
-                  href="/media/articles"
+                  href={`/${lang}/articles`}
                   onClick={onClose}
                   className="block text-lg font-medium hover:opacity-70 transition-opacity"
                 >
@@ -121,7 +123,7 @@ export default function HamburgerMenu({ isOpen, onClose, menuSettings, menuBackg
               {/* 検索 */}
               <li>
                 <Link
-                  href="/media/search"
+                  href={`/${lang}/search`}
                   onClick={onClose}
                   className="block text-lg font-medium hover:opacity-70 transition-opacity"
                 >

@@ -3,14 +3,16 @@
 import { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { useRouter } from 'next/navigation';
+import { Lang } from '@/types/lang';
 import Image from 'next/image';
 
 interface SearchPanelProps {
   isOpen: boolean;
   onClose: () => void;
+  lang?: Lang;
 }
 
-export default function SearchPanel({ isOpen, onClose }: SearchPanelProps) {
+export default function SearchPanel({ isOpen, onClose, lang = 'ja' }: SearchPanelProps) {
   const [mounted, setMounted] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const router = useRouter();
@@ -37,7 +39,7 @@ export default function SearchPanel({ isOpen, onClose }: SearchPanelProps) {
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
-      router.push(`/media/search?q=${encodeURIComponent(searchQuery.trim())}`);
+      router.push(`/${lang}/search?q=${encodeURIComponent(searchQuery.trim())}`);
       onClose();
       setSearchQuery('');
     }
