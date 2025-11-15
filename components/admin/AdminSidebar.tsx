@@ -126,7 +126,7 @@ const AdminSidebar = memo(function AdminSidebar({
     },
   ];
 
-  // セクション3: サイト、デザイン、ブロック、メディア
+  // セクション3: サイト、ページ、テーマ、メディア
   const section3Navigation: MenuItem[] = [
     { 
       name: 'サイト', 
@@ -135,6 +135,19 @@ const AdminSidebar = memo(function AdminSidebar({
         <Image 
           src="/site.svg" 
           alt="サイト" 
+          width={20}
+          height={20}
+          priority
+        />
+      )
+    },
+    { 
+      name: 'ページ', 
+      href: '/pages',
+      icon: (
+        <Image 
+          src="/article.svg" 
+          alt="ページ" 
           width={20}
           height={20}
           priority
