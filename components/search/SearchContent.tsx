@@ -6,13 +6,14 @@ import Image from 'next/image';
 import SimpleSearch from '@/components/search/SimpleSearch';
 import ArticleCard from '@/components/articles/ArticleCard';
 import { Article } from '@/types/article';
-import { searchArticles } from '@/lib/firebase/search';
+import { searchArticlesWithAlgolia } from '@/lib/algolia/search';
 
 interface SearchContentProps {
   faviconUrl?: string;
+  mediaId?: string;
 }
 
-export default function SearchContent({ faviconUrl }: SearchContentProps) {
+export default function SearchContent({ faviconUrl, mediaId }: SearchContentProps) {
   const searchParams = useSearchParams();
   const query = searchParams.get('q') || '';
   const [articles, setArticles] = useState<Article[]>([]);
@@ -30,10 +31,12 @@ export default function SearchContent({ faviconUrl }: SearchContentProps) {
     setLoading(true);
     setKeyword(searchKeyword);
     try {
-      const results = await searchArticles({
+      const { articles: results } = await searchArticlesWithAlgolia({
         keyword: searchKeyword,
+        mediaId,
+        hitsPerPage: 50,
       });
-      setArticles(results);
+      setArticles(results as Article[]);
     } catch (error) {
       console.error('Search error:', error);
       setArticles([]);

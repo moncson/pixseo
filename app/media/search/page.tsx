@@ -90,7 +90,7 @@ export default async function SearchPage() {
           <div className="flex-1 lg:w-[70%]">
             {/* 検索コンテンツ */}
             <Suspense fallback={<div className="text-center py-12">読み込み中...</div>}>
-              <SearchContent faviconUrl={siteInfo.faviconUrl} />
+              <SearchContent faviconUrl={siteInfo.faviconUrl} mediaId={mediaId || undefined} />
             </Suspense>
             </div>
 
