@@ -121,11 +121,10 @@ export default async function WriterPage({ params }: PageProps) {
       {/* ヘッダー */}
       <MediaHeader 
         siteName={siteName}
-        logoUrl={siteInfo.logoUrl}
-        categories={headerCategories}
+        siteInfo={siteInfo}
+        menuSettings={theme.menuSettings}
         menuBackgroundColor={theme.menuBackgroundColor}
         menuTextColor={theme.menuTextColor}
-        menuItems={theme.menuItems}
       />
 
       {/* FV（ライター用） */}
