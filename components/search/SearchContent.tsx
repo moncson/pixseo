@@ -23,6 +23,10 @@ export default function SearchContent({ faviconUrl, mediaId }: SearchContentProp
   useEffect(() => {
     if (query) {
       handleSearch(query);
+    } else {
+      // URLパラメーターが空になったら検索結果とキーワードをクリア
+      setArticles([]);
+      setKeyword('');
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [query]);
