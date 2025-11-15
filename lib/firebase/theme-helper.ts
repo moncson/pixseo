@@ -56,22 +56,12 @@ export function generateThemeStyles(theme: Theme): string {
       --header-background-color: ${theme.headerBackgroundColor};
       --footer-background-color: ${theme.footerBackgroundColor};
       --block-background-color: ${theme.blockBackgroundColor};
+      --menu-bg-color: ${theme.menuBackgroundColor};
+      --menu-text-color: ${theme.menuTextColor};
       --link-color: ${theme.linkColor};
       --link-hover-color: ${theme.linkHoverColor};
       --border-color: ${theme.borderColor};
       --shadow-color: ${theme.shadowColor};
-      --h2-color: ${theme.h2Color};
-      --h2-background-color: ${theme.h2BackgroundColor || 'transparent'};
-      --h2-left-border-color: ${theme.h2LeftBorderColor || 'transparent'};
-      --h2-bottom-border-color: ${theme.h2BottomBorderColor || 'transparent'};
-      --h3-color: ${theme.h3Color};
-      --h3-background-color: ${theme.h3BackgroundColor || 'transparent'};
-      --h3-left-border-color: ${theme.h3LeftBorderColor || 'transparent'};
-      --h3-bottom-border-color: ${theme.h3BottomBorderColor || 'transparent'};
-      --h4-color: ${theme.h4Color};
-      --h4-background-color: ${theme.h4BackgroundColor || 'transparent'};
-      --h4-left-border-color: ${theme.h4LeftBorderColor || 'transparent'};
-      --h4-bottom-border-color: ${theme.h4BottomBorderColor || 'transparent'};
     }
   `;
 }
