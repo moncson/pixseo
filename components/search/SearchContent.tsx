@@ -8,7 +8,11 @@ import ArticleCard from '@/components/articles/ArticleCard';
 import { Article } from '@/types/article';
 import { searchArticles } from '@/lib/firebase/search';
 
-export default function SearchContent() {
+interface SearchContentProps {
+  faviconUrl?: string;
+}
+
+export default function SearchContent({ faviconUrl }: SearchContentProps) {
   const searchParams = useSearchParams();
   const query = searchParams.get('q') || '';
   const [articles, setArticles] = useState<Article[]>([]);
