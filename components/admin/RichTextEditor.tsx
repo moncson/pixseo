@@ -602,12 +602,25 @@ export default function RichTextEditor({ value, onChange, placeholder }: RichTex
 
       {/* エディタ内のスタイル適用 */}
       <style jsx global>{`
+        [contenteditable="true"] {
+          line-height: 2.0;
+          letter-spacing: 0.02em;
+        }
+
+        [contenteditable="true"] p {
+          line-height: 2.0;
+          letter-spacing: 0.02em;
+          margin-bottom: 1.5em;
+        }
+
         [contenteditable="true"] h2 {
           color: #111827;
-          margin: 1.5rem 0 1rem 0;
-          padding-bottom: 0.5rem;
+          margin: 2em 0 1em 0;
+          padding-bottom: 0.5em;
           font-size: 1.375rem;
           font-weight: 700;
+          line-height: 1.6;
+          letter-spacing: 0.02em;
           position: relative;
           border-bottom: none;
         }
@@ -625,11 +638,13 @@ export default function RichTextEditor({ value, onChange, placeholder }: RichTex
 
         [contenteditable="true"] h3 {
           color: #1f2937;
-          margin: 1.25rem 0 0.75rem 0;
-          padding-bottom: 0.5rem;
+          margin: 1.8em 0 0.8em 0;
+          padding-bottom: 0.5em;
           padding-left: 0;
           font-size: 1.25rem;
           font-weight: 600;
+          line-height: 1.6;
+          letter-spacing: 0.02em;
           position: relative;
           border-bottom: none;
           border-left: none;
@@ -648,10 +663,12 @@ export default function RichTextEditor({ value, onChange, placeholder }: RichTex
 
         [contenteditable="true"] h4 {
           color: #374151;
-          margin: 1rem 0 0.5rem 0;
-          padding-bottom: 0.25rem;
+          margin: 1.5em 0 0.6em 0;
+          padding-bottom: 0.25em;
           font-size: 1.125rem;
           font-weight: 600;
+          line-height: 1.6;
+          letter-spacing: 0.02em;
           border-bottom: 2px solid ${theme.primaryColor || '#3b82f6'};
         }
 
@@ -662,6 +679,46 @@ export default function RichTextEditor({ value, onChange, placeholder }: RichTex
 
         [contenteditable="true"] a:hover {
           color: ${theme.linkHoverColor};
+        }
+
+        /* リスト */
+        [contenteditable="true"] ul,
+        [contenteditable="true"] ol {
+          line-height: 2.0;
+          letter-spacing: 0.02em;
+          counter-reset: list-counter;
+          list-style: none;
+          padding-left: 0;
+          margin: 1.5rem 0;
+        }
+
+        [contenteditable="true"] ol {
+          counter-reset: list-counter;
+        }
+
+        [contenteditable="true"] li {
+          margin-bottom: 0.75em;
+          padding: 0.75em 1em;
+          background: transparent;
+          border: 2px solid ${theme.borderColor || '#e5e7eb'};
+          border-radius: 8px;
+          position: relative;
+          counter-increment: list-counter;
+          font-size: 0.9em;
+        }
+
+        [contenteditable="true"] ol > li::before {
+          content: "No. " counter(list-counter);
+          display: inline-block;
+          margin-right: 0.5em;
+          font-weight: 700;
+          color: ${theme.primaryColor || '#3b82f6'};
+          font-size: 0.875em;
+          position: static;
+        }
+
+        [contenteditable="true"] ul > li::before {
+          content: "";
         }
 
         /* 引用 */
@@ -706,6 +763,14 @@ export default function RichTextEditor({ value, onChange, placeholder }: RichTex
           text-align: left;
         }
 
+        [contenteditable="true"] table.custom-table thead tr:first-child th:first-child {
+          border-top-left-radius: 7px;
+        }
+
+        [contenteditable="true"] table.custom-table thead tr:first-child th:last-child {
+          border-top-right-radius: 7px;
+        }
+
         [contenteditable="true"] table.custom-table td {
           border-bottom: 1px solid ${theme.tableBorderColor};
           padding: 0.75rem;
@@ -713,6 +778,14 @@ export default function RichTextEditor({ value, onChange, placeholder }: RichTex
 
         [contenteditable="true"] table.custom-table tbody tr:last-child td {
           border-bottom: none;
+        }
+
+        [contenteditable="true"] table.custom-table tbody tr:last-child td:first-child {
+          border-bottom-left-radius: 7px;
+        }
+
+        [contenteditable="true"] table.custom-table tbody tr:last-child td:last-child {
+          border-bottom-right-radius: 7px;
         }
 
         [contenteditable="true"] table.custom-table tr:nth-child(even) {
