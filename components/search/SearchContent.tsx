@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Image from 'next/image';
-import FilterSearch from '@/components/search/FilterSearch';
+import SimpleSearch from '@/components/search/SimpleSearch';
 import ArticleCard from '@/components/articles/ArticleCard';
 import { Article } from '@/types/article';
 import { searchArticles } from '@/lib/firebase/search';
@@ -17,11 +17,7 @@ export default function SearchContent({ faviconUrl }: SearchContentProps) {
   const query = searchParams.get('q') || '';
   const [articles, setArticles] = useState<Article[]>([]);
   const [loading, setLoading] = useState(false);
-  const [filters, setFilters] = useState({
-    categoryId: '',
-    tagId: '',
-    keyword: query,
-  });
+  const [keyword, setKeyword] = useState(query);
 
   useEffect(() => {
     if (query) {
@@ -30,13 +26,12 @@ export default function SearchContent({ faviconUrl }: SearchContentProps) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [query]);
 
-  const handleSearch = async (keyword: string) => {
+  const handleSearch = async (searchKeyword: string) => {
     setLoading(true);
+    setKeyword(searchKeyword);
     try {
       const results = await searchArticles({
-        keyword,
-        categoryId: filters.categoryId || undefined,
-        tagId: filters.tagId || undefined,
+        keyword: searchKeyword,
       });
       setArticles(results);
     } catch (error) {
@@ -47,22 +42,10 @@ export default function SearchContent({ faviconUrl }: SearchContentProps) {
     }
   };
 
-  const handleFilterChange = (newFilters: typeof filters) => {
-    setFilters(newFilters);
-    if (newFilters.keyword || newFilters.categoryId || newFilters.tagId) {
-      handleSearch(newFilters.keyword);
-    }
-  };
-
   return (
     <>
-      {/* 絞り込み検索 */}
-      <section className="mb-8">
-        <FilterSearch
-          filters={filters}
-          onChange={handleFilterChange}
-        />
-      </section>
+      {/* シンプル検索 */}
+      <SimpleSearch onSearch={handleSearch} initialKeyword={keyword} />
 
       {/* 検索結果 */}
       <section>
@@ -100,7 +83,7 @@ export default function SearchContent({ faviconUrl }: SearchContentProps) {
               </svg>
             )}
             <p className="text-sm">
-              {query || filters.categoryId || filters.tagId
+              {keyword
                 ? '記事が見つかりませんでした'
                 : '検索キーワードを入力してください'}
             </p>
@@ -110,4 +93,3 @@ export default function SearchContent({ faviconUrl }: SearchContentProps) {
     </>
   );
 }
-
