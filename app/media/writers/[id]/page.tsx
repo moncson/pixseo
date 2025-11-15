@@ -129,10 +129,12 @@ export default async function WriterPage({ params }: PageProps) {
 
       {/* FV（ライター用） */}
       <FirstView
-        imageUrl={writer.backgroundImage || ''}
-        catchphrase={writer.handleName}
-        description="WRITER"
-        isParallax={true}
+        settings={{
+          imageUrl: writer.backgroundImage || '',
+          catchphrase: writer.handleName,
+          description: 'WRITER',
+        }}
+        showCustomContent={true}
       />
 
       {/* カテゴリーバー */}
