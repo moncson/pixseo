@@ -56,7 +56,7 @@ export default function FirstView({ settings, customTitle, customSubtitle, showC
               />
               
               {/* オーバーレイ */}
-              <div className="absolute inset-0 bg-black bg-opacity-30" />
+              <div className="absolute inset-0 bg-black bg-opacity-50" />
             </>
           ) : (
             <div 
@@ -82,8 +82,15 @@ export default function FirstView({ settings, customTitle, customSubtitle, showC
               </div>
             )}
             {customTitle && (
-              <h1 className="text-4xl md:text-5xl font-bold text-center mb-4 drop-shadow-lg">
-                {customTitle}
+              <h1 
+                className="font-bold text-center mb-4 drop-shadow-lg"
+                style={{ fontSize: writerIcon ? undefined : '1.5em' }}
+              >
+                {writerIcon ? (
+                  <span className="text-4xl md:text-5xl">{customTitle}</span>
+                ) : (
+                  customTitle
+                )}
               </h1>
             )}
             {customMeta && (
