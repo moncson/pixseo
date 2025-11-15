@@ -118,27 +118,6 @@ export interface Theme {
   borderColor: string;              // ボーダーカラー
   shadowColor: string;              // シャドウカラー（RGBA形式）
   
-  // 見出しデザイン（H2）
-  h2Color: string;
-  h2BackgroundColor?: string;
-  h2LeftBorderColor?: string;
-  h2BottomBorderColor?: string;
-  h2Icon?: string;
-  
-  // 見出しデザイン（H3）
-  h3Color: string;
-  h3BackgroundColor?: string;
-  h3LeftBorderColor?: string;
-  h3BottomBorderColor?: string;
-  h3Icon?: string;
-  
-  // 見出しデザイン（H4）
-  h4Color: string;
-  h4BackgroundColor?: string;
-  h4LeftBorderColor?: string;
-  h4BottomBorderColor?: string;
-  h4Icon?: string;
-  
   // カスタムCSS
   customCss?: string;               // 自由なCSS記述エリア
   
@@ -200,27 +179,6 @@ export const defaultTheme: Theme = {
   // 装飾
   borderColor: '#e5e7eb',           // gray-200（ボーダーカラー）
   shadowColor: 'rgba(0, 0, 0, 0.1)', // シャドウカラー
-  
-  // 見出しデザイン（H2）
-  h2Color: '#111827',               // gray-900
-  h2BackgroundColor: '#f3f4f6',     // gray-100
-  h2LeftBorderColor: '#3b82f6',     // blue-500
-  h2BottomBorderColor: 'transparent',
-  h2Icon: '',
-  
-  // 見出しデザイン（H3）
-  h3Color: '#1f2937',               // gray-800
-  h3BackgroundColor: '#ffffff',
-  h3LeftBorderColor: 'transparent',
-  h3BottomBorderColor: '#9ca3af',   // gray-400
-  h3Icon: '',
-  
-  // 見出しデザイン（H4）
-  h4Color: '#374151',               // gray-700
-  h4BackgroundColor: '#ffffff',
-  h4LeftBorderColor: 'transparent',
-  h4BottomBorderColor: 'transparent',
-  h4Icon: '',
   
   // カスタムCSS
   customCss: '',

@@ -56,7 +56,7 @@ export default function TableOfContents({ items, faviconUrl }: TableOfContentsPr
     <div className="bg-white rounded-xl shadow-md border-l-3 border-blue-600 p-5 mb-6">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center justify-between w-full mb-4 pb-3 border-b border-gray-200"
+        className={`flex items-center justify-between w-full ${isOpen ? 'mb-4 pb-3 border-b border-gray-200' : ''}`}
       >
         <div className="flex items-center gap-2">
           {faviconUrl ? (
