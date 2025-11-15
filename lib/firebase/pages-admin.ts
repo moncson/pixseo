@@ -115,19 +115,24 @@ export const getPageById = async (id: string): Promise<Page | null> => {
  */
 export const getPages = async (mediaId?: string): Promise<Page[]> => {
   if (!db) {
-    throw new Error('Firestore is not initialized');
+    console.error('[getPages] Firestore is not initialized');
+    return []; // エラー時は空配列を返す
   }
 
   try {
     const pagesRef = collection(db, 'pages');
-    let q = query(pagesRef, orderBy('order', 'asc'));
+    let q;
     
     // mediaIdでフィルタリング（指定がある場合）
     if (mediaId) {
       q = query(pagesRef, where('mediaId', '==', mediaId), orderBy('order', 'asc'));
+    } else {
+      q = query(pagesRef, orderBy('order', 'asc'));
     }
     
+    console.log('[getPages] Querying pages with mediaId:', mediaId);
     const querySnapshot = await getDocs(q);
+    console.log('[getPages] Found', querySnapshot.docs.length, 'pages');
     
     return querySnapshot.docs.map((doc) => {
       const data = doc.data();
@@ -139,8 +144,10 @@ export const getPages = async (mediaId?: string): Promise<Page[]> => {
       } as Page;
     });
   } catch (error) {
-    console.error('Error getting pages:', error);
-    throw error;
+    console.error('[getPages] Error:', error);
+    console.error('[getPages] Error message:', error instanceof Error ? error.message : String(error));
+    // エラー時は空配列を返す（Firestoreインデックスが必要な場合など）
+    return [];
   }
 };
 
