@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { Article, Category } from '@/types/article';
+import { Lang } from '@/types/lang';
 
 interface ArticleNavigationProps {
   previousArticle?: Article | null;
@@ -8,6 +9,7 @@ interface ArticleNavigationProps {
   previousCategories?: Category[];
   nextCategories?: Category[];
   logoUrl?: string;
+  lang?: Lang;
 }
 
 export default function ArticleNavigation({ 
@@ -15,7 +17,8 @@ export default function ArticleNavigation({
   nextArticle,
   previousCategories = [],
   nextCategories = [],
-  logoUrl
+  logoUrl,
+  lang = 'ja'
 }: ArticleNavigationProps) {
   if (!previousArticle && !nextArticle) {
     return null;
@@ -34,7 +37,7 @@ export default function ArticleNavigation({
         <div>
           {nextArticle ? (
             <Link
-              href={`/articles/${nextArticle.slug}`}
+              href={`/${lang}/articles/${nextArticle.slug}`}
               className="block group bg-white rounded-lg shadow-md hover:shadow-lg transition-all p-5"
             >
               <div className="flex items-center text-sm text-gray-600 mb-3">
@@ -110,7 +113,7 @@ export default function ArticleNavigation({
         <div>
           {previousArticle ? (
             <Link
-              href={`/articles/${previousArticle.slug}`}
+              href={`/${lang}/articles/${previousArticle.slug}`}
               className="block group bg-white rounded-lg shadow-md hover:shadow-lg transition-all p-5"
             >
               <div className="flex items-center justify-end text-sm text-gray-600 mb-3">
