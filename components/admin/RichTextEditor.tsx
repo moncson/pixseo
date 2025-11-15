@@ -603,112 +603,32 @@ export default function RichTextEditor({ value, onChange, placeholder }: RichTex
       {/* エディタ内のスタイル適用 */}
       <style jsx global>{`
         [contenteditable="true"] h2 {
-          color: ${theme.h2Color};
-          display: flex;
-          align-items: center;
-          gap: 0.5rem;
+          color: ${theme.menuTextColor || '#ffffff'};
+          background-color: ${theme.menuBackgroundColor || '#1f2937'};
           margin: 1.5rem 0 1rem 0;
+          padding: 0.5rem 0.75rem;
           font-size: 1.5rem;
           font-weight: 700;
-          ${theme.h2BackgroundColor && theme.h2BackgroundColor !== 'transparent' ? `
-            background-color: ${theme.h2BackgroundColor};
-            padding: 0.5rem 1rem;
-          ` : ''}
-          ${theme.h2LeftBorderColor && theme.h2LeftBorderColor !== 'transparent' ? `
-            border-left: 4px solid ${theme.h2LeftBorderColor};
-            padding-left: 1rem;
-          ` : ''}
-          ${theme.h2BottomBorderColor && theme.h2BottomBorderColor !== 'transparent' ? `
-            border-bottom: 2px solid ${theme.h2BottomBorderColor};
-            padding-bottom: 0.5rem;
-          ` : ''}
+          border-radius: 8px;
         }
-
-        ${theme.h2Icon && theme.h2Icon !== '' ? `
-          [contenteditable="true"] h2::before {
-            content: '';
-            display: inline-block;
-            width: 1.5em;
-            height: 1.5em;
-            background-image: url(${theme.h2Icon});
-            background-size: contain;
-            background-repeat: no-repeat;
-            background-position: center;
-            flex-shrink: 0;
-          }
-        ` : ''}
 
         [contenteditable="true"] h3 {
-          color: ${theme.h3Color};
-          display: flex;
-          align-items: center;
-          gap: 0.5rem;
+          color: #1f2937;
           margin: 1.25rem 0 0.75rem 0;
+          padding-bottom: 0.5rem;
           font-size: 1.25rem;
           font-weight: 600;
-          ${theme.h3BackgroundColor && theme.h3BackgroundColor !== 'transparent' ? `
-            background-color: ${theme.h3BackgroundColor};
-            padding: 0.5rem 1rem;
-          ` : ''}
-          ${theme.h3LeftBorderColor && theme.h3LeftBorderColor !== 'transparent' ? `
-            border-left: 4px solid ${theme.h3LeftBorderColor};
-            padding-left: 1rem;
-          ` : ''}
-          ${theme.h3BottomBorderColor && theme.h3BottomBorderColor !== 'transparent' ? `
-            border-bottom: 2px solid ${theme.h3BottomBorderColor};
-            padding-bottom: 0.5rem;
-          ` : ''}
+          border-bottom: 3px solid ${theme.primaryColor || '#3b82f6'};
         }
-
-        ${theme.h3Icon && theme.h3Icon !== '' ? `
-          [contenteditable="true"] h3::before {
-            content: '';
-            display: inline-block;
-            width: 1.35em;
-            height: 1.35em;
-            background-image: url(${theme.h3Icon});
-            background-size: contain;
-            background-repeat: no-repeat;
-            background-position: center;
-            flex-shrink: 0;
-          }
-        ` : ''}
 
         [contenteditable="true"] h4 {
-          color: ${theme.h4Color};
-          display: flex;
-          align-items: center;
-          gap: 0.5rem;
+          color: #374151;
           margin: 1rem 0 0.5rem 0;
+          padding-bottom: 0.25rem;
           font-size: 1.125rem;
           font-weight: 600;
-          ${theme.h4BackgroundColor && theme.h4BackgroundColor !== 'transparent' ? `
-            background-color: ${theme.h4BackgroundColor};
-            padding: 0.5rem 1rem;
-          ` : ''}
-          ${theme.h4LeftBorderColor && theme.h4LeftBorderColor !== 'transparent' ? `
-            border-left: 4px solid ${theme.h4LeftBorderColor};
-            padding-left: 1rem;
-          ` : ''}
-          ${theme.h4BottomBorderColor && theme.h4BottomBorderColor !== 'transparent' ? `
-            border-bottom: 2px solid ${theme.h4BottomBorderColor};
-            padding-bottom: 0.5rem;
-          ` : ''}
+          border-bottom: 2px solid ${theme.primaryColor || '#3b82f6'};
         }
-
-        ${theme.h4Icon && theme.h4Icon !== '' ? `
-          [contenteditable="true"] h4::before {
-            content: '';
-            display: inline-block;
-            width: 1.2em;
-            height: 1.2em;
-            background-image: url(${theme.h4Icon});
-            background-size: contain;
-            background-repeat: no-repeat;
-            background-position: center;
-            flex-shrink: 0;
-          }
-        ` : ''}
 
         [contenteditable="true"] a {
           color: ${theme.linkColor};
