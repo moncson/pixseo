@@ -344,7 +344,7 @@ export default async function ArticlePage({ params }: PageProps) {
               nextArticle={adjacentArticles.nextArticle}
               previousCategories={previousCategories}
               nextCategories={nextCategories}
-              logoUrl={siteInfo.logoUrl}
+              logoUrl={siteInfo.faviconUrl}
             />
 
             {/* SNSシェアボタン */}

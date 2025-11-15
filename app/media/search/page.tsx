@@ -96,7 +96,7 @@ export default async function SearchPage() {
 
             {/* 検索コンテンツ */}
             <Suspense fallback={<div className="text-center py-12">読み込み中...</div>}>
-              <SearchContent />
+              <SearchContent faviconUrl={siteInfo.faviconUrl} />
             </Suspense>
             </div>
 
