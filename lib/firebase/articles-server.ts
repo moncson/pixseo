@@ -516,6 +516,11 @@ export const getAdjacentArticlesServer = async (
   mediaId?: string
 ): Promise<{ previousArticle: Article | null; nextArticle: Article | null }> => {
   try {
+    console.log('[getAdjacentArticlesServer] Starting...');
+    console.log('[getAdjacentArticlesServer] Current article:', currentArticle.id, currentArticle.title);
+    console.log('[getAdjacentArticlesServer] Current publishedAt:', currentArticle.publishedAt);
+    console.log('[getAdjacentArticlesServer] mediaId:', mediaId);
+    
     const articlesRef = adminDb.collection('articles');
     let baseQuery = articlesRef.where('isPublished', '==', true);
     
@@ -525,18 +530,22 @@ export const getAdjacentArticlesServer = async (
     }
     
     // 前の記事（公開日が古い順で現在の記事より前）
+    console.log('[getAdjacentArticlesServer] Querying for previous article...');
     const prevQuery = await baseQuery
       .where('publishedAt', '<', currentArticle.publishedAt)
       .orderBy('publishedAt', 'desc')
       .limit(1)
       .get();
+    console.log('[getAdjacentArticlesServer] Previous query result count:', prevQuery.size);
     
     // 次の記事（公開日が新しい順で現在の記事より後）
+    console.log('[getAdjacentArticlesServer] Querying for next article...');
     const nextQuery = await baseQuery
       .where('publishedAt', '>', currentArticle.publishedAt)
       .orderBy('publishedAt', 'asc')
       .limit(1)
       .get();
+    console.log('[getAdjacentArticlesServer] Next query result count:', nextQuery.size);
     
     let previousArticle: Article | null = null;
     let nextArticle: Article | null = null;
@@ -553,6 +562,7 @@ export const getAdjacentArticlesServer = async (
         relatedArticleIds: Array.isArray(data.relatedArticleIds) ? data.relatedArticleIds : [],
         readingTime: typeof data.readingTime === 'number' ? data.readingTime : undefined,
       } as Article;
+      console.log('[getAdjacentArticlesServer] Previous article found:', previousArticle.id, previousArticle.title);
     }
     
     if (!nextQuery.empty) {
@@ -567,11 +577,18 @@ export const getAdjacentArticlesServer = async (
         relatedArticleIds: Array.isArray(data.relatedArticleIds) ? data.relatedArticleIds : [],
         readingTime: typeof data.readingTime === 'number' ? data.readingTime : undefined,
       } as Article;
+      console.log('[getAdjacentArticlesServer] Next article found:', nextArticle.id, nextArticle.title);
     }
+    
+    console.log('[getAdjacentArticlesServer] Returning:', {
+      previousArticle: previousArticle ? previousArticle.id : null,
+      nextArticle: nextArticle ? nextArticle.id : null,
+    });
     
     return { previousArticle, nextArticle };
   } catch (error) {
     console.error('[getAdjacentArticlesServer] Error:', error);
+    console.error('[getAdjacentArticlesServer] Error details:', error instanceof Error ? error.message : String(error));
     return { previousArticle: null, nextArticle: null };
   }
 };
