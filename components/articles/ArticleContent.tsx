@@ -188,10 +188,46 @@ export default function ArticleContent({ content, tableOfContents }: ArticleCont
 
   // Instagram埋め込みがない場合は、通常のパース処理
   return (
-    <div className="prose prose-lg max-w-none">
+    <div className="prose prose-lg max-w-none article-content">
       {parse(processedContent, options)}
     </div>
   );
+}
+
+// グローバルスタイル（可読性向上）
+if (typeof window !== 'undefined') {
+  const style = document.createElement('style');
+  style.textContent = `
+    .article-content {
+      line-height: 2.0 !important;
+      letter-spacing: 0.02em !important;
+    }
+    .article-content p {
+      line-height: 2.0 !important;
+      letter-spacing: 0.02em !important;
+      margin-bottom: 1.5em !important;
+    }
+    .article-content h2,
+    .article-content h3,
+    .article-content h4 {
+      letter-spacing: 0.03em !important;
+      margin-top: 2em !important;
+      margin-bottom: 1em !important;
+      line-height: 1.5 !important;
+    }
+    .article-content ul,
+    .article-content ol {
+      line-height: 2.0 !important;
+      letter-spacing: 0.02em !important;
+    }
+    .article-content li {
+      margin-bottom: 0.5em !important;
+    }
+  `;
+  if (!document.querySelector('#article-content-styles')) {
+    style.id = 'article-content-styles';
+    document.head.appendChild(style);
+  }
 }
 
 function extractYouTubeId(url: string): string | null {

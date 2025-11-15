@@ -22,7 +22,6 @@ import ArticleContent from '@/components/articles/ArticleContent';
 import RelatedArticles from '@/components/articles/RelatedArticles';
 import GoogleMapsEmbed from '@/components/common/GoogleMapsEmbed';
 import TableOfContents from '@/components/articles/TableOfContents';
-import ReadingTime from '@/components/articles/ReadingTime';
 import SocialShare from '@/components/articles/SocialShare';
 import Breadcrumbs from '@/components/articles/Breadcrumbs';
 import CategoryTagBadges from '@/components/articles/CategoryTagBadges';
@@ -288,6 +287,8 @@ export default async function ArticlePage({ params }: PageProps) {
             }` : ''
           }${
             article.viewCount !== undefined ? ` • ${article.viewCount} views` : ''
+          }${
+            article.readingTime ? ` • この記事は約${article.readingTime}分で読めます` : ''
           }`}
           showCustomContent={true}
         />
@@ -305,13 +306,6 @@ export default async function ArticlePage({ params }: PageProps) {
 
             {/* カテゴリー・タグバッジ */}
             <CategoryTagBadges categories={categories} tags={tags} />
-
-            {/* 読了時間 */}
-            {article.readingTime && (
-              <div className="mb-6">
-                <ReadingTime minutes={article.readingTime} />
-              </div>
-            )}
 
             {/* 目次 */}
             {Array.isArray(article.tableOfContents) && article.tableOfContents.length > 0 && (
