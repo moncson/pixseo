@@ -2,7 +2,7 @@ import { notFound } from 'next/navigation';
 import { Metadata } from 'next';
 import { headers } from 'next/headers';
 import { getWriterServer, getArticlesByWriterServer } from '@/lib/firebase/articles-server';
-import { getCategoriesServer } from '@/lib/firebase/categories-server';
+import { getCategoriesServer as getAllCategoriesServer } from '@/lib/firebase/categories-server';
 import { getMediaIdFromHost, getSiteInfo } from '@/lib/firebase/media-tenant-helper';
 import { getTheme, getCombinedStyles } from '@/lib/firebase/theme-helper';
 import { FooterContent, FooterTextLinkSection } from '@/types/theme';
@@ -76,7 +76,7 @@ export default async function WriterPage({ params }: PageProps) {
     mediaId ? getSiteInfo(mediaId) : Promise.resolve({ name: 'メディアサイト', description: '', logoUrl: '', faviconUrl: '', allowIndexing: false }),
     mediaId ? getTheme(mediaId) : Promise.resolve({} as any),
     getArticlesByWriterServer(params.id, mediaId || undefined, 50),
-    getCategoriesServer([]).catch(() => []),
+    getAllCategoriesServer().catch(() => []),
   ]);
 
   const siteName = siteInfo.name;
