@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import OpenAI from 'openai';
+import { improveImagePrompt } from '@/lib/openai/improve-prompt';
 
 export const dynamic = 'force-dynamic';
 
@@ -23,13 +24,18 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    console.log('[Generate Sample Image] Generating image...');
+    console.log('[Generate Sample Image] Improving prompt with GPT-4o...');
 
     const openai = new OpenAI({ apiKey: openaiApiKey });
 
+    // GPT-4o でプロンプトを改善（ChatGPT UI と同じ動作）
+    const improvedPrompt = await improveImagePrompt(prompt, openai);
+
+    console.log('[Generate Sample Image] Generating image with DALL-E 3...');
+
     const response = await openai.images.generate({
       model: 'dall-e-3',
-      prompt: prompt,
+      prompt: improvedPrompt,
       n: 1,
       size: size as '1024x1024' | '1792x1024' | '1024x1792',
       quality: 'standard',
