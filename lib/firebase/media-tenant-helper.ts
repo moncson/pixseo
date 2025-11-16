@@ -135,10 +135,10 @@ export async function getSiteInfo(mediaId: string): Promise<SiteInfo> {
       name_en: data?.name_en || data?.name,
       name_zh: data?.name_zh || data?.name,
       name_ko: data?.name_ko || data?.name,
-      description_ja: data?.settings?.siteDescription_ja || data?.siteDescription,
-      description_en: data?.settings?.siteDescription_en || data?.siteDescription,
-      description_zh: data?.settings?.siteDescription_zh || data?.siteDescription,
-      description_ko: data?.settings?.siteDescription_ko || data?.siteDescription,
+      description_ja: data?.siteDescription_ja || data?.siteDescription,
+      description_en: data?.siteDescription_en || data?.siteDescription,
+      description_zh: data?.siteDescription_zh || data?.siteDescription,
+      description_ko: data?.siteDescription_ko || data?.siteDescription,
     };
 
     // キャッシュに保存

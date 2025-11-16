@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import { FooterTextLinkSection } from '@/types/theme';
 import { Lang } from '@/types/lang';
 
@@ -11,7 +12,7 @@ interface FooterTextLinksRendererProps {
 
 /**
  * テキストリンクセクションを表示するコンポーネント
- * セクションタイトル + テキストリンクのグループ
+ * 左カラム（ロゴ+説明）+ セクションのグリッドレイアウト
  */
 export default function FooterTextLinksRenderer({ sections, siteInfo, lang = 'ja', className = '' }: FooterTextLinksRendererProps) {
   // 有効なセクション（タイトルまたはリンクがある）のみフィルタリング
@@ -24,7 +25,41 @@ export default function FooterTextLinksRenderer({ sections, siteInfo, lang = 'ja
   }
 
   return (
-    <div className={`grid grid-cols-1 md:grid-cols-2 gap-8 ${className}`}>
+    <div className={`w-full grid ${validSections.length === 1 ? 'grid-cols-2' : 'grid-cols-3'} pb-8 ${className}`}>
+      {/* 左カラム: ロゴとディスクリプション */}
+      <div className="text-left px-8">
+        <div className="flex items-center gap-3 mb-4">
+          {siteInfo.faviconUrl && (
+            <Image
+              src={siteInfo.faviconUrl}
+              alt={`${siteInfo.name} アイコン`}
+              width={32}
+              height={32}
+              className="w-8 h-8 brightness-0 invert"
+              unoptimized={siteInfo.faviconUrl.endsWith('.svg')}
+            />
+          )}
+          {siteInfo.logoUrl ? (
+            <Image
+              src={siteInfo.logoUrl}
+              alt={siteInfo.name}
+              width={120}
+              height={32}
+              className="h-8 w-auto brightness-0 invert"
+              unoptimized={siteInfo.logoUrl.endsWith('.svg')}
+            />
+          ) : (
+            <h3 className="text-2xl font-bold">{siteInfo.name}</h3>
+          )}
+        </div>
+        {siteInfo.description && (
+          <p className="text-gray-300 text-sm leading-relaxed whitespace-pre-line">
+            {siteInfo.description}
+          </p>
+        )}
+      </div>
+
+      {/* セクション */}
       {validSections.map((section, index) => (
         <LinkSection key={index} section={section} lang={lang} />
       ))}
@@ -40,10 +75,10 @@ function LinkSection({ section, lang = 'ja' }: { section: FooterTextLinkSection;
   const validLinks = section.links?.filter(link => link.text && link.url) || [];
 
   return (
-    <div>
+    <div className="text-right border-l border-gray-600 px-8">
       {/* セクションタイトル */}
       {section.title && (
-        <h3 className="text-lg font-bold text-gray-900 mb-4 uppercase tracking-wider">
+        <h3 className="text-base font-bold mb-4 uppercase tracking-wider">
           {section.title}
         </h3>
       )}
@@ -61,7 +96,7 @@ function LinkSection({ section, lang = 'ja' }: { section: FooterTextLinkSection;
               <li key={index}>
                 <Link
                   href={href}
-                  className="text-gray-600 hover:text-blue-600 transition-colors text-sm"
+                  className="text-gray-300 hover:text-white transition-colors text-sm"
                   target={link.url.startsWith('http') ? '_blank' : undefined}
                   rel={link.url.startsWith('http') ? 'noopener noreferrer' : undefined}
                 >

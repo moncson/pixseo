@@ -151,7 +151,7 @@ export default async function FixedPage({ params }: PageProps) {
 
       <footer style={{ backgroundColor: rawTheme.footerBackgroundColor }} className="text-white">
         {footerTextLinkSections.length > 0 ? (
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          <div className="py-12">
             <FooterTextLinksRenderer
               siteInfo={siteInfo}
               sections={footerTextLinkSections}
