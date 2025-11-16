@@ -533,7 +533,7 @@ A: [回答]`;
         positions.push(Math.floor((headingTexts.length * 2) / 3));
       }
 
-      const headingMatches = Array.from(content.matchAll(/<h2[^>]*>.*?<\/h2>/gi));
+      const headingMatches = Array.from(content.matchAll(/<h2[^>]*>.*?<\/h2>/gi)) as RegExpMatchArray[];
 
       for (let i = positions.length - 1; i >= 0; i--) {
         try {
