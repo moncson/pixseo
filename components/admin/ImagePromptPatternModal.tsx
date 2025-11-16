@@ -25,6 +25,8 @@ export default function ImagePromptPatternModal({
   const [patterns, setPatterns] = useState<ImagePromptPattern[]>([]);
   const [loading, setLoading] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [generatingImage, setGeneratingImage] = useState(false);
+  const [sampleImageUrl, setSampleImageUrl] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     name: '',
     description: '',
@@ -137,6 +139,39 @@ export default function ImagePromptPatternModal({
     }
   };
 
+  const handleGenerateSample = async () => {
+    if (!formData.prompt) {
+      alert('プロンプトを入力してください');
+      return;
+    }
+
+    setGeneratingImage(true);
+    setSampleImageUrl(null);
+
+    try {
+      const response = await fetch('/api/admin/articles/generate-sample-image', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          prompt: formData.prompt,
+          size: formData.size,
+        }),
+      });
+
+      if (!response.ok) throw new Error('Failed to generate sample image');
+
+      const data = await response.json();
+      setSampleImageUrl(data.imageUrl);
+    } catch (error) {
+      console.error('Error generating sample image:', error);
+      alert('サンプル画像の生成に失敗しました');
+    } finally {
+      setGeneratingImage(false);
+    }
+  };
+
   if (!isOpen) return null;
 
   return (
@@ -144,9 +179,6 @@ export default function ImagePromptPatternModal({
       <div className="bg-white rounded-2xl shadow-xl max-w-5xl w-full max-h-[90vh] overflow-hidden">
         <div className="p-8 border-b border-gray-200">
           <h2 className="text-2xl font-bold text-gray-900">画像プロンプトパターン管理</h2>
-          <p className="text-sm text-gray-500 mt-1">
-            AI画像生成時のプロンプトパターンを登録（ピクサー風、写真風など）
-          </p>
         </div>
 
         <div className="p-8 overflow-y-auto max-h-[calc(90vh-200px)]">
@@ -158,14 +190,14 @@ export default function ImagePromptPatternModal({
             
             <div className="space-y-4">
               <FloatingInput
-                label="パターン名（例: ピクサー風イラスト、写真風）"
+                label="パターン名"
                 value={formData.name}
                 onChange={(value) => setFormData({ ...formData, name: value })}
                 required
               />
 
               <FloatingInput
-                label="説明（任意）"
+                label="説明"
                 value={formData.description}
                 onChange={(value) => setFormData({ ...formData, description: value })}
                 multiline
@@ -181,20 +213,16 @@ export default function ImagePromptPatternModal({
               />
 
               <FloatingInput
-                label="プロンプト（DALL-E 3に渡す指示文）"
+                label="プロンプト"
                 value={formData.prompt}
-                onChange={(value) => setFormData({ ...formData, prompt: value })}
+                onChange={(value) => {
+                  setFormData({ ...formData, prompt: value });
+                  setSampleImageUrl(null);
+                }}
                 multiline
                 rows={6}
                 required
-                placeholder="例: ピクサー風の3Dアニメーションスタイルで、温かみのあるカラフルな色彩。プロフェッショナルで親しみやすい雰囲気。重要：画像内にテキスト、文字、文章を一切含めないでください。"
               />
-
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                <p className="text-sm text-blue-800">
-                  <strong>ヒント:</strong> プロンプトには「重要：画像内にテキスト、文字、文章を一切含めないでください。」を含めることを推奨します。
-                </p>
-              </div>
 
               <div className="flex gap-3">
                 <button
@@ -205,12 +233,22 @@ export default function ImagePromptPatternModal({
                   {loading ? '処理中...' : editingId ? '更新' : '作成'}
                 </button>
 
+                <button
+                  type="button"
+                  onClick={handleGenerateSample}
+                  disabled={generatingImage || !formData.prompt}
+                  className="bg-purple-600 text-white px-6 py-3 rounded-xl hover:bg-purple-700 transition-colors disabled:opacity-50"
+                >
+                  {generatingImage ? '生成中...' : 'サンプル画像生成'}
+                </button>
+
                 {editingId && (
                   <button
                     type="button"
                     onClick={() => {
                       setEditingId(null);
                       setFormData({ name: '', description: '', prompt: '', size: '1792x1024' });
+                      setSampleImageUrl(null);
                     }}
                     className="bg-gray-300 text-gray-700 px-6 py-3 rounded-xl hover:bg-gray-400 transition-colors"
                   >
@@ -218,6 +256,18 @@ export default function ImagePromptPatternModal({
                   </button>
                 )}
               </div>
+
+              {/* サンプル画像表示エリア */}
+              {sampleImageUrl && (
+                <div className="mt-6 p-4 bg-white border border-purple-200 rounded-xl">
+                  <p className="text-sm font-medium text-gray-700 mb-3">生成されたサンプル画像:</p>
+                  <img
+                    src={sampleImageUrl}
+                    alt="Sample generated image"
+                    className="w-full max-h-96 object-contain rounded-lg"
+                  />
+                </div>
+              )}
             </div>
           </form>
 
