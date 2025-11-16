@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { adminDb } from '@/lib/firebase/admin';
 import { FieldValue } from 'firebase-admin/firestore';
+import { translateText } from '@/lib/openai/translate';
+import { SUPPORTED_LANGS } from '@/types/lang';
 
 export const dynamic = 'force-dynamic';
 
@@ -66,17 +68,34 @@ export async function POST(request: NextRequest) {
       );
     }
     
-    const writerData = {
+    const writerData: any = {
       icon: icon || '',
       iconAlt: iconAlt || '',
       backgroundImage: backgroundImage || '',
       backgroundImageAlt: backgroundImageAlt || '',
       handleName,
+      handleName_ja: handleName,
       bio: bio || '',
+      bio_ja: bio || '',
       mediaId,
       createdAt: FieldValue.serverTimestamp(),
       updatedAt: FieldValue.serverTimestamp(),
     };
+    
+    // 他言語へ翻訳
+    const otherLangs = SUPPORTED_LANGS.filter(lang => lang !== 'ja');
+    for (const lang of otherLangs) {
+      try {
+        writerData[`handleName_${lang}`] = await translateText(handleName, lang, 'ライター名');
+        if (bio) {
+          writerData[`bio_${lang}`] = await translateText(bio, lang, 'ライター自己紹介文');
+        }
+      } catch (error) {
+        console.error(`[Writer Translation Error] ${lang}:`, error);
+        writerData[`handleName_${lang}`] = handleName;
+        writerData[`bio_${lang}`] = bio || '';
+      }
+    }
     
     const docRef = await adminDb.collection('writers').add(writerData);
     

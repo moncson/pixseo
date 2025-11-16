@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { adminDb } from '@/lib/firebase/admin';
 import { Page } from '@/types/page';
+import { translateArticle } from '@/lib/openai/translate';
+import { SUPPORTED_LANGS } from '@/types/lang';
 
 // 固定ページ取得
 export async function GET(
@@ -48,10 +50,60 @@ export async function PUT(
       Object.entries(body).filter(([_, value]) => value !== undefined)
     );
     
-    await adminDb.collection('pages').doc(params.id).update({
+    const updateData: any = {
       ...cleanData,
       updatedAt: new Date(),
-    });
+    };
+    
+    // title, content, excerpt等が更新される場合は翻訳
+    if (body.title || body.content || body.excerpt || body.metaTitle || body.metaDescription) {
+      // 日本語フィールドを保存
+      if (body.title) {
+        updateData.title_ja = body.title;
+      }
+      if (body.content) {
+        updateData.content_ja = body.content;
+      }
+      if (body.excerpt) {
+        updateData.excerpt_ja = body.excerpt;
+      }
+      if (body.metaTitle) {
+        updateData.metaTitle_ja = body.metaTitle;
+      }
+      if (body.metaDescription) {
+        updateData.metaDescription_ja = body.metaDescription;
+      }
+      
+      // 他の言語への翻訳
+      const otherLangs = SUPPORTED_LANGS.filter(lang => lang !== 'ja');
+      for (const lang of otherLangs) {
+        try {
+          const translated = await translateArticle({
+            title: body.title || '',
+            content: body.content || '',
+            excerpt: body.excerpt || '',
+            metaTitle: body.metaTitle || body.title || '',
+            metaDescription: body.metaDescription || body.excerpt || '',
+          }, lang);
+          
+          if (body.title) updateData[`title_${lang}`] = translated.title;
+          if (body.content) updateData[`content_${lang}`] = translated.content;
+          if (body.excerpt) updateData[`excerpt_${lang}`] = translated.excerpt;
+          if (body.metaTitle) updateData[`metaTitle_${lang}`] = translated.metaTitle;
+          if (body.metaDescription) updateData[`metaDescription_${lang}`] = translated.metaDescription;
+        } catch (error) {
+          console.error(`[API] 翻訳エラー（${lang}）:`, error);
+          // エラーの場合は日本語をコピー
+          if (body.title) updateData[`title_${lang}`] = body.title;
+          if (body.content) updateData[`content_${lang}`] = body.content;
+          if (body.excerpt) updateData[`excerpt_${lang}`] = body.excerpt;
+          if (body.metaTitle) updateData[`metaTitle_${lang}`] = body.metaTitle || body.title;
+          if (body.metaDescription) updateData[`metaDescription_${lang}`] = body.metaDescription || body.excerpt;
+        }
+      }
+    }
+    
+    await adminDb.collection('pages').doc(params.id).update(updateData);
     
     return NextResponse.json({ success: true });
   } catch (error) {

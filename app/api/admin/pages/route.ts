@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { adminDb } from '@/lib/firebase/admin';
 import { Page } from '@/types/page';
+import { translateArticle } from '@/lib/openai/translate';
+import { SUPPORTED_LANGS } from '@/types/lang';
 
 export const dynamic = 'force-dynamic';
 
@@ -56,11 +58,51 @@ export async function POST(request: NextRequest) {
       Object.entries(body).filter(([_, value]) => value !== undefined)
     );
     
-    const docRef = await adminDb.collection('pages').add({
+    const pageData: any = {
       ...cleanData,
       publishedAt: new Date(),
       updatedAt: new Date(),
-    });
+    };
+    
+    // 日本語フィールドを保存
+    pageData.title_ja = pageData.title;
+    pageData.content_ja = pageData.content;
+    pageData.excerpt_ja = pageData.excerpt || '';
+    pageData.metaTitle_ja = pageData.metaTitle || pageData.title;
+    pageData.metaDescription_ja = pageData.metaDescription || pageData.excerpt || '';
+    
+    // 他の言語への翻訳
+    const otherLangs = SUPPORTED_LANGS.filter(lang => lang !== 'ja');
+    for (const lang of otherLangs) {
+      try {
+        console.log(`[API] 翻訳開始（${lang}）`);
+        const translated = await translateArticle({
+          title: pageData.title,
+          content: pageData.content,
+          excerpt: pageData.excerpt || '',
+          metaTitle: pageData.metaTitle || pageData.title,
+          metaDescription: pageData.metaDescription || pageData.excerpt || '',
+        }, lang);
+        
+        pageData[`title_${lang}`] = translated.title;
+        pageData[`content_${lang}`] = translated.content;
+        pageData[`excerpt_${lang}`] = translated.excerpt;
+        pageData[`metaTitle_${lang}`] = translated.metaTitle;
+        pageData[`metaDescription_${lang}`] = translated.metaDescription;
+        
+        console.log(`[API] 翻訳完了（${lang}）`);
+      } catch (error) {
+        console.error(`[API] 翻訳エラー（${lang}）:`, error);
+        // エラーの場合は日本語をコピー
+        pageData[`title_${lang}`] = pageData.title;
+        pageData[`content_${lang}`] = pageData.content;
+        pageData[`excerpt_${lang}`] = pageData.excerpt || '';
+        pageData[`metaTitle_${lang}`] = pageData.metaTitle || pageData.title;
+        pageData[`metaDescription_${lang}`] = pageData.metaDescription || pageData.excerpt || '';
+      }
+    }
+    
+    const docRef = await adminDb.collection('pages').add(pageData);
     
     console.log('[API] Page created with ID:', docRef.id);
     

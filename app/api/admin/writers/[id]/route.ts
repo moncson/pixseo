@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { adminDb } from '@/lib/firebase/admin';
 import { FieldValue } from 'firebase-admin/firestore';
+import { translateText } from '@/lib/openai/translate';
+import { SUPPORTED_LANGS } from '@/types/lang';
 
 // GET: 単一ライター取得
 export async function GET(
@@ -58,15 +60,32 @@ export async function PUT(
       );
     }
     
-    const updateData = {
+    const updateData: any = {
       icon: icon || '',
       iconAlt: iconAlt || '',
       backgroundImage: backgroundImage || '',
       backgroundImageAlt: backgroundImageAlt || '',
       handleName,
+      handleName_ja: handleName,
       bio: bio || '',
+      bio_ja: bio || '',
       updatedAt: FieldValue.serverTimestamp(),
     };
+    
+    // 他言語へ翻訳
+    const otherLangs = SUPPORTED_LANGS.filter(lang => lang !== 'ja');
+    for (const lang of otherLangs) {
+      try {
+        updateData[`handleName_${lang}`] = await translateText(handleName, lang, 'ライター名');
+        if (bio) {
+          updateData[`bio_${lang}`] = await translateText(bio, lang, 'ライター自己紹介文');
+        }
+      } catch (error) {
+        console.error(`[Writer Translation Error] ${lang}:`, error);
+        updateData[`handleName_${lang}`] = handleName;
+        updateData[`bio_${lang}`] = bio || '';
+      }
+    }
     
     await adminDb.collection('writers').doc(id).update(updateData);
     

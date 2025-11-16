@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { adminDb } from '@/lib/firebase/admin';
 import { FieldValue } from 'firebase-admin/firestore';
 import { defaultTheme } from '@/types/theme';
+import { translateText } from '@/lib/openai/translate';
+import { SUPPORTED_LANGS } from '@/types/lang';
 
 export const dynamic = 'force-dynamic';
 
@@ -54,13 +56,120 @@ export async function PUT(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { theme } = body;
+    let { theme } = body;
 
     if (!theme) {
       return NextResponse.json(
         { error: 'テーマデータが必要です' },
         { status: 400 }
       );
+    }
+
+    // 翻訳処理
+    const otherLangs = SUPPORTED_LANGS.filter(lang => lang !== 'ja');
+    
+    // FV設定の翻訳
+    if (theme.firstView) {
+      theme.firstView.catchphrase_ja = theme.firstView.catchphrase;
+      theme.firstView.description_ja = theme.firstView.description;
+      
+      for (const lang of otherLangs) {
+        try {
+          theme.firstView[`catchphrase_${lang}`] = await translateText(theme.firstView.catchphrase || '', lang, 'FVキャッチコピー');
+          theme.firstView[`description_${lang}`] = await translateText(theme.firstView.description || '', lang, 'FVディスクリプション');
+        } catch (error) {
+          console.error(`[Theme FV Translation Error] ${lang}:`, error);
+          theme.firstView[`catchphrase_${lang}`] = theme.firstView.catchphrase;
+          theme.firstView[`description_${lang}`] = theme.firstView.description;
+        }
+      }
+    }
+    
+    // フッターコンテンツの翻訳
+    if (theme.footerContents && Array.isArray(theme.footerContents)) {
+      for (const content of theme.footerContents) {
+        content.title_ja = content.title;
+        content.description_ja = content.description;
+        
+        for (const lang of otherLangs) {
+          try {
+            content[`title_${lang}`] = await translateText(content.title || '', lang, 'フッターコンテンツタイトル');
+            content[`description_${lang}`] = await translateText(content.description || '', lang, 'フッターコンテンツ説明');
+          } catch (error) {
+            console.error(`[Theme Footer Content Translation Error] ${lang}:`, error);
+            content[`title_${lang}`] = content.title;
+            content[`description_${lang}`] = content.description;
+          }
+        }
+      }
+    }
+    
+    // フッターテキストリンクセクションの翻訳
+    if (theme.footerTextLinkSections && Array.isArray(theme.footerTextLinkSections)) {
+      for (const section of theme.footerTextLinkSections) {
+        section.title_ja = section.title;
+        
+        for (const lang of otherLangs) {
+          try {
+            section[`title_${lang}`] = await translateText(section.title || '', lang, 'フッターセクションタイトル');
+          } catch (error) {
+            console.error(`[Theme Footer Section Translation Error] ${lang}:`, error);
+            section[`title_${lang}`] = section.title;
+          }
+        }
+        
+        // リンクテキストの翻訳
+        if (section.links && Array.isArray(section.links)) {
+          for (const link of section.links) {
+            link.text_ja = link.text;
+            
+            for (const lang of otherLangs) {
+              try {
+                link[`text_${lang}`] = await translateText(link.text || '', lang, 'フッターリンクテキスト');
+              } catch (error) {
+                console.error(`[Theme Footer Link Translation Error] ${lang}:`, error);
+                link[`text_${lang}`] = link.text;
+              }
+            }
+          }
+        }
+      }
+    }
+    
+    // メニュー設定の翻訳
+    if (theme.menuSettings) {
+      theme.menuSettings.topLabel_ja = theme.menuSettings.topLabel || 'トップ';
+      theme.menuSettings.articlesLabel_ja = theme.menuSettings.articlesLabel || '記事一覧';
+      theme.menuSettings.searchLabel_ja = theme.menuSettings.searchLabel || '検索';
+      
+      for (const lang of otherLangs) {
+        try {
+          theme.menuSettings[`topLabel_${lang}`] = await translateText(theme.menuSettings.topLabel || 'トップ', lang, 'メニューラベル');
+          theme.menuSettings[`articlesLabel_${lang}`] = await translateText(theme.menuSettings.articlesLabel || '記事一覧', lang, 'メニューラベル');
+          theme.menuSettings[`searchLabel_${lang}`] = await translateText(theme.menuSettings.searchLabel || '検索', lang, 'メニューラベル');
+        } catch (error) {
+          console.error(`[Theme Menu Translation Error] ${lang}:`, error);
+          theme.menuSettings[`topLabel_${lang}`] = theme.menuSettings.topLabel;
+          theme.menuSettings[`articlesLabel_${lang}`] = theme.menuSettings.articlesLabel;
+          theme.menuSettings[`searchLabel_${lang}`] = theme.menuSettings.searchLabel;
+        }
+      }
+      
+      // カスタムメニューの翻訳
+      if (theme.menuSettings.customMenus && Array.isArray(theme.menuSettings.customMenus)) {
+        for (const menu of theme.menuSettings.customMenus) {
+          menu.label_ja = menu.label;
+          
+          for (const lang of otherLangs) {
+            try {
+              menu[`label_${lang}`] = await translateText(menu.label || '', lang, 'カスタムメニューラベル');
+            } catch (error) {
+              console.error(`[Theme Custom Menu Translation Error] ${lang}:`, error);
+              menu[`label_${lang}`] = menu.label;
+            }
+          }
+        }
+      }
     }
 
     await adminDb.collection('mediaTenants').doc(mediaId).update({
