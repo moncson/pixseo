@@ -640,7 +640,7 @@ A: [回答]`;
 
     // AI Summary生成
     try {
-      articleDataToSave.aiSummary = await generateAISummary(title, plainContent.substring(0, 1000), 'ja');
+      articleDataToSave.aiSummary = await generateAISummary(plainContent.substring(0, 1000), 'ja');
       articleDataToSave.aiSummary_ja = articleDataToSave.aiSummary;
     } catch (error) {
       console.error('[Step 12] AI Summary generation failed:', error);
