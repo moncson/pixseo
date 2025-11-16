@@ -414,7 +414,7 @@ ${plainContent}
       quality: 'standard',
     });
 
-    const imageUrl = imageResponse.data[0]?.url;
+    const imageUrl = imageResponse.data?.[0]?.url;
     if (!imageUrl) {
       throw new Error('Failed to generate featured image');
     }
@@ -551,7 +551,7 @@ A: [回答]`;
             quality: 'standard',
           });
 
-          const inlineImageUrl = inlineImageResponse.data[0]?.url;
+          const inlineImageUrl = inlineImageResponse.data?.[0]?.url;
           if (!inlineImageUrl) continue;
 
           const inlineImageBuffer = Buffer.from(await (await fetch(inlineImageUrl)).arrayBuffer());

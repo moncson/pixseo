@@ -96,7 +96,7 @@ export async function POST(request: NextRequest) {
           quality: 'standard',
         });
 
-        const imageUrl = response.data[0]?.url;
+        const imageUrl = response.data?.[0]?.url;
         if (!imageUrl) {
           console.error(`[Generate Inline Images] No image URL returned for image ${i + 1}`);
           continue;
