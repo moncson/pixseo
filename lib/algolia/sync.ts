@@ -33,6 +33,9 @@ export async function syncArticleToAlgolia(
     return;
   }
 
+  // TypeScriptのnullチェック対応
+  const client = adminClient;
+
   try {
     // 各言語ごとにインデックスに保存
     const syncPromises = SUPPORTED_LANGS.map(async (lang) => {
@@ -74,7 +77,7 @@ export async function syncArticleToAlgolia(
         };
 
         const indexName = getArticlesIndexName(lang);
-        await adminClient.saveObject({
+        await client.saveObject({
           indexName,
           body: record,
         });
@@ -104,12 +107,15 @@ export async function deleteArticleFromAlgolia(articleId: string): Promise<void>
     return;
   }
 
+  // TypeScriptのnullチェック対応
+  const client = adminClient;
+
   try {
     // 各言語のインデックスから削除
     const deletePromises = SUPPORTED_LANGS.map(async (lang) => {
       try {
         const indexName = getArticlesIndexName(lang);
-        await adminClient.deleteObject({
+        await client.deleteObject({
           indexName,
           objectID: articleId,
         });
@@ -140,9 +146,12 @@ export async function bulkSyncArticlesToAlgolia(
     return;
   }
 
+  // TypeScriptのnullチェック対応
+  const client = adminClient;
+
   try {
     const indexName = getArticlesIndexName(lang);
-    await adminClient.saveObjects({
+    await client.saveObjects({
       indexName,
       objects: records as unknown as Array<Record<string, unknown>>,
     });

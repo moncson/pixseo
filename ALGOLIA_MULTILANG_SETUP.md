@@ -44,15 +44,16 @@
 各インデックスで以下を設定：
 
 ```
-- isPublished (searchable)
-- mediaId (searchable)
-- categories (searchable)
-- tags (searchable)
+- isPublished (filterOnly) ← フィルタリングのみ
+- mediaId (filterOnly) ← フィルタリングのみ
+- categories (searchable) ← フィルタリング + 検索対象
+- tags (searchable) ← フィルタリング + 検索対象
 ```
 
 **設定方法:**
 - Index > Configuration > Facets
-- 各フィールドを追加し、`searchable` にチェック
+- `isPublished` と `mediaId` は **filterOnly** にチェック
+- `categories` と `tags` は **searchable** にチェック
 
 ### 2.3 Ranking（ランキング設定）
 
@@ -154,8 +155,12 @@ Algoliaの無料枠:
 ## 完了チェックリスト
 
 - [ ] 4つのインデックスを作成（ja, en, zh, ko）
-- [ ] 各インデックスのSearchable attributesを設定
-- [ ] 各インデックスのFacetsを設定（isPublished, mediaId, categories, tags）
-- [ ] 既存記事の同期スクリプトを実行
+- [ ] 各インデックスのSearchable attributesを設定（title, contentText, excerpt, categories, tags）
+- [ ] 各インデックスのFacetsを設定
+  - [ ] isPublished (filterOnly)
+  - [ ] mediaId (filterOnly)
+  - [ ] categories (searchable)
+  - [ ] tags (searchable)
+- [ ] 既存記事の同期スクリプトを実行 or 管理画面から再保存
 - [ ] 各言語の検索ページで動作確認
 
