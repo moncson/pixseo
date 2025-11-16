@@ -113,8 +113,8 @@ ${plainContent}
     // リライトされたコンテンツを段落ごとに<p>タグで囲む
     const paragraphs = rewrittenContent
       .split('\n')
-      .filter(p => p.trim())
-      .map(p => {
+      .filter((p: string) => p.trim())
+      .map((p: string) => {
         // 見出しっぽいもの（短い行）はH2タグに
         if (p.trim().length < 50 && !p.includes('。') && !p.includes('、')) {
           return `<h2>${p.trim()}</h2>`;
