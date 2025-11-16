@@ -571,12 +571,12 @@ A: [回答]`;
           });
 
           await inlineImageFile.makePublic();
-          const inlineImageUrl = `https://storage.googleapis.com/${adminStorage.bucket().name}/${inlineImageFileName}`;
+          const inlineImagePublicUrl = `https://storage.googleapis.com/${adminStorage.bucket().name}/${inlineImageFileName}`;
 
           await adminDb.collection('mediaLibrary').add({
             name: inlineImageFileName,
             originalName: `inline-${title}-${i}.webp`,
-            url: inlineImageUrl,
+            url: inlineImagePublicUrl,
             type: 'image',
             mimeType: 'image/webp',
             size: optimizedInlineBuffer.length,
@@ -589,7 +589,7 @@ A: [回答]`;
           const insertPosition = headingMatch.index! + headingMatch[0].length;
           
           const imageHtml = `\n<figure class="inline-image my-6">
-  <img src="${inlineImageUrl}" alt="${title} - ${headingContext}" class="w-full rounded-lg shadow-md" />
+  <img src="${inlineImagePublicUrl}" alt="${title} - ${headingContext}" class="w-full rounded-lg shadow-md" />
 </figure>\n`;
 
           content = 
