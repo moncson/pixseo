@@ -165,14 +165,15 @@ export async function POST(request: NextRequest) {
 
     // 画像を記事内に挿入
     let updatedContent = content;
-    const headingMatches = Array.from(content.matchAll(/<h2[^>]*>.*?<\/h2>/gi));
+    const headingMatches = Array.from(content.matchAll(/<h2[^>]*>.*?<\/h2>/gi)) as RegExpMatchArray[];
 
     // 後ろから挿入することで位置がずれないようにする
     for (let i = generatedImages.length - 1; i >= 0; i--) {
       const image = generatedImages[i];
       if (image.position < headingMatches.length) {
         const headingMatch = headingMatches[image.position];
-        const insertPosition = headingMatch.index! + headingMatch[0].length;
+        if (!headingMatch || headingMatch.index === undefined) continue;
+        const insertPosition = headingMatch.index + headingMatch[0].length;
         
         const imageHtml = `\n<figure class="inline-image my-6">
   <img src="${image.url}" alt="${title} - ${headingTexts[image.position]}" class="w-full rounded-lg shadow-md" />
