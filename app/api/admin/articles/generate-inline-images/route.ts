@@ -46,7 +46,7 @@ export async function POST(request: NextRequest) {
 
     // 見出しを抽出（H2タグ）
     const headings = content.match(/<h2[^>]*>(.*?)<\/h2>/gi) || [];
-    const headingTexts = headings.map(h => h.replace(/<[^>]*>/g, '').trim());
+    const headingTexts = headings.map((h: string) => h.replace(/<[^>]*>/g, '').trim());
 
     console.log(`[Generate Inline Images] Found ${headingTexts.length} headings`);
 
