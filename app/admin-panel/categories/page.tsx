@@ -126,13 +126,15 @@ export default function CategoriesPage() {
                           </div>
                         )}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
+                      <td className="px-6 py-4">
                         <div className="text-sm font-medium text-gray-900">
                           {category.name}
                         </div>
                         {category.description && (
-                          <div className="text-sm text-gray-500">
-                            {category.description}
+                          <div className="text-sm text-gray-500 max-w-md truncate" title={category.description}>
+                            {category.description.length > 60 
+                              ? `${category.description.substring(0, 60)}...` 
+                              : category.description}
                           </div>
                         )}
                       </td>
