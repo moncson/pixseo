@@ -16,12 +16,15 @@ export function middleware(request: NextRequest) {
     return NextResponse.next();
   }
   
-  // 管理画面（admin.pixseo.cloudサブドメインも含む）は除外
-  if (
-    pathname.startsWith('/admin-panel') ||
-    hostname.startsWith('admin.') ||
-    pathname.startsWith('/admin')
-  ) {
+  // admin.pixseo.cloudサブドメインの場合、/admin-panel/にリライト
+  if (hostname.startsWith('admin.') && !pathname.startsWith('/admin-panel')) {
+    const url = request.nextUrl.clone();
+    url.pathname = `/admin-panel${pathname}`;
+    return NextResponse.rewrite(url);
+  }
+  
+  // 管理画面パスは言語リダイレクトから除外
+  if (pathname.startsWith('/admin-panel') || pathname.startsWith('/admin')) {
     return NextResponse.next();
   }
   
