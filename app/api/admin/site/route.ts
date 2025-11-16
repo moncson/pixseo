@@ -28,7 +28,7 @@ export async function GET(request: NextRequest) {
     
     return NextResponse.json({
       siteName: data?.name || '',
-      siteDescription: data?.settings?.siteDescription || '',
+      siteDescription: data?.siteDescription || '', // トップレベルから取得
       logoUrl: data?.settings?.logos?.square || '',
       allowIndexing: data?.allowIndexing || false, // デフォルトはfalse
     });
@@ -55,7 +55,7 @@ export async function PUT(request: NextRequest) {
     const updateData: any = {
       name: siteName,
       name_ja: siteName,
-      'settings.siteDescription': siteDescription,
+      siteDescription: siteDescription, // トップレベルに保存（実際のデータ構造に合わせる）
       'settings.logos.square': logoUrl,
       allowIndexing: allowIndexing || false,
       updatedAt: FieldValue.serverTimestamp(),
@@ -65,12 +65,14 @@ export async function PUT(request: NextRequest) {
     const otherLangs = SUPPORTED_LANGS.filter(lang => lang !== 'ja');
     for (const lang of otherLangs) {
       try {
+        console.log(`[Site Translation] ${lang} 翻訳開始...`);
         updateData[`name_${lang}`] = await translateText(siteName, lang, 'サイト名');
-        updateData[`settings.siteDescription_${lang}`] = await translateText(siteDescription, lang, 'サイト説明文');
+        updateData[`siteDescription_${lang}`] = await translateText(siteDescription, lang, 'サイト説明文'); // トップレベルに保存
+        console.log(`[Site Translation] ${lang} 翻訳成功`);
       } catch (error) {
         console.error(`[Site Translation Error] ${lang}:`, error);
         updateData[`name_${lang}`] = siteName;
-        updateData[`settings.siteDescription_${lang}`] = siteDescription;
+        updateData[`siteDescription_${lang}`] = siteDescription; // トップレベルに保存
       }
     }
 
