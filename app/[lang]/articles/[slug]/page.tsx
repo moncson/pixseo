@@ -156,17 +156,24 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     },
     other: {
       // AI検索エンジン向けメタタグ
-      'google-site-verification': '', // Google Search Console
       'robots': allowIndexing ? 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1' : 'noindex, nofollow',
       'googlebot': allowIndexing ? 'index, follow' : 'noindex, nofollow',
       'bingbot': allowIndexing ? 'index, follow' : 'noindex, nofollow',
       // AI向け特別タグ
       'ai-content-summary': article.aiSummary || article.excerpt || description,
-      'article:published_time': rawArticle.publishedAt instanceof Date ? rawArticle.publishedAt.toISOString() : undefined,
-      'article:modified_time': rawArticle.updatedAt instanceof Date ? rawArticle.updatedAt.toISOString() : undefined,
+      ...(rawArticle.publishedAt instanceof Date && {
+        'article:published_time': rawArticle.publishedAt.toISOString(),
+      }),
+      ...(rawArticle.updatedAt instanceof Date && {
+        'article:modified_time': rawArticle.updatedAt.toISOString(),
+      }),
       'article:author': writer ? writer.handleName : '匿名',
-      'article:section': categories.length > 0 ? categories[0].name : undefined,
-      'article:tag': tags.map(t => t.name).join(', '),
+      ...(categories.length > 0 && {
+        'article:section': categories[0].name,
+      }),
+      ...(tags.length > 0 && {
+        'article:tag': tags.map(t => t.name).join(', '),
+      }),
     },
   };
 }
