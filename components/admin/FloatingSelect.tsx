@@ -30,6 +30,7 @@ export default function FloatingSelect({
           paddingRight: '2.5rem',
         }}
       >
+        <option value="">選択してください</option>
         {options.map((option) => (
           <option key={option.value} value={option.value}>
             {option.label}

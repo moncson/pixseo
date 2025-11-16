@@ -41,8 +41,18 @@ export default function AdvancedArticleGeneratorModal({
     if (isOpen) {
       fetchPatterns();
       fetchImagePromptPatterns();
+      
+      // カテゴリーが1つしかない場合、自動的に選択
+      if (categories.length === 1) {
+        setFormData(prev => ({ ...prev, categoryId: categories[0].id }));
+      }
+      
+      // ライターが1つしかない場合、自動的に選択
+      if (writers.length === 1) {
+        setFormData(prev => ({ ...prev, writerId: writers[0].id }));
+      }
     }
-  }, [isOpen]);
+  }, [isOpen, categories, writers]);
 
   useEffect(() => {
     if (formData.writerId) {
@@ -68,7 +78,13 @@ export default function AdvancedArticleGeneratorModal({
       if (!response.ok) throw new Error('Failed to fetch patterns');
 
       const data = await response.json();
-      setPatterns(data.patterns || []);
+      const fetchedPatterns = data.patterns || [];
+      setPatterns(fetchedPatterns);
+
+      // オプションが1つしかない場合、自動的に選択
+      if (fetchedPatterns.length === 1) {
+        setFormData(prev => ({ ...prev, patternId: fetchedPatterns[0].id }));
+      }
     } catch (error) {
       console.error('Error fetching patterns:', error);
     }
@@ -89,7 +105,13 @@ export default function AdvancedArticleGeneratorModal({
       if (!response.ok) throw new Error('Failed to fetch writing styles');
 
       const data = await response.json();
-      setWritingStyles(data.styles || []);
+      const fetchedStyles = data.styles || [];
+      setWritingStyles(fetchedStyles);
+
+      // オプションが1つしかない場合、自動的に選択
+      if (fetchedStyles.length === 1) {
+        setFormData(prev => ({ ...prev, writingStyleId: fetchedStyles[0].id }));
+      }
     } catch (error) {
       console.error('Error fetching writing styles:', error);
     }
@@ -110,7 +132,13 @@ export default function AdvancedArticleGeneratorModal({
       if (!response.ok) throw new Error('Failed to fetch image prompt patterns');
 
       const data = await response.json();
-      setImagePromptPatterns(data.patterns || []);
+      const fetchedPatterns = data.patterns || [];
+      setImagePromptPatterns(fetchedPatterns);
+
+      // オプションが1つしかない場合、自動的に選択
+      if (fetchedPatterns.length === 1) {
+        setFormData(prev => ({ ...prev, imagePromptPatternId: fetchedPatterns[0].id }));
+      }
     } catch (error) {
       console.error('Error fetching image prompt patterns:', error);
     }
