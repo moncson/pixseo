@@ -1,9 +1,11 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { FooterContent } from '@/types/theme';
+import { Lang } from '@/types/lang';
 
 interface FooterContentRendererProps {
   contents: FooterContent[];
+  lang?: Lang;
   className?: string;
 }
 
@@ -11,7 +13,7 @@ interface FooterContentRendererProps {
  * フッターコンテンツを表示するコンポーネント
  * 画像 + タイトル + 説明のリッチコンテンツ（画面横いっぱい、余白なし）
  */
-export default function FooterContentRenderer({ contents, className = '' }: FooterContentRendererProps) {
+export default function FooterContentRenderer({ contents, lang = 'ja', className = '' }: FooterContentRendererProps) {
   if (contents.length === 0) {
     return null;
   }
@@ -19,7 +21,7 @@ export default function FooterContentRenderer({ contents, className = '' }: Foot
   return (
     <div className={`grid grid-cols-1 md:grid-cols-2 ${className}`}>
       {contents.slice(0, 2).map((content, index) => (
-        <ContentItem key={index} content={content} />
+        <ContentItem key={index} content={content} lang={lang} />
       ))}
     </div>
   );
@@ -28,7 +30,7 @@ export default function FooterContentRenderer({ contents, className = '' }: Foot
 /**
  * 個別のコンテンツアイテムを表示
  */
-function ContentItem({ content }: { content: FooterContent }) {
+function ContentItem({ content, lang = 'ja' }: { content: FooterContent; lang?: Lang }) {
   if (!content.imageUrl) {
     return null;
   }
@@ -68,9 +70,14 @@ function ContentItem({ content }: { content: FooterContent }) {
 
   // リンクがある場合はリンクでラップ
   if (content.linkUrl) {
+    // 内部リンクの場合は言語パスを追加
+    const href = content.linkUrl.startsWith('http') || content.linkUrl.startsWith('https')
+      ? content.linkUrl
+      : `/${lang}${content.linkUrl}`;
+    
     return (
       <Link
-        href={content.linkUrl}
+        href={href}
         className="block"
         target={content.linkUrl.startsWith('http') ? '_blank' : undefined}
         rel={content.linkUrl.startsWith('http') ? 'noopener noreferrer' : undefined}

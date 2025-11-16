@@ -6,8 +6,10 @@ import { getMediaIdFromHost, getSiteInfo } from '@/lib/firebase/media-tenant-hel
 import { getTheme, getCombinedStyles } from '@/lib/firebase/theme-helper';
 import { Lang, LANG_REGIONS, SUPPORTED_LANGS, isValidLang } from '@/types/lang';
 import { localizeSiteInfo, localizeTheme, localizePage } from '@/lib/i18n/localize';
+import { t } from '@/lib/i18n/translations';
 import MediaHeader from '@/components/layout/MediaHeader';
 import FooterContentRenderer from '@/components/blocks/FooterContentRenderer';
+import FooterTextLinksRenderer from '@/components/blocks/FooterTextLinksRenderer';
 import ScrollToTopButton from '@/components/common/ScrollToTopButton';
 
 interface PageProps {
@@ -116,6 +118,7 @@ export default async function FixedPage({ params }: PageProps) {
   const combinedStyles = getCombinedStyles(rawTheme);
 
   const footerContents = theme.footerContents?.filter((content: any) => content.imageUrl) || [];
+  const footerTextLinkSections = theme.footerTextLinkSections?.filter((section: any) => section.title || section.links?.length > 0) || [];
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: rawTheme.backgroundColor }}>
@@ -142,22 +145,37 @@ export default async function FixedPage({ params }: PageProps) {
 
       {footerContents.length > 0 && (
         <section className="w-full">
-          <FooterContentRenderer contents={footerContents} />
+          <FooterContentRenderer contents={footerContents} lang={lang} />
         </section>
       )}
 
       <footer style={{ backgroundColor: rawTheme.footerBackgroundColor }} className="text-white">
-        <div className="max-w-7xl mx-auto px-0 py-12">
-          <div className="text-center space-y-4">
-            <h3 className="text-2xl font-bold">{siteInfo.name}</h3>
-            {siteInfo.description && (
-              <p className="text-gray-300 max-w-2xl mx-auto">{siteInfo.description}</p>
-            )}
-            <p className="text-gray-400 text-sm pt-4">
-              © {new Date().getFullYear()} {siteInfo.name}. All rights reserved.
-            </p>
+        {footerTextLinkSections.length > 0 ? (
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+            <FooterTextLinksRenderer
+              siteInfo={siteInfo}
+              sections={footerTextLinkSections}
+              lang={lang}
+            />
+            <div className="w-full border-t border-gray-700 pt-6">
+              <p className="text-gray-400 text-sm text-center">
+                © {new Date().getFullYear()} {siteInfo.name}. {t('common.allRightsReserved', lang)}
+              </p>
+            </div>
           </div>
-        </div>
+        ) : (
+          <div className="max-w-7xl mx-auto px-0 py-12">
+            <div className="text-center space-y-4">
+              <h3 className="text-2xl font-bold">{siteInfo.name}</h3>
+              {siteInfo.description && (
+                <p className="text-gray-300 max-w-2xl mx-auto">{siteInfo.description}</p>
+              )}
+              <p className="text-gray-400 text-sm pt-4">
+                © {new Date().getFullYear()} {siteInfo.name}. {t('common.allRightsReserved', lang)}
+              </p>
+            </div>
+          </div>
+        )}
       </footer>
 
       <ScrollToTopButton primaryColor={rawTheme.primaryColor} />

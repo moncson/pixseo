@@ -170,7 +170,7 @@ export default async function TagPage({ params }: PageProps) {
           </aside>
         </div>
       </main>
-      {footerContents.length > 0 && <section className="w-full"><FooterContentRenderer contents={footerContents} /></section>}
+      {footerContents.length > 0 && <section className="w-full"><FooterContentRenderer contents={footerContents} lang={lang} /></section>}
       <footer style={{ backgroundColor: rawTheme.footerBackgroundColor }} className="text-white">
         {footerTextLinkSections.length > 0 ? (
           <div className="py-12">
@@ -188,7 +188,29 @@ export default async function TagPage({ params }: PageProps) {
                 return (
                   <div key={index} className="text-right border-l border-gray-600 px-8">
                     {section.title && <h3 className="text-base font-bold mb-4 uppercase tracking-wider">{section.title}</h3>}
-                    {validLinks.length > 0 && <ul className="space-y-2">{validLinks.map((link: any, linkIndex: number) => (<li key={linkIndex}><a href={link.url} className="text-gray-300 hover:text-white transition-colors text-sm" target={link.url.startsWith('http') ? '_blank' : undefined} rel={link.url.startsWith('http') ? 'noopener noreferrer' : undefined}>{link.text}</a></li>))}</ul>}
+                    {validLinks.length > 0 && (
+                      <ul className="space-y-2">
+                        {validLinks.map((link: any, linkIndex: number) => {
+                          // 内部リンクの場合は言語パスを追加
+                          const href = link.url.startsWith('http') || link.url.startsWith('https')
+                            ? link.url
+                            : `/${lang}${link.url}`;
+                          
+                          return (
+                            <li key={linkIndex}>
+                              <Link
+                                href={href}
+                                className="text-gray-300 hover:text-white transition-colors text-sm"
+                                target={link.url.startsWith('http') ? '_blank' : undefined}
+                                rel={link.url.startsWith('http') ? 'noopener noreferrer' : undefined}
+                              >
+                                {link.text}
+                              </Link>
+                            </li>
+                          );
+                        })}
+                      </ul>
+                    )}
                   </div>
                 );
               })}

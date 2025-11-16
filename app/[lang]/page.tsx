@@ -241,7 +241,7 @@ export default async function HomePage({ params }: PageProps) {
       {/* フッターコンテンツ（画面横いっぱい） */}
       {footerContents.length > 0 && (
         <section className="w-full">
-          <FooterContentRenderer contents={footerContents} />
+          <FooterContentRenderer contents={footerContents} lang={lang} />
         </section>
       )}
 
@@ -297,18 +297,25 @@ export default async function HomePage({ params }: PageProps) {
                     )}
                     {validLinks.length > 0 && (
                       <ul className="space-y-2">
-                        {validLinks.map((link: any, linkIndex: number) => (
-                          <li key={linkIndex}>
-                            <a
-                              href={link.url}
-                              className="text-gray-300 hover:text-white transition-colors text-sm"
-                              target={link.url.startsWith('http') ? '_blank' : undefined}
-                              rel={link.url.startsWith('http') ? 'noopener noreferrer' : undefined}
-                            >
-                              {link.text}
-                            </a>
-                          </li>
-                        ))}
+                        {validLinks.map((link: any, linkIndex: number) => {
+                          // 内部リンクの場合は言語パスを追加
+                          const href = link.url.startsWith('http') || link.url.startsWith('https')
+                            ? link.url
+                            : `/${lang}${link.url}`;
+                          
+                          return (
+                            <li key={linkIndex}>
+                              <Link
+                                href={href}
+                                className="text-gray-300 hover:text-white transition-colors text-sm"
+                                target={link.url.startsWith('http') ? '_blank' : undefined}
+                                rel={link.url.startsWith('http') ? 'noopener noreferrer' : undefined}
+                              >
+                                {link.text}
+                              </Link>
+                            </li>
+                          );
+                        })}
                       </ul>
                     )}
                   </div>
