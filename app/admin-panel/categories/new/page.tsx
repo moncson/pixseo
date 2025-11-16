@@ -2,6 +2,7 @@
 
 import { useState, FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 import AuthGuard from '@/components/admin/AuthGuard';
 import AdminLayout from '@/components/admin/AdminLayout';
 import FloatingInput from '@/components/admin/FloatingInput';
@@ -13,6 +14,7 @@ export default function NewCategoryPage() {
   const router = useRouter();
   const { currentTenant } = useMediaTenant();
   const [loading, setLoading] = useState(false);
+  const [generatingDescription, setGeneratingDescription] = useState(false);
   
   const [formData, setFormData] = useState({
     name: '',
@@ -23,6 +25,38 @@ export default function NewCategoryPage() {
     isRecommended: false,
     order: 0,
   });
+
+  const generateDescription = async () => {
+    if (!formData.name) {
+      alert('カテゴリー名を入力してください');
+      return;
+    }
+
+    setGeneratingDescription(true);
+    try {
+      const response = await fetch('/api/admin/categories/generate-description', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: formData.name,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to generate description');
+      }
+
+      const data = await response.json();
+      setFormData(prev => ({ ...prev, description: data.description }));
+    } catch (error) {
+      console.error('Error generating description:', error);
+      alert('説明の生成に失敗しました');
+    } finally {
+      setGeneratingDescription(false);
+    }
+  };
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -93,13 +127,30 @@ export default function NewCategoryPage() {
               />
 
               {/* 説明 */}
-              <FloatingInput
-                label="説明"
-                value={formData.description}
-                onChange={(value) => setFormData({ ...formData, description: value })}
-                multiline
-                rows={3}
-              />
+              <div className="flex gap-2">
+                <div className="flex-1">
+                  <FloatingInput
+                    label="説明（SEO用: 120-180文字推奨）"
+                    value={formData.description}
+                    onChange={(value) => setFormData({ ...formData, description: value })}
+                    multiline
+                    rows={3}
+                  />
+                </div>
+                <button
+                  type="button"
+                  onClick={generateDescription}
+                  disabled={generatingDescription || !formData.name}
+                  className="w-12 h-12 mb-0.5 bg-purple-600 text-white rounded-xl hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+                  title="説明文をAI自動生成"
+                >
+                  {generatingDescription ? (
+                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                  ) : (
+                    <Image src="/ai.svg" alt="AI" width={20} height={20} className="brightness-0 invert" />
+                  )}
+                </button>
+              </div>
 
               {/* カテゴリー画像 */}
               <div>
