@@ -2,6 +2,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Article, Category } from '@/types/article';
 import { Lang } from '@/types/lang';
+import { t } from '@/lib/i18n/translations';
 
 interface ArticleNavigationProps {
   previousArticle?: Article | null;
@@ -44,7 +45,7 @@ export default function ArticleNavigation({
                 <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                 </svg>
-                <span className="font-medium">次の記事</span>
+                <span className="font-medium">{t('article.nextArticle', lang)}</span>
               </div>
               
               <h3 className="text-base font-bold transition-colors line-clamp-2 mb-3" style={{ color: 'var(--link-text-color, #1f2937)' }}>
@@ -104,7 +105,7 @@ export default function ArticleNavigation({
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                 </svg>
               )}
-              次の記事はありません
+              {t('article.noNextArticle', lang)}
             </div>
           )}
         </div>
@@ -117,7 +118,7 @@ export default function ArticleNavigation({
               className="block group bg-white rounded-lg shadow-md hover:shadow-lg transition-all p-5"
             >
               <div className="flex items-center justify-end text-sm text-gray-600 mb-3">
-                <span className="font-medium">前の記事</span>
+                <span className="font-medium">{t('article.previousArticle', lang)}</span>
                 <svg className="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                 </svg>
@@ -180,7 +181,7 @@ export default function ArticleNavigation({
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                 </svg>
               )}
-              前の記事はありません
+              {t('article.noPreviousArticle', lang)}
             </div>
           )}
         </div>
