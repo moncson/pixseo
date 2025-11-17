@@ -355,14 +355,14 @@ export default async function ArticlePage({ params }: PageProps) {
           }}
           customTitle={article.title}
           customSubtitle=""
-          customMeta={`公開: ${
+          customMeta={`${t('article.published', lang)}: ${
             rawArticle.publishedAt ? (
               rawArticle.publishedAt instanceof Date 
                 ? rawArticle.publishedAt.toLocaleDateString(LANG_REGIONS[lang], { year: 'numeric', month: 'numeric', day: 'numeric' })
                 : new Date((rawArticle.publishedAt as any).toDate()).toLocaleDateString(LANG_REGIONS[lang], { year: 'numeric', month: 'numeric', day: 'numeric' })
             ) : '日付不明'
           }${
-            rawArticle.updatedAt ? ` • 更新: ${
+            rawArticle.updatedAt ? ` • ${t('article.updated', lang)}: ${
               rawArticle.updatedAt instanceof Date 
                 ? rawArticle.updatedAt.toLocaleDateString(LANG_REGIONS[lang], { year: 'numeric', month: 'numeric', day: 'numeric' })
                 : new Date((rawArticle.updatedAt as any).toDate()).toLocaleDateString(LANG_REGIONS[lang], { year: 'numeric', month: 'numeric', day: 'numeric' })
@@ -370,7 +370,7 @@ export default async function ArticlePage({ params }: PageProps) {
           }${
             rawArticle.viewCount !== undefined ? ` • ${rawArticle.viewCount} views` : ''
           }${
-            rawArticle.readingTime ? ` • この記事は約${rawArticle.readingTime}分で読めます` : ''
+            rawArticle.readingTime ? ` • ${t('article.readingTime', lang, { minutes: rawArticle.readingTime })}` : ''
           }`}
           showCustomContent={true}
         />
