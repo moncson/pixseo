@@ -12,6 +12,9 @@ export const translations: Record<Lang, Record<string, string>> = {
     'common.menu': 'メニュー',
     'common.articles': '記事',
     'common.allRightsReserved': 'All rights reserved.',
+    'common.follow': 'をフォロー',
+    'common.copy': 'コピー',
+    'common.copied': 'コピーしました',
     
     // ナビゲーション
     'nav.top': 'トップ',
@@ -21,6 +24,8 @@ export const translations: Record<Lang, Record<string, string>> = {
     'nav.tags': 'タグ',
     
     // 記事
+    'article.published': '公開',
+    'article.updated': '更新',
     'article.publishedAt': '公開日',
     'article.updatedAt': '更新日',
     'article.views': '閲覧数',
@@ -75,6 +80,9 @@ export const translations: Record<Lang, Record<string, string>> = {
     'common.menu': 'Menu',
     'common.articles': 'Articles',
     'common.allRightsReserved': 'All rights reserved.',
+    'common.follow': 'Follow',
+    'common.copy': 'Copy',
+    'common.copied': 'Copied',
     
     // Navigation
     'nav.top': 'Top',
@@ -84,6 +92,8 @@ export const translations: Record<Lang, Record<string, string>> = {
     'nav.tags': 'Tags',
     
     // Article
+    'article.published': 'Published',
+    'article.updated': 'Updated',
     'article.publishedAt': 'Published',
     'article.updatedAt': 'Updated',
     'article.views': 'Views',
@@ -138,6 +148,9 @@ export const translations: Record<Lang, Record<string, string>> = {
     'common.menu': '菜单',
     'common.articles': '文章',
     'common.allRightsReserved': '版权所有。',
+    'common.follow': '关注',
+    'common.copy': '复制',
+    'common.copied': '已复制',
     
     // 导航
     'nav.top': '首页',
@@ -147,6 +160,8 @@ export const translations: Record<Lang, Record<string, string>> = {
     'nav.tags': '标签',
     
     // 文章
+    'article.published': '发布',
+    'article.updated': '更新',
     'article.publishedAt': '发布日期',
     'article.updatedAt': '更新日期',
     'article.views': '浏览量',
@@ -201,6 +216,9 @@ export const translations: Record<Lang, Record<string, string>> = {
     'common.menu': '메뉴',
     'common.articles': '기사',
     'common.allRightsReserved': '모든 권리 보유.',
+    'common.follow': '팔로우',
+    'common.copy': '복사',
+    'common.copied': '복사됨',
     
     // 내비게이션
     'nav.top': '홈',
@@ -210,6 +228,8 @@ export const translations: Record<Lang, Record<string, string>> = {
     'nav.tags': '태그',
     
     // 기사
+    'article.published': '게시',
+    'article.updated': '수정',
     'article.publishedAt': '게시일',
     'article.updatedAt': '수정일',
     'article.views': '조회수',
