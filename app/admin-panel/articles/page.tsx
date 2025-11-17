@@ -113,25 +113,46 @@ export default function ArticlesPage() {
     }
   };
 
-  const handleTogglePublished = async (id: string, currentStatus: boolean) => {
-    try {
-      const response = await fetch(`/api/admin/articles/${id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ isPublished: !currentStatus }),
-      });
-
+  const handleTogglePublished = (id: string, currentStatus: boolean) => {
+    const newStatus = !currentStatus;
+    
+    // 楽観的UI更新（即座に状態を変更）
+    setArticles(prev => prev.map(a => 
+      a.id === id ? { ...a, isPublished: newStatus } : a
+    ));
+    
+    // バックグラウンドでAPIを呼び出す（await しない）
+    fetch(`/api/admin/articles/${id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ isPublished: newStatus }),
+    }).then(async (response) => {
       if (response.ok) {
-        fetchArticles();
+        console.log(`[ArticlesPage] 記事の公開ステータスを更新しました (ID: ${id})`);
+        if (newStatus) {
+          // 公開に切り替えた場合は、翻訳処理が完了するまで待機
+          console.log(`[ArticlesPage] バックグラウンドで翻訳とAlgolia登録を実行中...`);
+          // トーストやメッセージを表示したい場合はここに追加
+        }
+        // 完了後にリストを更新（最新の状態を取得）
+        await fetchArticles();
       } else {
-        throw new Error('更新に失敗しました');
+        // エラー時は元の状態に戻す
+        setArticles(prev => prev.map(a => 
+          a.id === id ? { ...a, isPublished: currentStatus } : a
+        ));
+        alert('ステータスの更新に失敗しました');
       }
-    } catch (error) {
+    }).catch((error) => {
       console.error('Error toggling article published:', error);
+      // エラー時は元の状態に戻す
+      setArticles(prev => prev.map(a => 
+        a.id === id ? { ...a, isPublished: currentStatus } : a
+      ));
       alert('ステータスの更新に失敗しました');
-    }
+    });
   };
 
   const filteredArticles = articles.filter((article) => {
