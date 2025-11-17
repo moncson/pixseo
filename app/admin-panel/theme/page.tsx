@@ -530,7 +530,6 @@ export default function ThemePage() {
                         xUserId: value,
                       }
                     }))}
-                    placeholder="moncson"
                   />
                   <p className="text-sm text-gray-500 mt-2">
                     ※ 未入力の場合、サイドバーにX（Twitter）タイムラインは表示されません
