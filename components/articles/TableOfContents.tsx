@@ -1,15 +1,18 @@
 'use client';
 
 import { TableOfContentsItem } from '@/types/article';
+import { Lang } from '@/types/lang';
+import { t } from '@/lib/i18n/translations';
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
 
 interface TableOfContentsProps {
   items: TableOfContentsItem[];
   faviconUrl?: string;
+  lang?: Lang;
 }
 
-export default function TableOfContents({ items, faviconUrl }: TableOfContentsProps) {
+export default function TableOfContents({ items, faviconUrl, lang = 'ja' }: TableOfContentsProps) {
   const [activeId, setActiveId] = useState<string>('');
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
@@ -73,7 +76,7 @@ export default function TableOfContents({ items, faviconUrl }: TableOfContentsPr
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M4 6h16M4 12h16M4 18h7" />
             </svg>
           )}
-          <h2 className="text-lg font-bold text-gray-900">目次</h2>
+          <h2 className="text-lg font-bold text-gray-900">{t('article.toc', lang)}</h2>
         </div>
         <svg 
           className={`w-5 h-5 text-gray-600 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}

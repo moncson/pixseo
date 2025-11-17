@@ -391,7 +391,7 @@ export default async function ArticlePage({ params }: PageProps) {
 
             {/* 目次 */}
             {Array.isArray(rawArticle.tableOfContents) && rawArticle.tableOfContents.length > 0 && (
-              <TableOfContents items={rawArticle.tableOfContents} faviconUrl={rawSiteInfo.faviconUrl} />
+              <TableOfContents items={rawArticle.tableOfContents} faviconUrl={rawSiteInfo.faviconUrl} lang={lang} />
             )}
 
             {/* 記事本文 */}

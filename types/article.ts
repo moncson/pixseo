@@ -72,7 +72,11 @@ export interface Article {
   latitude?: number;
   longitude?: number;
   // コンテンツ拡張
-  tableOfContents?: TableOfContentsItem[];  // 目次
+  tableOfContents?: TableOfContentsItem[];  // 目次（後方互換性）
+  tableOfContents_ja?: TableOfContentsItem[];
+  tableOfContents_en?: TableOfContentsItem[];
+  tableOfContents_zh?: TableOfContentsItem[];
+  tableOfContents_ko?: TableOfContentsItem[];
   relatedArticleIds?: string[];              // 関連記事ID
   readingTime?: number;                      // 読了時間（分）
   faqs?: FAQItem[];                          // FAQ（既存・後方互換性）
