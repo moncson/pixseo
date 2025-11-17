@@ -7,6 +7,16 @@ import { SUPPORTED_LANGS } from '@/types/lang';
 
 export const dynamic = 'force-dynamic';
 
+/**
+ * テキストが全て英語（アルファベット+スペース+記号）かどうかをチェック
+ */
+function isFullEnglish(text: string): boolean {
+  if (!text || text.trim() === '') return false;
+  // 英数字、スペース、一般的な記号のみで構成されているかチェック
+  const englishOnlyPattern = /^[a-zA-Z0-9\s\.,!?;:'"()\-\/_&]+$/;
+  return englishOnlyPattern.test(text);
+}
+
 // GET: デザイン設定を取得
 export async function GET(request: NextRequest) {
   try {
@@ -91,10 +101,23 @@ export async function PUT(request: NextRequest) {
         content.title_ja = content.title;
         content.description_ja = content.description;
         
+        // 全文英語の場合は翻訳せず、全言語で同じ値を使用
+        const isTitleEnglish = isFullEnglish(content.title || '');
+        const isDescriptionEnglish = isFullEnglish(content.description || '');
+        
         for (const lang of otherLangs) {
           try {
-            content[`title_${lang}`] = await translateText(content.title || '', lang, 'フッターコンテンツタイトル');
-            content[`description_${lang}`] = await translateText(content.description || '', lang, 'フッターコンテンツ説明');
+            if (isTitleEnglish) {
+              content[`title_${lang}`] = content.title;
+            } else {
+              content[`title_${lang}`] = await translateText(content.title || '', lang, 'フッターコンテンツタイトル');
+            }
+            
+            if (isDescriptionEnglish) {
+              content[`description_${lang}`] = content.description;
+            } else {
+              content[`description_${lang}`] = await translateText(content.description || '', lang, 'フッターコンテンツ説明');
+            }
           } catch (error) {
             console.error(`[Theme Footer Content Translation Error] ${lang}:`, error);
             content[`title_${lang}`] = content.title;
@@ -109,9 +132,16 @@ export async function PUT(request: NextRequest) {
       for (const section of theme.footerTextLinkSections) {
         section.title_ja = section.title;
         
+        // 全文英語の場合は翻訳せず、全言語で同じ値を使用
+        const isSectionTitleEnglish = isFullEnglish(section.title || '');
+        
         for (const lang of otherLangs) {
           try {
-            section[`title_${lang}`] = await translateText(section.title || '', lang, 'フッターセクションタイトル');
+            if (isSectionTitleEnglish) {
+              section[`title_${lang}`] = section.title;
+            } else {
+              section[`title_${lang}`] = await translateText(section.title || '', lang, 'フッターセクションタイトル');
+            }
           } catch (error) {
             console.error(`[Theme Footer Section Translation Error] ${lang}:`, error);
             section[`title_${lang}`] = section.title;
@@ -123,9 +153,16 @@ export async function PUT(request: NextRequest) {
           for (const link of section.links) {
             link.text_ja = link.text;
             
+            // 全文英語の場合は翻訳せず、全言語で同じ値を使用
+            const isLinkTextEnglish = isFullEnglish(link.text || '');
+            
             for (const lang of otherLangs) {
               try {
-                link[`text_${lang}`] = await translateText(link.text || '', lang, 'フッターリンクテキスト');
+                if (isLinkTextEnglish) {
+                  link[`text_${lang}`] = link.text;
+                } else {
+                  link[`text_${lang}`] = await translateText(link.text || '', lang, 'フッターリンクテキスト');
+                }
               } catch (error) {
                 console.error(`[Theme Footer Link Translation Error] ${lang}:`, error);
                 link[`text_${lang}`] = link.text;
@@ -142,11 +179,30 @@ export async function PUT(request: NextRequest) {
       theme.menuSettings.articlesLabel_ja = theme.menuSettings.articlesLabel || '記事一覧';
       theme.menuSettings.searchLabel_ja = theme.menuSettings.searchLabel || '検索';
       
+      // 全文英語の場合は翻訳せず、全言語で同じ値を使用
+      const isTopLabelEnglish = isFullEnglish(theme.menuSettings.topLabel || '');
+      const isArticlesLabelEnglish = isFullEnglish(theme.menuSettings.articlesLabel || '');
+      const isSearchLabelEnglish = isFullEnglish(theme.menuSettings.searchLabel || '');
+      
       for (const lang of otherLangs) {
         try {
-          theme.menuSettings[`topLabel_${lang}`] = await translateText(theme.menuSettings.topLabel || 'トップ', lang, 'メニューラベル');
-          theme.menuSettings[`articlesLabel_${lang}`] = await translateText(theme.menuSettings.articlesLabel || '記事一覧', lang, 'メニューラベル');
-          theme.menuSettings[`searchLabel_${lang}`] = await translateText(theme.menuSettings.searchLabel || '検索', lang, 'メニューラベル');
+          if (isTopLabelEnglish) {
+            theme.menuSettings[`topLabel_${lang}`] = theme.menuSettings.topLabel;
+          } else {
+            theme.menuSettings[`topLabel_${lang}`] = await translateText(theme.menuSettings.topLabel || 'トップ', lang, 'メニューラベル');
+          }
+          
+          if (isArticlesLabelEnglish) {
+            theme.menuSettings[`articlesLabel_${lang}`] = theme.menuSettings.articlesLabel;
+          } else {
+            theme.menuSettings[`articlesLabel_${lang}`] = await translateText(theme.menuSettings.articlesLabel || '記事一覧', lang, 'メニューラベル');
+          }
+          
+          if (isSearchLabelEnglish) {
+            theme.menuSettings[`searchLabel_${lang}`] = theme.menuSettings.searchLabel;
+          } else {
+            theme.menuSettings[`searchLabel_${lang}`] = await translateText(theme.menuSettings.searchLabel || '検索', lang, 'メニューラベル');
+          }
         } catch (error) {
           console.error(`[Theme Menu Translation Error] ${lang}:`, error);
           theme.menuSettings[`topLabel_${lang}`] = theme.menuSettings.topLabel;
@@ -160,9 +216,16 @@ export async function PUT(request: NextRequest) {
         for (const menu of theme.menuSettings.customMenus) {
           menu.label_ja = menu.label;
           
+          // 全文英語の場合は翻訳せず、全言語で同じ値を使用
+          const isMenuLabelEnglish = isFullEnglish(menu.label || '');
+          
           for (const lang of otherLangs) {
             try {
-              menu[`label_${lang}`] = await translateText(menu.label || '', lang, 'カスタムメニューラベル');
+              if (isMenuLabelEnglish) {
+                menu[`label_${lang}`] = menu.label;
+              } else {
+                menu[`label_${lang}`] = await translateText(menu.label || '', lang, 'カスタムメニューラベル');
+              }
             } catch (error) {
               console.error(`[Theme Custom Menu Translation Error] ${lang}:`, error);
               menu[`label_${lang}`] = menu.label;

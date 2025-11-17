@@ -152,7 +152,7 @@ export default async function WriterPage({ params }: PageProps) {
             <PopularArticles articles={localizedPopularArticles} categories={allCategories} lang={lang} />
             <RecommendedArticles articles={localizedArticles} categories={allCategories} lang={lang} />
             {footerBlocks.length > 0 && <SidebarBanners blocks={footerBlocks} />}
-            <XLink username="moncson" />
+            {rawTheme.snsSettings?.xUserId && <XLink username={rawTheme.snsSettings.xUserId} />}
           </aside>
         </div>
       </main>

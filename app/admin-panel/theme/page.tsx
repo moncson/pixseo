@@ -15,7 +15,7 @@ export default function ThemePage() {
   const [theme, setTheme] = useState<Theme>(defaultTheme);
   const [loading, setLoading] = useState(false);
   const [fetchLoading, setFetchLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<'fv' | 'banner' | 'footer-content' | 'footer-section' | 'menu' | 'color' | 'css'>('fv');
+  const [activeTab, setActiveTab] = useState<'fv' | 'banner' | 'footer-content' | 'footer-section' | 'menu' | 'sns' | 'color' | 'css'>('fv');
 
   useEffect(() => {
     if (currentTenant) {
@@ -37,6 +37,9 @@ export default function ThemePage() {
           ...defaultTheme.menuSettings,
           ...fetchedTheme.menuSettings,
           customMenus: fetchedTheme.menuSettings?.customMenus || defaultTheme.menuSettings?.customMenus || [],
+        },
+        snsSettings: {
+          ...fetchedTheme.snsSettings,
         },
       });
     } catch (error) {
@@ -295,6 +298,18 @@ export default function ThemePage() {
                 </button>
                 <button
                   type="button"
+                  onClick={() => setActiveTab('sns')}
+                  className={`flex-1 px-6 py-4 text-sm font-medium transition-colors ${
+                    activeTab === 'sns'
+                      ? 'text-blue-600 border-b-2 border-blue-600'
+                      : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                  }`}
+                  style={activeTab === 'sns' ? { backgroundColor: '#f9fafb' } : {}}
+                >
+                  SNS
+                </button>
+                <button
+                  type="button"
                   onClick={() => setActiveTab('color')}
                   className={`flex-1 px-6 py-4 text-sm font-medium transition-colors ${
                     activeTab === 'color'
@@ -499,6 +514,27 @@ export default function ThemePage() {
                       </div>
                     );
                   })}
+                </div>
+              )}
+
+              {/* SNSタブ */}
+              {activeTab === 'sns' && (
+                <div className="space-y-4">
+                  <FloatingInput
+                    label="X（Twitter）ユーザーID"
+                    value={theme.snsSettings?.xUserId || ''}
+                    onChange={(value) => setTheme(prev => ({
+                      ...prev,
+                      snsSettings: {
+                        ...prev.snsSettings,
+                        xUserId: value,
+                      }
+                    }))}
+                    placeholder="moncson"
+                  />
+                  <p className="text-sm text-gray-500 mt-2">
+                    ※ 未入力の場合、サイドバーにX（Twitter）タイムラインは表示されません
+                  </p>
                 </div>
               )}
 

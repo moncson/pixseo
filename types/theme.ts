@@ -99,6 +99,11 @@ export interface MenuSettings {
   customMenus: MenuItem[];    // 追加メニュー1-5
 }
 
+// SNS設定の定義
+export interface SnsSettings {
+  xUserId?: string;           // X（Twitter）のユーザーID
+}
+
 // FV（ファーストビュー）設定の定義
 export interface FirstViewSettings {
   imageUrl: string;           // FV画像
@@ -134,6 +139,9 @@ export interface Theme {
   
   // メニュー設定
   menuSettings?: MenuSettings;
+  
+  // SNS設定
+  snsSettings?: SnsSettings;
   
   // 基本カラー
   primaryColor: string;             // メインカラー

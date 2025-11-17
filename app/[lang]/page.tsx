@@ -234,7 +234,7 @@ export default async function HomePage({ params }: PageProps) {
             )}
 
             {/* Xリンク */}
-            <XLink username="moncson" />
+            {rawTheme.snsSettings?.xUserId && <XLink username={rawTheme.snsSettings.xUserId} />}
           </aside>
         </div>
       </main>
