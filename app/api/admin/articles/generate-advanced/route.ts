@@ -514,7 +514,7 @@ This is a featured image for an article titled "${title}".`;
     // === STEP 10: FAQ生成 ===
     console.log('[Step 10] Generating FAQ...');
 
-    const faqPrompt = `以下の記事から、読者が持ちそうな質問と回答を3〜5個生成してください。
+    const faqPrompt = `以下の記事に基づいて、読者が抱くであろう質問とその回答を3〜5個生成してください。
 
 タイトル: ${title}
 本文: ${plainContent.substring(0, 1500)}
@@ -542,11 +542,11 @@ A: [回答]`;
       max_tokens: 1000,
     });
 
-    const faqText = faqResponse.choices[0].message.content?.trim() || '';
+    const faqText = faqResponse.choices[0]?.message?.content?.trim() || '';
     console.log('[Step 10] FAQ raw response:', faqText.substring(0, 200));
     
-    // より柔軟な正規表現でマッチング
-    const faqMatches = Array.from(faqText.matchAll(/Q[：:]\s*([^\n]+)\n+A[：:]\s*([^\n]+(?:\n(?!Q[：:]).+)*)/gi));
+    // より柔軟な正規表現でマッチング（手動生成と同じロジック）
+    const faqMatches = Array.from(faqText.matchAll(/Q:\s*([^\n]+)\s*\n\s*A:\s*([^\n]+(?:\n(?!Q:)[^\n]+)*)/gi));
     
     const faqs_ja: Array<{ question: string; answer: string }> = [];
     for (const match of faqMatches) {

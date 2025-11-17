@@ -198,7 +198,7 @@ export default function FAQManager({ value, onChange, title = '', content = '' }
                   value={faq.question}
                   onChange={(e) => handleChange(index, 'question', e.target.value)}
                   placeholder=" "
-                  className="peer w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:border-blue-500 focus:outline-none transition-colors"
+                  className="peer w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:border-blue-500 focus:outline-none transition-colors text-gray-900"
                 />
                 <label className="absolute left-3 -top-2.5 bg-white px-1 text-sm font-medium text-gray-700 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-3 peer-focus:-top-2.5 peer-focus:text-sm peer-focus:text-blue-600 transition-all">
                   質問 *
@@ -212,7 +212,7 @@ export default function FAQManager({ value, onChange, title = '', content = '' }
                   onChange={(e) => handleChange(index, 'answer', e.target.value)}
                   placeholder=" "
                   rows={4}
-                  className="peer w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:border-blue-500 focus:outline-none transition-colors resize-none"
+                  className="peer w-full px-4 py-3 border-2 border-gray-300 rounded-xl focus:border-blue-500 focus:outline-none transition-colors resize-none text-gray-900"
                 />
                 <label className="absolute left-3 -top-2.5 bg-white px-1 text-sm font-medium text-gray-700 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-3 peer-focus:-top-2.5 peer-focus:text-sm peer-focus:text-blue-600 transition-all">
                   回答 *
