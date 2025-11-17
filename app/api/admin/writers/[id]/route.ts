@@ -4,6 +4,16 @@ import { FieldValue } from 'firebase-admin/firestore';
 import { translateText } from '@/lib/openai/translate';
 import { SUPPORTED_LANGS } from '@/types/lang';
 
+/**
+ * テキストが全て英語（アルファベット+スペース+記号）かどうかをチェック
+ */
+function isFullEnglish(text: string): boolean {
+  if (!text || text.trim() === '') return false;
+  // 英数字、スペース、一般的な記号のみで構成されているかチェック
+  const englishOnlyPattern = /^[a-zA-Z0-9\s\.,!?;:'"()\-\/_&]+$/;
+  return englishOnlyPattern.test(text);
+}
+
 // GET: 単一ライター取得
 export async function GET(
   request: NextRequest,
@@ -72,13 +82,25 @@ export async function PUT(
       updatedAt: FieldValue.serverTimestamp(),
     };
     
-    // 他言語へ翻訳
+    // 他言語へ翻訳（全文英語の場合は翻訳せず、全言語で同じ値を使用）
+    const isHandleNameEnglish = isFullEnglish(handleName);
+    const isBioEnglish = isFullEnglish(bio || '');
+    
     const otherLangs = SUPPORTED_LANGS.filter(lang => lang !== 'ja');
     for (const lang of otherLangs) {
       try {
-        updateData[`handleName_${lang}`] = await translateText(handleName, lang, 'ライター名');
+        if (isHandleNameEnglish) {
+          updateData[`handleName_${lang}`] = handleName;
+        } else {
+          updateData[`handleName_${lang}`] = await translateText(handleName, lang, 'ライター名');
+        }
+        
         if (bio) {
-          updateData[`bio_${lang}`] = await translateText(bio, lang, 'ライター自己紹介文');
+          if (isBioEnglish) {
+            updateData[`bio_${lang}`] = bio;
+          } else {
+            updateData[`bio_${lang}`] = await translateText(bio, lang, 'ライター自己紹介文');
+          }
         }
       } catch (error) {
         console.error(`[Writer Translation Error] ${lang}:`, error);
