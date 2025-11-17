@@ -413,7 +413,7 @@ export default async function ArticlePage({ params }: PageProps) {
             />
 
             {/* SNSシェアボタン */}
-            <SocialShare title={typeof article.title === 'string' ? article.title : ''} />
+            <SocialShare title={typeof article.title === 'string' ? article.title : ''} lang={lang} />
 
             {/* Googleマイマップ */}
             {rawArticle.googleMapsUrl && (

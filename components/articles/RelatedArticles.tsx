@@ -1,5 +1,6 @@
 import { RelatedArticle } from '@/types/article';
 import { Lang } from '@/types/lang';
+import { t } from '@/lib/i18n/translations';
 import ArticleCard from './ArticleCard';
 
 interface RelatedArticlesProps {
@@ -16,7 +17,7 @@ export default function RelatedArticles({ articles, lang = 'ja' }: RelatedArticl
   return (
     <section className="mb-8">
       <div className="text-center mb-8">
-        <h2 className="text-xl font-bold text-gray-900 mb-1">関連記事</h2>
+        <h2 className="text-xl font-bold text-gray-900 mb-1">{t('article.relatedArticles', lang)}</h2>
         <p className="text-xs text-gray-500 uppercase tracking-wider">Related Articles</p>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

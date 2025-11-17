@@ -1,17 +1,20 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { Lang } from '@/types/lang';
+import { t } from '@/lib/i18n/translations';
 
 interface SocialShareProps {
   title: string;
   url?: string;
+  lang?: Lang;
 }
 
-export default function SocialShare({ title, url: propUrl }: SocialShareProps) {
+export default function SocialShare({ title, url: propUrl, lang = 'ja' }: SocialShareProps) {
   const [url, setUrl] = useState(propUrl || '');
 
   // タイトルの安全チェック
-  const safeTitle = typeof title === 'string' ? title : 'この記事をシェア';
+  const safeTitle = typeof title === 'string' ? title : t('article.share', lang);
 
   useEffect(() => {
     if (typeof window !== 'undefined' && !propUrl) {
@@ -37,7 +40,7 @@ export default function SocialShare({ title, url: propUrl }: SocialShareProps) {
   const copyToClipboard = async () => {
     try {
       await navigator.clipboard.writeText(url);
-      alert('URLをコピーしました！');
+      alert(t('common.copied', lang));
     } catch (error) {
       console.error('Failed to copy:', error);
     }
@@ -46,7 +49,7 @@ export default function SocialShare({ title, url: propUrl }: SocialShareProps) {
   return (
     <div className="mb-8">
       <div className="text-center mb-8">
-        <h3 className="text-xl font-bold text-gray-900 mb-1">この記事をシェア</h3>
+        <h3 className="text-xl font-bold text-gray-900 mb-1">{t('article.share', lang)}</h3>
         <p className="text-xs text-gray-500 uppercase tracking-wider">Share This Article</p>
       </div>
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
@@ -95,7 +98,7 @@ export default function SocialShare({ title, url: propUrl }: SocialShareProps) {
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
           </svg>
-          <span className="font-medium">URLコピー</span>
+          <span className="font-medium">{t('common.copy', lang)}</span>
         </button>
       </div>
     </div>
