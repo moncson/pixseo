@@ -174,80 +174,78 @@ export default function AdvancedArticleGeneratorModal({
         </div>
 
         <div className="p-8 overflow-y-auto max-h-[calc(90vh-200px)]">
-          {!generating ? (
-            <div className="space-y-6">
-              {error && (
-                <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-                  <p className="text-red-800 text-sm">{error}</p>
-                </div>
-              )}
-
-              <FloatingSelect
-                label="カテゴリー *"
-                value={formData.categoryId}
-                onChange={(value) => setFormData({ ...formData, categoryId: value })}
-                options={categories.map(cat => ({ value: cat.id, label: cat.name }))}
-                required
-              />
-
-              <FloatingSelect
-                label="構成パターン *"
-                value={formData.patternId}
-                onChange={(value) => setFormData({ ...formData, patternId: value })}
-                options={patterns.map(p => ({ value: p.id, label: p.name }))}
-                required
-              />
-              {patterns.length === 0 && (
-                <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3 -mt-2">
-                  <p className="text-sm text-yellow-800">
-                    ⚠️ 構成パターンが登録されていません。
-                    <br />
-                    「構成パターン管理」ボタンから登録してください。
-                  </p>
-                </div>
-              )}
-
-              <FloatingSelect
-                label="ライター *"
-                value={formData.writerId}
-                onChange={(value) => setFormData({ ...formData, writerId: value })}
-                options={writers.map(w => ({ value: w.id, label: w.handleName }))}
-                required
-              />
-
-              <FloatingSelect
-                label="画像プロンプトパターン *"
-                value={formData.imagePromptPatternId}
-                onChange={(value) => setFormData({ ...formData, imagePromptPatternId: value })}
-                options={imagePromptPatterns.map(p => ({ value: p.id, label: p.name }))}
-                required
-              />
-              {imagePromptPatterns.length === 0 && (
-                <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3 -mt-2">
-                  <p className="text-sm text-yellow-800">
-                    ⚠️ 画像プロンプトパターンが登録されていません。
-                    <br />
-                    メディアライブラリの「画像プロンプトパターン管理」から登録してください。
-                  </p>
-                </div>
-              )}
-
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                <p className="text-sm text-blue-800">
-                  <strong>生成フロー:</strong><br />
-                  1. テーマ5つ生成 → 2. 重複チェック → 3. 記事ベース作成（5,000文字以上） → 
-                  4. タグ自動割り当て → 5. 新規タグ翻訳・登録 → 6. アイキャッチ生成 → 7. ライター選択 → 
-                  8. メタデータ生成 → 9. FAQ生成 → 10. 記事内画像生成・配置 → 11. 非公開として保存
-                </p>
+          <div className="space-y-6">
+            {error && (
+              <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+                <p className="text-red-800 text-sm">{error}</p>
               </div>
+            )}
 
-              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+            <FloatingSelect
+              label="カテゴリー *"
+              value={formData.categoryId}
+              onChange={(value) => setFormData({ ...formData, categoryId: value })}
+              options={categories.map(cat => ({ value: cat.id, label: cat.name }))}
+              required
+            />
+
+            <FloatingSelect
+              label="構成パターン *"
+              value={formData.patternId}
+              onChange={(value) => setFormData({ ...formData, patternId: value })}
+              options={patterns.map(p => ({ value: p.id, label: p.name }))}
+              required
+            />
+            {patterns.length === 0 && (
+              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3 -mt-2">
                 <p className="text-sm text-yellow-800">
-                  <strong>⚠️ 注意:</strong> 生成開始後、バックグラウンドで処理されます。完了すると記事一覧に自動追加されます（約4-7分）。
+                  ⚠️ 構成パターンが登録されていません。
+                  <br />
+                  「構成パターン管理」ボタンから登録してください。
                 </p>
               </div>
+            )}
+
+            <FloatingSelect
+              label="ライター *"
+              value={formData.writerId}
+              onChange={(value) => setFormData({ ...formData, writerId: value })}
+              options={writers.map(w => ({ value: w.id, label: w.handleName }))}
+              required
+            />
+
+            <FloatingSelect
+              label="画像プロンプトパターン *"
+              value={formData.imagePromptPatternId}
+              onChange={(value) => setFormData({ ...formData, imagePromptPatternId: value })}
+              options={imagePromptPatterns.map(p => ({ value: p.id, label: p.name }))}
+              required
+            />
+            {imagePromptPatterns.length === 0 && (
+              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3 -mt-2">
+                <p className="text-sm text-yellow-800">
+                  ⚠️ 画像プロンプトパターンが登録されていません。
+                  <br />
+                  メディアライブラリの「画像プロンプトパターン管理」から登録してください。
+                </p>
+              </div>
+            )}
+
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+              <p className="text-sm text-blue-800">
+                <strong>生成フロー:</strong><br />
+                1. テーマ5つ生成 → 2. 重複チェック → 3. 記事ベース作成（5,000文字以上） → 
+                4. タグ自動割り当て → 5. 新規タグ翻訳・登録 → 6. アイキャッチ生成 → 7. ライター選択 → 
+                8. メタデータ生成 → 9. FAQ生成 → 10. 記事内画像生成・配置 → 11. 非公開として保存
+              </p>
             </div>
-          )
+
+            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+              <p className="text-sm text-yellow-800">
+                <strong>⚠️ 注意:</strong> 生成開始後、バックグラウンドで処理されます。完了すると記事一覧に自動追加されます（約4-7分）。
+              </p>
+            </div>
+          </div>
         </div>
 
         <div className="p-6 border-t border-gray-200 flex justify-end gap-3">

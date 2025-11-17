@@ -271,6 +271,20 @@ ${patternData.prompt}
     let metaDescription = metaDescMatch?.[1]?.trim() || '';
     let content = contentMatch?.[1]?.trim() || articleContent;
 
+    // 余計な改行をクリーンアップ（3つ以上の連続改行を2つに）
+    content = content.replace(/\n{3,}/g, '\n\n');
+    
+    // タグ間の不要な空白を削除（ただし、pタグの内容は保持）
+    content = content.replace(/>\s+</g, '><');
+    
+    // 段落タグの後の余分な改行を削除
+    content = content.replace(/<\/p>\s+<p>/g, '</p>\n<p>');
+    content = content.replace(/<\/h2>\s+<p>/g, '</h2>\n<p>');
+    content = content.replace(/<\/h3>\s+<p>/g, '</h3>\n<p>');
+    content = content.replace(/<\/ul>\s+<p>/g, '</ul>\n<p>');
+    content = content.replace(/<\/ol>\s+<p>/g, '</ol>\n<p>');
+    content = content.replace(/<\/table>\s+<p>/g, '</table>\n<p>');
+
     console.log(`[Step 3] Article base created (${content.length} chars)`);
 
     // === STEP 4: ライティング特徴リライト（スキップ） ===

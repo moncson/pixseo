@@ -381,7 +381,7 @@ export default function RichTextEditor({ value, onChange, placeholder }: RichTex
         ref={editorRef}
         contentEditable
         onInput={handleInput}
-        className="min-h-[500px] p-6 focus:outline-none prose prose-sm max-w-none bg-white border border-gray-300 rounded-xl"
+        className="min-h-[500px] p-6 focus:outline-none prose prose-lg max-w-none bg-white border border-gray-300 rounded-xl article-content"
         style={{
           whiteSpace: 'pre-wrap',
           color: theme.textColor,
@@ -813,6 +813,145 @@ export default function RichTextEditor({ value, onChange, placeholder }: RichTex
         [contenteditable="true"]:empty:before {
           content: attr(data-placeholder);
           color: #9ca3af;
+        }
+
+        /* メインアプリと同じスタイル */
+        .article-content {
+          line-height: 2.0 !important;
+          letter-spacing: 0.02em !important;
+        }
+        .article-content p {
+          line-height: 2.0 !important;
+          letter-spacing: 0.02em !important;
+          margin-bottom: 1.5em !important;
+        }
+        .article-content h2 {
+          font-size: 1.375em !important;
+          line-height: 1.6 !important;
+          letter-spacing: 0.02em !important;
+          margin-top: 2em !important;
+          margin-bottom: 1em !important;
+          font-weight: 700 !important;
+          padding-bottom: 0.5em !important;
+          color: #111827 !important;
+          position: relative !important;
+          border-bottom: none !important;
+        }
+        .article-content h2::after {
+          content: '' !important;
+          position: absolute !important;
+          bottom: 0 !important;
+          left: 0 !important;
+          width: 100% !important;
+          height: 6px !important;
+          background-color: ${theme.primaryColor || '#3b82f6'} !important;
+          border-radius: 3px !important;
+        }
+        .article-content h3 {
+          font-size: 1.25em !important;
+          line-height: 1.6 !important;
+          letter-spacing: 0.02em !important;
+          margin-top: 1.8em !important;
+          margin-bottom: 0.8em !important;
+          font-weight: 600 !important;
+          padding-bottom: 0.5em !important;
+          padding-left: 0 !important;
+          position: relative !important;
+          border-bottom: none !important;
+          border-left: none !important;
+        }
+        .article-content h3::after {
+          content: '' !important;
+          position: absolute !important;
+          bottom: 0 !important;
+          left: 0 !important;
+          width: 100% !important;
+          height: 3px !important;
+          background-color: ${theme.primaryColor || '#3b82f6'} !important;
+          border-radius: 1.5px !important;
+        }
+        .article-content h4 {
+          font-size: 1.125em !important;
+          line-height: 1.6 !important;
+          letter-spacing: 0.02em !important;
+          margin-top: 1.5em !important;
+          margin-bottom: 0.6em !important;
+          font-weight: 600 !important;
+          padding-bottom: 0.25em !important;
+          border-bottom: 2px solid ${theme.primaryColor || '#3b82f6'} !important;
+        }
+        .article-content ul,
+        .article-content ol {
+          line-height: 2.0 !important;
+          letter-spacing: 0.02em !important;
+          counter-reset: list-counter !important;
+          list-style: none !important;
+          padding-left: 0 !important;
+        }
+        .article-content ol {
+          counter-reset: list-counter !important;
+        }
+        .article-content li {
+          margin-bottom: 0.75em !important;
+          padding: 0.75em 1em !important;
+          background: transparent !important;
+          border: 2px solid ${theme.borderColor || '#e5e7eb'} !important;
+          border-radius: 8px !important;
+          position: relative !important;
+          counter-increment: list-counter !important;
+          font-size: 0.9em !important;
+        }
+        .article-content ol > li::before {
+          content: "No. " counter(list-counter) !important;
+          display: inline-block !important;
+          margin-right: 0.5em !important;
+          font-weight: 700 !important;
+          color: ${theme.primaryColor || '#3b82f6'} !important;
+          font-size: 0.875em !important;
+        }
+        .article-content ul > li::before {
+          content: "" !important;
+        }
+        .article-content table {
+          width: 100% !important;
+          border-collapse: separate !important;
+          border-spacing: 0 !important;
+          margin: 2em 0 !important;
+          font-size: 0.875em !important;
+          border-radius: 8px !important;
+          overflow: hidden !important;
+          border: 1px solid ${theme.borderColor || '#e5e7eb'} !important;
+        }
+        .article-content table thead {
+          background-color: ${theme.blockBackgroundColor || '#f9fafb'} !important;
+        }
+        .article-content table th {
+          padding: 0.75em 1em !important;
+          text-align: left !important;
+          font-weight: 600 !important;
+          border-bottom: 2px solid ${theme.borderColor || '#e5e7eb'} !important;
+        }
+        .article-content table thead tr:first-child th:first-child {
+          border-top-left-radius: 7px !important;
+        }
+        .article-content table thead tr:first-child th:last-child {
+          border-top-right-radius: 7px !important;
+        }
+        .article-content table td {
+          padding: 0.75em 1em !important;
+          border-bottom: 1px solid ${theme.borderColor || '#e5e7eb'} !important;
+        }
+        .article-content table tbody tr:last-child td {
+          border-bottom: none !important;
+        }
+        .article-content table tbody tr:last-child td:first-child {
+          border-bottom-left-radius: 7px !important;
+        }
+        .article-content table tbody tr:last-child td:last-child {
+          border-bottom-right-radius: 7px !important;
+        }
+        .article-content table tbody tr:hover {
+          background-color: ${theme.blockBackgroundColor || '#f9fafb'} !important;
         }
       `}</style>
     </div>
