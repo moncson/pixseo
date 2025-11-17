@@ -10,7 +10,6 @@ import { Article, Category, Tag } from '@/types/article';
 import { Writer } from '@/types/writer';
 import { apiGet } from '@/lib/api-client';
 import { useMediaTenant } from '@/contexts/MediaTenantContext';
-import ArticleGeneratorModal from '@/components/admin/ArticleGeneratorModal';
 import ArticlePatternModal from '@/components/admin/ArticlePatternModal';
 import ScheduledGenerationModal from '@/components/admin/ScheduledGenerationModal';
 import AdvancedArticleGeneratorModal from '@/components/admin/AdvancedArticleGeneratorModal';
@@ -25,7 +24,6 @@ export default function ArticlesPage() {
   const [tags, setTags] = useState<Tag[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
-  const [isGeneratorModalOpen, setIsGeneratorModalOpen] = useState(false);
   const [isAdvancedGeneratorModalOpen, setIsAdvancedGeneratorModalOpen] = useState(false);
   const [isPatternModalOpen, setIsPatternModalOpen] = useState(false);
   const [isScheduleModalOpen, setIsScheduleModalOpen] = useState(false);
@@ -89,26 +87,6 @@ export default function ArticlesPage() {
     } catch (error) {
       console.error('[ArticlesPage] Error fetching tags:', error);
     }
-  };
-
-  const handleArticleGenerated = (articleData: {
-    title: string;
-    excerpt: string;
-    content: string;
-    categoryIds: string[];
-    tagIds: string[];
-    featuredImage?: string;
-  }) => {
-    // 新規記事作成ページに遷移し、生成されたデータを渡す
-    const params = new URLSearchParams({
-      title: articleData.title,
-      excerpt: articleData.excerpt,
-      content: articleData.content,
-      categoryIds: articleData.categoryIds.join(','),
-      tagIds: articleData.tagIds.join(','),
-      ...(articleData.featuredImage && { featuredImage: articleData.featuredImage }),
-    });
-    router.push(`/articles/new?${params.toString()}`);
   };
 
   const handleDelete = async (id: string, title: string) => {
@@ -353,24 +331,13 @@ export default function ArticlesPage() {
             </svg>
           </button>
 
-          {/* AI高度生成ボタン（新規） */}
+          {/* AI高度生成ボタン */}
           <button
             onClick={() => setIsAdvancedGeneratorModalOpen(true)}
             className="bg-gradient-to-r from-purple-600 to-blue-600 text-white w-14 h-14 rounded-full hover:from-purple-700 hover:to-blue-700 transition-all hover:scale-110 flex items-center justify-center shadow-lg"
-            title="AI高度記事生成（12ステップ）"
+            title="AI高度記事生成"
           >
             <Image src="/ai.svg" alt="AI" width={24} height={24} className="brightness-0 invert" />
-          </button>
-
-          {/* AI記事生成ボタン（簡易版） */}
-          <button
-            onClick={() => setIsGeneratorModalOpen(true)}
-            className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white w-14 h-14 rounded-full hover:from-indigo-700 hover:to-purple-700 transition-all hover:scale-110 flex items-center justify-center shadow-lg"
-            title="AI記事生成（簡易版）"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-            </svg>
           </button>
           
           {/* 新規記事作成ボタン */}
@@ -415,15 +382,6 @@ export default function ArticlesPage() {
           }}
           categories={categories}
           writers={writers}
-        />
-
-        {/* AI記事生成モーダル（簡易版） */}
-        <ArticleGeneratorModal
-          isOpen={isGeneratorModalOpen}
-          onClose={() => setIsGeneratorModalOpen(false)}
-          onGenerate={handleArticleGenerated}
-          categories={categories}
-          tags={tags}
         />
       </AdminLayout>
     </AuthGuard>

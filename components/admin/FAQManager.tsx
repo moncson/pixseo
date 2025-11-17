@@ -1,14 +1,18 @@
 'use client';
 import { useState } from 'react';
+import Image from 'next/image';
 import { FAQItem } from '@/types/article';
 
 interface FAQManagerProps {
   value: FAQItem[];
   onChange: (faqs: FAQItem[]) => void;
+  title?: string;
+  content?: string;
 }
 
-export default function FAQManager({ value, onChange }: FAQManagerProps) {
+export default function FAQManager({ value, onChange, title = '', content = '' }: FAQManagerProps) {
   const [faqs, setFaqs] = useState<FAQItem[]>(value || []);
+  const [generatingFAQ, setGeneratingFAQ] = useState(false);
 
   const handleAdd = () => {
     const newFaqs = [...faqs, { question: '', answer: '' }];
@@ -45,20 +49,80 @@ export default function FAQManager({ value, onChange }: FAQManagerProps) {
     onChange(newFaqs);
   };
 
+  const handleGenerateFAQ = async () => {
+    if (!title || !content) {
+      alert('タイトルと本文を入力してください');
+      return;
+    }
+
+    setGeneratingFAQ(true);
+    try {
+      const response = await fetch('/api/admin/articles/generate-faq', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          title,
+          content,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to generate FAQ');
+      }
+
+      const data = await response.json();
+      
+      // 生成されたFAQをパース
+      const generatedFAQs = data.faqs;
+      
+      // 既存のFAQに追加
+      const newFaqs = [...faqs, ...generatedFAQs];
+      setFaqs(newFaqs);
+      onChange(newFaqs);
+      
+      alert(`${generatedFAQs.length}件のFAQを生成しました`);
+    } catch (error) {
+      console.error('Error generating FAQ:', error);
+      alert('FAQの生成に失敗しました');
+    } finally {
+      setGeneratingFAQ(false);
+    }
+  };
+
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <h3 className="text-lg font-semibold text-gray-900">FAQ（よくある質問）</h3>
-        <button
-          type="button"
-          onClick={handleAdd}
-          className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-        >
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-          </svg>
-          質問を追加
-        </button>
+        <div className="flex items-center gap-2">
+          {/* AI生成ボタン */}
+          {title && content && (
+            <button
+              type="button"
+              onClick={handleGenerateFAQ}
+              disabled={generatingFAQ}
+              className="bg-gradient-to-r from-purple-600 to-blue-600 text-white w-10 h-10 rounded-full hover:from-purple-700 hover:to-blue-700 transition-all shadow-md disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+              title="FAQをAI自動生成"
+            >
+              {generatingFAQ ? (
+                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+              ) : (
+                <Image src="/ai.svg" alt="AI" width={20} height={20} className="brightness-0 invert" />
+              )}
+            </button>
+          )}
+          <button
+            type="button"
+            onClick={handleAdd}
+            className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+            </svg>
+            質問を追加
+          </button>
+        </div>
       </div>
 
       {faqs.length === 0 ? (

@@ -520,6 +520,8 @@ function NewArticlePageContent() {
             <FAQManager
               value={formData.faqs}
               onChange={(faqs) => setFormData({ ...formData, faqs })}
+              title={formData.title}
+              content={formData.content}
             />
           </div>
 

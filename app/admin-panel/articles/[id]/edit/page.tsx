@@ -529,6 +529,8 @@ export default function EditArticlePage({ params }: { params: { id: string } }) 
             <FAQManager
               value={formData.faqs}
               onChange={(faqs) => setFormData({ ...formData, faqs })}
+              title={formData.title}
+              content={formData.content}
             />
           </div>
 
