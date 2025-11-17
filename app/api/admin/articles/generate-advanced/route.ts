@@ -297,10 +297,35 @@ ${patternData.prompt}
     // タグ生成用にプレーンテキストを抽出
     const plainContent = content.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
 
-    const tagPrompt = `以下の記事から、検索されやすい広義で汎用的なタグを日本語で5個生成してください。
+    // 既存タグを取得してAIに渡す
+    const existingTags = await adminDb
+      .collection('tags')
+      .where('mediaId', '==', mediaId)
+      .get();
 
-既存タグがある場合は類似するものを使用してください。
-カテゴリー名（${categoryName}）と重複するタグは生成しないでください。
+    const existingTagMap = new Map<string, { id: string; name: string }>();
+    const existingTagNames: string[] = [];
+    existingTags.docs.forEach(doc => {
+      const tagData = doc.data();
+      const normalizedName = tagData.name.toLowerCase();
+      existingTagMap.set(normalizedName, { id: doc.id, name: tagData.name });
+      existingTagNames.push(tagData.name);
+    });
+
+    // 全カテゴリー名を取得
+    const allCategories = await adminDb
+      .collection('categories')
+      .where('mediaId', '==', mediaId)
+      .get();
+    const allCategoryNames = allCategories.docs.map(doc => doc.data().name);
+
+    const existingTagsText = existingTagNames.length > 0 
+      ? `\n既存タグ: ${existingTagNames.join('、')}\n既存タグと同じ意味の場合は、必ず既存タグの表記をそのまま使用してください。`
+      : '';
+
+    const tagPrompt = `以下の記事から、検索されやすい広義で汎用的なタグを日本語で5個生成してください。
+${existingTagsText}
+カテゴリー名（${allCategoryNames.join('、')}）と重複するタグは生成しないでください。
 
 タイトル: ${title}
 本文: ${plainContent.substring(0, 1000)}
@@ -312,7 +337,7 @@ ${patternData.prompt}
       messages: [
         {
           role: 'system',
-          content: 'あなたはSEOに強いタグ生成の専門家です。必ず日本語でタグを生成してください。',
+          content: 'あなたはSEOに強いタグ生成の専門家です。必ず日本語でタグを生成してください。既存タグがある場合は、表記を完全に一致させてください。',
         },
         {
           role: 'user',
@@ -327,27 +352,25 @@ ${patternData.prompt}
     const generatedTags = tagsText
       .split(/[,、]/)
       .map(tag => tag.trim())
-      .filter(tag => tag && tag !== categoryName);
+      .filter(tag => {
+        if (!tag) return false;
+        const lowerTag = tag.toLowerCase();
+        return !allCategoryNames.some(cat => cat.toLowerCase() === lowerTag);
+      });
 
     const tagIds: string[] = [];
-    const existingTags = await adminDb
-      .collection('tags')
-      .where('mediaId', '==', mediaId)
-      .get();
-
-    const existingTagMap = new Map<string, string>();
-    existingTags.docs.forEach(doc => {
-      existingTagMap.set(doc.data().name.toLowerCase(), doc.id);
-    });
 
     for (const tagName of generatedTags) {
       const normalizedTag = tagName.toLowerCase();
       
       if (existingTagMap.has(normalizedTag)) {
-        tagIds.push(existingTagMap.get(normalizedTag)!);
+        // 既存タグを使用
+        const existingTag = existingTagMap.get(normalizedTag)!;
+        tagIds.push(existingTag.id);
+        console.log(`[Step 5-6] Using existing tag: "${existingTag.name}" (normalized: "${normalizedTag}")`);
       } else {
         // 新規タグを作成し、翻訳
-        const slug = tagName.toLowerCase().replace(/\s+/g, '-');
+        const slug = tagName.toLowerCase().replace(/\s+/g, '-').replace(/\//g, '-');
         const tagData: any = {
           name: tagName,
           name_ja: tagName,
@@ -369,7 +392,8 @@ ${patternData.prompt}
 
         const newTagRef = await adminDb.collection('tags').add(tagData);
         tagIds.push(newTagRef.id);
-        existingTagMap.set(normalizedTag, newTagRef.id);
+        existingTagMap.set(normalizedTag, { id: newTagRef.id, name: tagName });
+        console.log(`[Step 5-6] Created new tag: "${tagName}" (normalized: "${normalizedTag}")`);
       }
     }
 
