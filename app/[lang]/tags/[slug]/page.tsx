@@ -133,7 +133,7 @@ export default async function TagPage({ params }: PageProps) {
       />
 
       {rawTheme.firstView && (
-        <FirstView settings={theme.firstView} customTitle={tag.name} customSubtitle="TAG" customMeta={`${localizedArticles.length}件の記事`} showCustomContent={true} />
+        <FirstView settings={theme.firstView} customTitle={tag.name} customSubtitle="TAG" customMeta={t('meta.articlesCount', lang, { count: localizedArticles.length })} showCustomContent={true} />
       )}
       <MediaHeader siteName={siteInfo.name} siteInfo={rawSiteInfo} menuSettings={theme.menuSettings} menuBackgroundColor={rawTheme.menuBackgroundColor} menuTextColor={rawTheme.menuTextColor} lang={lang} />
       <CategoryBar categories={categories} variant="half" lang={lang} />

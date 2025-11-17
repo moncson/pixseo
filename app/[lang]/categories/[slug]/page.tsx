@@ -160,7 +160,7 @@ export default async function CategoryPage({ params }: PageProps) {
           }}
           customTitle={category.name}
           customSubtitle="CATEGORY"
-          customMeta={`${localizedArticles.length}件の記事`}
+          customMeta={t('meta.articlesCount', lang, { count: localizedArticles.length })}
           showCustomContent={true}
         />
       )}
