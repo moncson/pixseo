@@ -177,7 +177,7 @@ export default async function SearchPage({ params }: PageProps) {
               )}
 
               {/* Xタイムライン */}
-              {rawTheme.snsSettings?.xUserId && <XLink username={rawTheme.snsSettings.xUserId} />}
+              {rawTheme.snsSettings?.xUserId && <XLink username={rawTheme.snsSettings.xUserId} lang={lang} />}
             </aside>
           </div>
         </main>

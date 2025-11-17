@@ -195,7 +195,7 @@ export default async function ArticlesPage({ params }: PageProps) {
             )}
 
             {/* Xタイムライン */}
-            {rawTheme.snsSettings?.xUserId && <XLink username={rawTheme.snsSettings.xUserId} />}
+            {rawTheme.snsSettings?.xUserId && <XLink username={rawTheme.snsSettings.xUserId} lang={lang} />}
           </aside>
         </div>
       </main>
