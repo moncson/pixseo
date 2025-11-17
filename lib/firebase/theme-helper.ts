@@ -10,6 +10,12 @@ const THEME_CACHE_TTL = 5 * 60 * 1000; // 5分
  */
 export async function getTheme(mediaId: string): Promise<Theme> {
   try {
+    // mediaIdが空の場合はデフォルトテーマを返す
+    if (!mediaId || mediaId.trim() === '') {
+      console.warn('[getTheme] mediaId is empty, returning default theme');
+      return defaultTheme;
+    }
+
     // キャッシュチェック
     const cached = themeCache.get(mediaId);
     if (cached && Date.now() - cached.timestamp < THEME_CACHE_TTL) {
