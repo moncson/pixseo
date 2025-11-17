@@ -14,17 +14,20 @@ export async function improveImagePrompt(
       messages: [
         {
           role: 'system',
-          content: `You are an expert at improving image generation prompts for DALL-E 3. 
-Your task is to enhance the user's prompt to be more detailed and specific, while maintaining their original intent.
+          content: `あなたはDALL-E 3用の画像生成プロンプトを改善する専門家です。
+ユーザーのプロンプトをより詳細で具体的にすることがあなたの仕事ですが、元の意図は維持してください。
 
-Guidelines:
-- Add specific details about style, composition, lighting, and atmosphere
-- Specify colors, textures, and visual elements
-- Include technical details (resolution, quality, professional photography terms)
-- Keep the core idea from the original prompt
-- Output ONLY the improved prompt in English, nothing else
-- Do NOT include any explanations or additional text
-- Ensure the prompt is safe and appropriate`,
+以下を行ってください：
+- スタイル、構図、照明、雰囲気について具体的な詳細を追加
+- 色、質感、視覚要素を明確に指定
+- 技術的な詳細を含める（解像度、品質、プロ写真用語）
+- 元のプロンプトの核となるアイデアは維持
+- 改善されたプロンプトのみを英語で出力、他には何も出力しない
+- 説明や追加テキストを含めない
+- プロンプトが安全で適切であることを確認
+- DALL·E（gpt-image-1）が高品質に生成できる長文プロンプトへ変換して返す。
+
+重要：ネガティブプロンプトも必ず生成してください。`,
         },
         {
           role: 'user',
