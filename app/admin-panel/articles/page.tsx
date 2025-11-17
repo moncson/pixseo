@@ -356,7 +356,7 @@ export default function ArticlesPage() {
           {/* AI高度生成ボタン（新規） */}
           <button
             onClick={() => setIsAdvancedGeneratorModalOpen(true)}
-            className="bg-purple-600 text-white w-14 h-14 rounded-full hover:bg-purple-700 transition-all hover:scale-110 flex items-center justify-center shadow-lg"
+            className="bg-gradient-to-r from-purple-600 to-blue-600 text-white w-14 h-14 rounded-full hover:from-purple-700 hover:to-blue-700 transition-all hover:scale-110 flex items-center justify-center shadow-lg"
             title="AI高度記事生成（12ステップ）"
           >
             <Image src="/ai.svg" alt="AI" width={24} height={24} className="brightness-0 invert" />
@@ -365,7 +365,7 @@ export default function ArticlesPage() {
           {/* AI記事生成ボタン（簡易版） */}
           <button
             onClick={() => setIsGeneratorModalOpen(true)}
-            className="bg-indigo-600 text-white w-14 h-14 rounded-full hover:bg-indigo-700 transition-all hover:scale-110 flex items-center justify-center shadow-lg"
+            className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white w-14 h-14 rounded-full hover:from-indigo-700 hover:to-purple-700 transition-all hover:scale-110 flex items-center justify-center shadow-lg"
             title="AI記事生成（簡易版）"
           >
             <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">

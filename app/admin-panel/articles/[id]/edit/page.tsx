@@ -392,7 +392,7 @@ export default function EditArticlePage({ params }: { params: { id: string } }) 
                   type="button"
                   onClick={generateTagsFromContent}
                   disabled={generatingTags || (!formData.title && !formData.content)}
-                  className="w-12 h-12 mb-0.5 bg-purple-600 text-white rounded-xl hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+                  className="w-12 h-12 mb-0.5 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-full hover:from-purple-700 hover:to-blue-700 transition-all shadow-md disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
                   title="タグ自動生成"
                 >
                   {generatingTags ? (
@@ -425,7 +425,7 @@ export default function EditArticlePage({ params }: { params: { id: string } }) 
                   type="button"
                   onClick={handleGenerateSlug}
                   disabled={generatingSlug || !formData.title}
-                  className="w-12 h-12 mb-0.5 bg-purple-600 text-white rounded-xl hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+                  className="w-12 h-12 mb-0.5 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-full hover:from-purple-700 hover:to-blue-700 transition-all shadow-md disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
                   title="スラッグ自動生成"
                 >
                   {generatingSlug ? (
@@ -497,7 +497,7 @@ export default function EditArticlePage({ params }: { params: { id: string } }) 
                   type="button"
                   onClick={generateMetaTitle}
                   disabled={generatingMetaTitle || !formData.title}
-                  className="w-12 h-12 mb-0.5 bg-purple-600 text-white rounded-xl hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+                  className="w-12 h-12 mb-0.5 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-full hover:from-purple-700 hover:to-blue-700 transition-all shadow-md disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
                   title="メタタイトル自動生成"
                 >
                   {generatingMetaTitle ? (

@@ -636,9 +636,7 @@ The image should visually represent the main concept of this section.`;
           if (!headingMatch || headingMatch.index === undefined) continue;
           const insertPosition = headingMatch.index + headingMatch[0].length;
           
-          const imageHtml = `\n<figure class="inline-image my-6">
-  <img src="${inlineImagePublicUrl}" alt="${title} - ${headingContext}" class="w-full rounded-lg shadow-md" />
-</figure>\n`;
+          const imageHtml = `<figure class="inline-image my-6"><img src="${inlineImagePublicUrl}" alt="${title} - ${headingContext}" class="w-full rounded-lg shadow-md" /></figure>`;
 
           content = 
             content.substring(0, insertPosition) + 

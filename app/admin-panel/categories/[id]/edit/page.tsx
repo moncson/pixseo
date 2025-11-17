@@ -15,6 +15,7 @@ export default function EditCategoryPage({ params }: { params: { id: string } })
   const [loading, setLoading] = useState(false);
   const [fetchLoading, setFetchLoading] = useState(true);
   const [generatingDescription, setGeneratingDescription] = useState(false);
+  const [generatingSlug, setGeneratingSlug] = useState(false);
   const [category, setCategory] = useState<Category | null>(null);
   
   const [formData, setFormData] = useState({
@@ -89,6 +90,39 @@ export default function EditCategoryPage({ params }: { params: { id: string } })
     }
   };
 
+  const generateSlug = async () => {
+    if (!formData.name) {
+      alert('カテゴリー名を入力してください');
+      return;
+    }
+
+    setGeneratingSlug(true);
+    try {
+      const response = await fetch('/api/admin/generate-slug', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: formData.name,
+          type: 'category',
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to generate slug');
+      }
+
+      const data = await response.json();
+      setFormData(prev => ({ ...prev, slug: data.slug }));
+    } catch (error) {
+      console.error('Error generating slug:', error);
+      alert('スラッグの生成に失敗しました');
+    } finally {
+      setGeneratingSlug(false);
+    }
+  };
+
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     
@@ -143,25 +177,34 @@ export default function EditCategoryPage({ params }: { params: { id: string } })
               <FloatingInput
                 label="カテゴリー名 *"
                 value={formData.name}
-                onChange={(value) => {
-                  setFormData({ ...formData, name: value });
-                  // 自動でスラッグを生成
-                  const slug = value
-                    .toLowerCase()
-                    .replace(/[^a-z0-9\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FFF]+/g, '-')
-                    .replace(/^-+|-+$/g, '');
-                  setFormData({ ...formData, name: value, slug });
-                }}
+                onChange={(value) => setFormData({ ...formData, name: value })}
                 required
               />
 
               {/* スラッグ */}
-              <FloatingInput
-                label="スラッグ（英数字とハイフンのみ）*"
-                value={formData.slug}
-                onChange={(value) => setFormData({ ...formData, slug: value.toLowerCase().replace(/[^a-z0-9-]/g, '') })}
-                required
-              />
+              <div className="flex gap-2">
+                <div className="flex-1">
+                  <FloatingInput
+                    label="スラッグ（英数字とハイフンのみ）*"
+                    value={formData.slug}
+                    onChange={(value) => setFormData({ ...formData, slug: value.toLowerCase().replace(/[^a-z0-9-]/g, '') })}
+                    required
+                  />
+                </div>
+                <button
+                  type="button"
+                  onClick={generateSlug}
+                  disabled={generatingSlug || !formData.name}
+                  className="mt-1 bg-gradient-to-r from-purple-600 to-blue-600 text-white w-12 h-12 rounded-full hover:from-purple-700 hover:to-blue-700 transition-all shadow-md disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+                  title="AIで英語スラッグを生成"
+                >
+                  {generatingSlug ? (
+                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                  ) : (
+                    <Image src="/ai.svg" alt="AI" width={20} height={20} className="brightness-0 invert" />
+                  )}
+                </button>
+              </div>
 
               {/* 説明 */}
               <div className="flex gap-2">
@@ -178,7 +221,7 @@ export default function EditCategoryPage({ params }: { params: { id: string } })
                   type="button"
                   onClick={generateDescription}
                   disabled={generatingDescription || !formData.name}
-                  className="w-12 h-12 mb-0.5 bg-purple-600 text-white rounded-xl hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+                  className="w-12 h-12 mb-0.5 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-full hover:from-purple-700 hover:to-blue-700 transition-all shadow-md disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
                   title="説明文をAI自動生成"
                 >
                   {generatingDescription ? (
