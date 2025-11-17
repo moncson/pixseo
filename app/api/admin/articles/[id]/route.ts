@@ -71,6 +71,8 @@ export async function GET(
     const article: Article = {
       id: doc.id,
       ...data,
+      // 管理画面用に faqs_ja を faqs にマッピング
+      faqs: data.faqs_ja || [],
       publishedAt: data.publishedAt?.toDate() || new Date(),
       updatedAt: data.updatedAt?.toDate() || new Date(),
     } as Article;
@@ -79,6 +81,7 @@ export async function GET(
     console.log(`[API /admin/articles/${id}] featuredImage:`, data.featuredImage);
     console.log(`[API /admin/articles/${id}] featuredImageAlt:`, data.featuredImageAlt);
     console.log(`[API /admin/articles/${id}] article object featuredImageAlt:`, article.featuredImageAlt);
+    console.log(`[API /admin/articles/${id}] FAQs count:`, article.faqs?.length || 0);
     return NextResponse.json(article);
   } catch (error) {
     console.error(`[API /admin/articles] Error:`, error);

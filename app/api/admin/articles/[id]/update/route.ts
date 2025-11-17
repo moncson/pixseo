@@ -78,7 +78,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
           const excerptToTranslate = updateData.excerpt !== undefined ? updateData.excerpt : (existingData?.excerpt || body.excerpt || '');
           const metaTitleToTranslate = updateData.metaTitle || existingData?.metaTitle || titleToTranslate;
           const metaDescriptionToTranslate = updateData.metaDescription || existingData?.metaDescription || excerptToTranslate;
-          const faqsToTranslate = updateData.faqs || existingData?.faqs;
+          const faqsToTranslate = updateData.faqs || existingData?.faqs_ja;
 
           // AIサマリー生成（日本語）
           if (contentToTranslate) {

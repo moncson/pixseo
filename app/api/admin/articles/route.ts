@@ -31,6 +31,8 @@ export async function GET(request: NextRequest) {
       return {
         id: doc.id,
         ...data,
+        // 管理画面用に faqs_ja を faqs にマッピング
+        faqs: data.faqs_ja || [],
         createdAt: data.createdAt?.toDate(),
         publishedAt: data.publishedAt?.toDate() || new Date(),
         updatedAt: data.updatedAt?.toDate() || new Date(),
