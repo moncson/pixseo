@@ -56,7 +56,7 @@ export default function SearchContent({ faviconUrl, mediaId, lang = 'ja' }: Sear
   return (
     <>
       {/* シンプル検索 */}
-      <SimpleSearch onSearch={handleSearch} initialKeyword={keyword} />
+      <SimpleSearch onSearch={handleSearch} initialKeyword={keyword} lang={lang} />
 
       {/* 検索結果 */}
       <section>

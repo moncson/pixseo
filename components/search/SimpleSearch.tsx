@@ -3,13 +3,16 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
+import { Lang } from '@/types/lang';
+import { t } from '@/lib/i18n/translations';
 
 interface SimpleSearchProps {
   onSearch: (keyword: string) => void;
   initialKeyword?: string;
+  lang?: Lang;
 }
 
-export default function SimpleSearch({ onSearch, initialKeyword = '' }: SimpleSearchProps) {
+export default function SimpleSearch({ onSearch, initialKeyword = '', lang = 'ja' }: SimpleSearchProps) {
   const router = useRouter();
   const [keyword, setKeyword] = useState(initialKeyword);
 
@@ -21,11 +24,11 @@ export default function SimpleSearch({ onSearch, initialKeyword = '' }: SimpleSe
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    // URLパラメーターを更新
+    // URLパラメーターを更新（言語パスを含める）
     if (keyword.trim()) {
-      router.push(`/search/?q=${encodeURIComponent(keyword.trim())}`);
+      router.push(`/${lang}/search/?q=${encodeURIComponent(keyword.trim())}`);
     } else {
-      router.push('/search/');
+      router.push(`/${lang}/search/`);
     }
     
     // 検索を実行
@@ -40,14 +43,14 @@ export default function SimpleSearch({ onSearch, initialKeyword = '' }: SimpleSe
             type="text"
             value={keyword}
             onChange={(e) => setKeyword(e.target.value)}
-            placeholder="キーワードを入力"
+            placeholder={t('message.enterSearchKeyword', lang)}
             className="flex-1 bg-transparent outline-none text-gray-900 placeholder-gray-500"
           />
           <button
             type="submit"
             className="absolute right-3 w-8 h-8 rounded-full flex items-center justify-center transition-opacity hover:opacity-80"
             style={{ backgroundColor: 'var(--primary-color, #3b82f6)' }}
-            aria-label="検索"
+            aria-label={t('common.search', lang)}
           >
             <Image
               src="/search.svg"

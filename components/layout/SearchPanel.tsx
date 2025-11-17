@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { useRouter } from 'next/navigation';
 import { Lang } from '@/types/lang';
+import { t } from '@/lib/i18n/translations';
 import Image from 'next/image';
 
 interface SearchPanelProps {
@@ -112,7 +113,7 @@ export default function SearchPanel({ isOpen, onClose, lang = 'ja' }: SearchPane
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="キーワードを入力"
+                  placeholder={t('message.enterSearchKeyword', lang)}
                   className="w-full pb-3 text-lg text-gray-900 bg-transparent border-b-[3px] border-gray-900 focus:outline-none placeholder:text-base placeholder:text-gray-500"
                 />
               </div>
@@ -120,7 +121,7 @@ export default function SearchPanel({ isOpen, onClose, lang = 'ja' }: SearchPane
                 type="submit"
                 className="w-full py-3 px-6 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors font-medium"
               >
-                検索
+                {t('common.search', lang)}
               </button>
             </form>
           </div>

@@ -4,6 +4,7 @@ import { Article } from '@/types/article';
 import { syncArticleToAlgolia } from '@/lib/algolia/sync';
 import { translateArticle, translateFAQs, generateAISummary } from '@/lib/openai/translate';
 import { SUPPORTED_LANGS } from '@/types/lang';
+import { generateTableOfContents } from '@/lib/article-utils';
 
 export const dynamic = 'force-dynamic';
 export const maxDuration = 300; // 5分（翻訳処理のため）
@@ -132,6 +133,10 @@ export async function POST(request: NextRequest) {
             translationData[`excerpt_${lang}`] = translated.excerpt;
             translationData[`metaTitle_${lang}`] = translated.metaTitle;
             translationData[`metaDescription_${lang}`] = translated.metaDescription;
+
+            // 目次を生成
+            const toc = generateTableOfContents(translated.content);
+            translationData[`tableOfContents_${lang}`] = toc;
 
             // AIサマリーを生成
             const aiSummary = await generateAISummary(translated.content, lang);

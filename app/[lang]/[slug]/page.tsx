@@ -159,7 +159,7 @@ export default async function FixedPage({ params }: PageProps) {
             />
             <div className="w-full border-t border-gray-700 pt-6">
               <p className="text-gray-400 text-sm text-center">
-                © {new Date().getFullYear()} {siteInfo.name}. {t('common.allRightsReserved', lang)}
+                © {new Date().getFullYear()} {siteInfo.name}. All rights reserved.
               </p>
             </div>
           </div>
@@ -171,7 +171,7 @@ export default async function FixedPage({ params }: PageProps) {
                 <p className="text-gray-300 max-w-2xl mx-auto">{siteInfo.description}</p>
               )}
               <p className="text-gray-400 text-sm pt-4">
-                © {new Date().getFullYear()} {siteInfo.name}. {t('common.allRightsReserved', lang)}
+                © {new Date().getFullYear()} {siteInfo.name}. All rights reserved.
               </p>
             </div>
           </div>

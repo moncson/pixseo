@@ -327,7 +327,7 @@ export default async function HomePage({ params }: PageProps) {
             {/* コピーライト */}
             <div className="w-full border-t border-gray-700 pt-6">
               <p className="text-gray-400 text-sm text-center">
-                © {new Date().getFullYear()} {siteInfo.name}. {t('common.allRightsReserved', lang)}
+                © {new Date().getFullYear()} {siteInfo.name}. All rights reserved.
               </p>
             </div>
           </div>
@@ -341,7 +341,7 @@ export default async function HomePage({ params }: PageProps) {
                 </p>
               )}
               <p className="text-gray-400 text-sm pt-4">
-                © {new Date().getFullYear()} {siteInfo.name}. {t('common.allRightsReserved', lang)}
+                © {new Date().getFullYear()} {siteInfo.name}. All rights reserved.
               </p>
             </div>
           </div>

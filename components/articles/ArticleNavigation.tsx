@@ -71,18 +71,21 @@ export default function ArticleNavigation({
                     <>
                       <span>•</span>
                       <div className="flex gap-1.5 flex-wrap">
-                        {nextCategories.slice(0, 2).map((cat) => (
-                          <span 
-                            key={cat.id} 
-                            className="px-2 py-0.5 rounded-full text-xs font-medium"
-                            style={{ 
-                              backgroundColor: 'color-mix(in srgb, var(--primary-color, #3b82f6) 15%, white)',
-                              color: 'var(--primary-color, #3b82f6)'
-                            }}
-                          >
-                            {cat.name}
-                          </span>
-                        ))}
+                        {nextCategories.slice(0, 2).map((cat) => {
+                          const categoryName = (cat as any)[`name_${lang}`] || cat.name;
+                          return (
+                            <span 
+                              key={cat.id} 
+                              className="px-2 py-0.5 rounded-full text-xs font-medium"
+                              style={{ 
+                                backgroundColor: 'color-mix(in srgb, var(--primary-color, #3b82f6) 15%, white)',
+                                color: 'var(--primary-color, #3b82f6)'
+                              }}
+                            >
+                              {categoryName}
+                            </span>
+                          );
+                        })}
                       </div>
                     </>
                   )}
@@ -147,18 +150,21 @@ export default function ArticleNavigation({
                     <>
                       <span>•</span>
                       <div className="flex gap-1.5 flex-wrap justify-end">
-                        {previousCategories.slice(0, 2).map((cat) => (
-                          <span 
-                            key={cat.id} 
-                            className="px-2 py-0.5 rounded-full text-xs font-medium"
-                            style={{ 
-                              backgroundColor: 'color-mix(in srgb, var(--primary-color, #3b82f6) 15%, white)',
-                              color: 'var(--primary-color, #3b82f6)'
-                            }}
-                          >
-                            {cat.name}
-                          </span>
-                        ))}
+                        {previousCategories.slice(0, 2).map((cat) => {
+                          const categoryName = (cat as any)[`name_${lang}`] || cat.name;
+                          return (
+                            <span 
+                              key={cat.id} 
+                              className="px-2 py-0.5 rounded-full text-xs font-medium"
+                              style={{ 
+                                backgroundColor: 'color-mix(in srgb, var(--primary-color, #3b82f6) 15%, white)',
+                                color: 'var(--primary-color, #3b82f6)'
+                              }}
+                            >
+                              {categoryName}
+                            </span>
+                          );
+                        })}
                       </div>
                     </>
                   )}
