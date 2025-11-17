@@ -233,8 +233,8 @@ function NewArticlePageContent() {
       console.log('[handleSubmit] 目次:', tableOfContents);
       console.log('[handleSubmit] 読了時間:', readingTime, '分');
       
-      // APIエンドポイント経由で作成（Algolia同期も含む）
-      const response = await fetch('/api/admin/articles', {
+      // バックグラウンドで実行（await しない）
+      fetch('/api/admin/articles', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -249,18 +249,22 @@ function NewArticlePageContent() {
           tableOfContents,
           readingTime,
         }),
+      }).then(async (response) => {
+        if (!response.ok) {
+          throw new Error(`作成に失敗しました: ${response.status}`);
+        }
+        console.log('[handleSubmit] 作成成功');
+      }).catch((error) => {
+        console.error('Error creating article:', error);
+        alert('記事の作成に失敗しました');
       });
       
-      if (!response.ok) {
-        throw new Error(`作成に失敗しました: ${response.status}`);
-      }
-      
-      console.log('[handleSubmit] 作成成功');
-      alert('記事を作成しました');
+      // 即座にリダイレクト
+      alert('記事を保存しました');
       router.push('/articles');
     } catch (error) {
-      console.error('Error creating article:', error);
-      alert('記事の作成に失敗しました');
+      console.error('Error:', error);
+      alert('記事の保存に失敗しました');
     } finally {
       setLoading(false);
     }

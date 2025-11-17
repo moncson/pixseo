@@ -292,7 +292,8 @@ export default function EditArticlePage({ params }: { params: { id: string } }) 
       console.log('[handleSubmit] 目次:', tableOfContents);
       console.log('[handleSubmit] 読了時間:', readingTime, '分');
       
-      const response = await fetch(`/api/admin/articles/${params.id}/update`, {
+      // バックグラウンドで実行（await しない）
+      fetch(`/api/admin/articles/${params.id}/update`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -307,18 +308,22 @@ export default function EditArticlePage({ params }: { params: { id: string } }) 
           tableOfContents,
           readingTime,
         }),
+      }).then(async (response) => {
+        if (!response.ok) {
+          throw new Error(`更新に失敗しました: ${response.status}`);
+        }
+        console.log('[handleSubmit] 更新成功');
+      }).catch((error) => {
+        console.error('[handleSubmit] 更新エラー:', error);
+        alert('記事の更新に失敗しました');
       });
-      
-      if (!response.ok) {
-        throw new Error(`更新に失敗しました: ${response.status}`);
-      }
 
-      console.log('[handleSubmit] 更新成功');
-      alert('記事を更新しました');
+      // 即座にリダイレクト
+      alert('記事を保存しました');
       router.push('/articles');
     } catch (error) {
-      console.error('[handleSubmit] 更新エラー:', error);
-      alert('記事の更新に失敗しました');
+      console.error('[handleSubmit] エラー:', error);
+      alert('記事の保存に失敗しました');
     } finally {
       setLoading(false);
     }
