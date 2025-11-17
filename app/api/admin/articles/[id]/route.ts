@@ -137,13 +137,17 @@ export async function PUT(
     // 公開ステータスが変更された場合
     const statusChanged = wasPublished !== body.isPublished;
     
-    // 🚀 非公開→公開に切り替わった場合、バックグラウンドで翻訳
-    if (body.isPublished && statusChanged && !wasPublished) {
-      console.log(`[API /admin/articles/${id}] バックグラウンド処理開始（翻訳 + Algolia）`);
+    // 🚀 公開に切り替えた場合、バックグラウンドで翻訳（常に実行）
+    if (body.isPublished === true && statusChanged) {
+      console.log(`[API] ===== バックグラウンド処理開始（翻訳 + Algolia） =====`);
+      console.log(`[API] 記事ID: ${id}`);
+      console.log(`[API] タイトル: ${existingData?.title}`);
+      console.log(`[API] wasPublished: ${wasPublished}, isPublished: ${body.isPublished}, statusChanged: ${statusChanged}`);
       
       // バックグラウンド処理（レスポンスを待たない）
       Promise.resolve().then(async () => {
         try {
+          console.log(`[Background ${id}] ===== 処理開始 =====`);
           const translationData: any = {};
 
           // 既存データから翻訳用のデータを取得
@@ -153,6 +157,8 @@ export async function PUT(
           const metaTitleToTranslate = existingData?.metaTitle || titleToTranslate;
           const metaDescriptionToTranslate = existingData?.metaDescription || excerptToTranslate;
           const faqsToTranslate = existingData?.faqs_ja;
+
+          console.log(`[Background ${id}] 翻訳対象: title="${titleToTranslate}", content length=${contentToTranslate.length}`);
 
           // AIサマリー生成（日本語）
           if (contentToTranslate) {
