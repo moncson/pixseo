@@ -5,6 +5,7 @@ import OpenAI from 'openai';
 import sharp from 'sharp';
 import { v4 as uuidv4 } from 'uuid';
 import { translateText, generateAISummary, translateFAQs } from '@/lib/openai/translate';
+import { improveImagePrompt } from '@/lib/openai/improve-prompt';
 import { SUPPORTED_LANGS } from '@/types/lang';
 
 export const dynamic = 'force-dynamic';
@@ -196,11 +197,14 @@ ${patternData.prompt}
 記事の要件:
 - 必ず${currentYear}年の最新の情報を含む
 - SEOを意識した構成
-- 3,000文字以上
-- 見出し（H2, H3）を適切に使用
-- 各見出し（H2, H3）の下には最低300文字以上の説明文を記載
-- 見出しと本文のバランスを重視し、読みやすい文章構成にする
+- 合計5,000文字以上の充実した記事
+- 見出し構造：H2を3～5個、各H2の下にH3を2～3個配置
+- 各H2見出しの下には最低600文字以上の詳細な説明文を記載
+- 各H3見出しの下には最低400文字以上の具体的な説明文を記載
+- 単なる概要ではなく、具体的な事例、データ、手順、メリット・デメリットなどを含む実用的な内容
 - 情報が整理しやすい場合は表（<table>タグ）を使用
+- 箇条書き（<ul>、<ol>）を適切に活用
+- 各セクションで読者が実際に行動できる具体的な情報を提供
 - 自然で親しみやすい文章
 
 記事の形式（必ず以下の形式で出力してください）:
@@ -219,7 +223,13 @@ ${patternData.prompt}
         messages: [
           {
             role: 'system',
-            content: `あなたはSEOに強い記事作成の専門家です。現在は${currentYear}年${currentMonth}月です。`,
+            content: `あなたはSEOに強い記事作成の専門家です。現在は${currentYear}年${currentMonth}月です。
+
+【重要な指示】
+- 各見出し（H2, H3）の下には必ず十分な文字数の説明文を記載してください
+- 短い説明文や概要のみの記述は避けてください
+- 具体的な事例、データ、手順を含む実用的な内容にしてください
+- 読者が実際に行動できる具体的な情報を提供してください`,
           },
           {
             role: 'user',
@@ -228,7 +238,7 @@ ${patternData.prompt}
         ],
         stream: false,
         temperature: 0.7,
-        max_tokens: 6000,
+        max_tokens: 10000,
       }),
     });
 
@@ -397,10 +407,13 @@ ${content}
     console.log('[Step 7] Generating featured image...');
 
     const imagePrompt = `${imagePatternData.prompt}\n\nContext: This is a featured image for an article titled "${title}". ${plainContent.substring(0, 200)}`;
+    
+    // GPT-4oでプロンプトを改善
+    const improvedFeaturedImagePrompt = await improveImagePrompt(imagePrompt, openai);
 
     const imageResponse = await openai.images.generate({
       model: 'dall-e-3',
-      prompt: imagePrompt,
+      prompt: improvedFeaturedImagePrompt,
       n: 1,
       size: imagePatternData.size as '1024x1024' | '1792x1024' | '1024x1792',
       quality: 'standard',
@@ -527,11 +540,31 @@ A: [回答]`;
           const headingMatch = headingMatches[position];
           const headingContext = headingTexts[position];
 
-          const inlineImagePrompt = `${imagePatternData.prompt}\n\nContext: This image is for an article titled "${title}". The image should represent the following section: "${headingContext}".`;
+          // h2見出しの後のコンテキストテキストを抽出（最大500文字）
+          const nextHeadingIndex = headingMatches[position + 1]?.index;
+          const startIndex = (headingMatch.index || 0) + headingMatch[0].length;
+          const endIndex = nextHeadingIndex || content.length;
+          const sectionContent = content
+            .substring(startIndex, endIndex)
+            .replace(/<[^>]*>/g, ' ')
+            .replace(/\s+/g, ' ')
+            .trim()
+            .substring(0, 500);
+
+          const inlineImagePrompt = `${imagePatternData.prompt}
+
+Context: This image is for an article titled "${title}". 
+Section heading: "${headingContext}"
+Section content: "${sectionContent}"
+
+The image should visually represent the main concept of this section.`;
+
+          // GPT-4oでプロンプトを改善
+          const improvedInlineImagePrompt = await improveImagePrompt(inlineImagePrompt, openai);
 
           const inlineImageResponse = await openai.images.generate({
             model: 'dall-e-3',
-            prompt: inlineImagePrompt,
+            prompt: improvedInlineImagePrompt,
             n: 1,
             size: imagePatternData.size as '1024x1024' | '1792x1024' | '1024x1792',
             quality: 'standard',
