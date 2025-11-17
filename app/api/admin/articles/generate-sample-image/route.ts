@@ -34,7 +34,7 @@ export async function POST(request: NextRequest) {
     console.log('[Generate Sample Image] Generating image with DALL-E 3...');
 
     const response = await openai.images.generate({
-      model: 'dall-e-3',
+      model: 'gpt-image-1',
       prompt: improvedPrompt,
       n: 1,
       size: size as '1024x1024' | '1792x1024' | '1024x1792',

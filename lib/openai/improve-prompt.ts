@@ -27,7 +27,9 @@ export async function improveImagePrompt(
 - プロンプトが安全で適切であることを確認
 - DALL·E（gpt-image-1）が高品質に生成できる長文プロンプトへ変換して返す。
 
-重要：ネガティブプロンプトも必ず生成してください。`,
+重要：ネガティブプロンプトも必ず生成してください。
+文章に直接「禁止事項」を書き込むことで、ネガティブプロンプトとして扱われます。
+例：「Important: The image must not contain any text, letters, words, watermarks, logos, or written characters.」`,
         },
         {
           role: 'user',

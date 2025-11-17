@@ -407,7 +407,7 @@ ${plainContent}
     const imagePrompt = `${imagePatternData.prompt}\n\nContext: This is a featured image for an article titled "${title}". ${plainContent.substring(0, 200)}`;
 
     const imageResponse = await openai.images.generate({
-      model: 'dall-e-3',
+      model: 'gpt-image-1',
       prompt: imagePrompt,
       n: 1,
       size: imagePatternData.size as '1024x1024' | '1792x1024' | '1024x1792',
@@ -544,7 +544,7 @@ A: [回答]`;
           const inlineImagePrompt = `${imagePatternData.prompt}\n\nContext: This image is for an article titled "${title}". The image should represent the following section: "${headingContext}".`;
 
           const inlineImageResponse = await openai.images.generate({
-            model: 'dall-e-3',
+            model: 'gpt-image-1',
             prompt: inlineImagePrompt,
             n: 1,
             size: imagePatternData.size as '1024x1024' | '1792x1024' | '1024x1792',

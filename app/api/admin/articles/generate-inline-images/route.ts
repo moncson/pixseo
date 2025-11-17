@@ -89,7 +89,7 @@ export async function POST(request: NextRequest) {
 
         // DALL-E 3で画像を生成
         const response = await openai.images.generate({
-          model: 'dall-e-3',
+          model: 'gpt-image-1',
           prompt: imagePrompt,
           n: 1,
           size: imageSize as '1024x1024' | '1792x1024' | '1024x1792',
