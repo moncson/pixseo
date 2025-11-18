@@ -10,6 +10,7 @@ import FloatingInput from '@/components/admin/FloatingInput';
 import FloatingSelect from '@/components/admin/FloatingSelect';
 import FloatingMultiSelect from '@/components/admin/FloatingMultiSelect';
 import FeaturedImageUpload from '@/components/admin/FeaturedImageUpload';
+import TargetAudienceInput from '@/components/admin/TargetAudienceInput';
 import { Category, Tag, Article } from '@/types/article';
 import { Writer } from '@/types/writer';
 import { apiGet } from '@/lib/api-client';
@@ -215,6 +216,31 @@ export default function EditArticlePage({ params }: { params: { id: string } }) 
       alert('想定読者の生成に失敗しました');
     } finally {
       setGeneratingAudience(false);
+    }
+  };
+
+  const handleDeleteAudienceHistory = async (audience: string) => {
+    try {
+      const currentTenantId = typeof window !== 'undefined' 
+        ? localStorage.getItem('currentTenantId') 
+        : null;
+
+      const response = await fetch(`/api/admin/target-audience-history?targetAudience=${encodeURIComponent(audience)}`, {
+        method: 'DELETE',
+        headers: {
+          'x-media-id': currentTenantId || '',
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error('履歴の削除に失敗しました');
+      }
+
+      const data = await response.json();
+      setAudienceHistory(data.history || []);
+    } catch (error) {
+      console.error('Error deleting audience history:', error);
+      alert('履歴の削除に失敗しました');
     }
   };
 
@@ -467,20 +493,15 @@ export default function EditArticlePage({ params }: { params: { id: string } }) 
                 </button>
               </div>
 
-              {/* 想定読者（ペルソナ） - プルダウン + AI自動生成ボタン */}
+              {/* 想定読者（ペルソナ） - カスタムプルダウン + AI自動生成ボタン */}
               <div className="flex gap-2">
                 <div className="flex-1">
-                  <FloatingInput
-                    label="想定読者（ペルソナ）"
+                  <TargetAudienceInput
                     value={formData.targetAudience}
                     onChange={(value) => setFormData({ ...formData, targetAudience: value })}
-                    list="audience-history-edit"
+                    history={audienceHistory}
+                    onDeleteHistory={handleDeleteAudienceHistory}
                   />
-                  <datalist id="audience-history-edit">
-                    {audienceHistory.map((audience, index) => (
-                      <option key={index} value={audience} />
-                    ))}
-                  </datalist>
                 </div>
                 <button
                   type="button"

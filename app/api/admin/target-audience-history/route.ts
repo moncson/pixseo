@@ -91,3 +91,48 @@ export async function POST(request: NextRequest) {
   }
 }
 
+// DELETE: 想定読者履歴から削除
+export async function DELETE(request: NextRequest) {
+  try {
+    const mediaId = request.headers.get('x-media-id');
+    const url = new URL(request.url);
+    const targetAudience = url.searchParams.get('targetAudience');
+
+    if (!mediaId || !targetAudience) {
+      return NextResponse.json(
+        { error: 'Media ID and target audience are required' },
+        { status: 400 }
+      );
+    }
+
+    const docRef = adminDb.collection('targetAudienceHistory').doc(mediaId);
+    const doc = await docRef.get();
+
+    if (!doc.exists) {
+      return NextResponse.json(
+        { error: 'History not found' },
+        { status: 404 }
+      );
+    }
+
+    const data = doc.data();
+    const history = data?.history || [];
+
+    // 指定された想定読者を削除
+    const newHistory = history.filter((item: string) => item !== targetAudience);
+
+    await docRef.update({
+      history: newHistory,
+      updatedAt: FieldValue.serverTimestamp(),
+    });
+
+    return NextResponse.json({ success: true, history: newHistory });
+  } catch (error) {
+    console.error('[Target Audience History DELETE] Error:', error);
+    return NextResponse.json(
+      { error: 'Failed to delete target audience from history' },
+      { status: 500 }
+    );
+  }
+}
+
