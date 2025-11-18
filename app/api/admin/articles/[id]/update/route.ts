@@ -62,6 +62,40 @@ export async function PUT(request: Request, { params }: { params: { id: string }
     await articleRef.update(updateData);
     console.log('[API] Firestore更新完了（日本語版）');
 
+    // 🎯 想定読者を履歴に追加
+    if (updateData.targetAudience && (existingData?.mediaId || updateData.mediaId)) {
+      try {
+        const mediaId = existingData?.mediaId || updateData.mediaId;
+        const now = new Date();
+        const historyRef = adminDb.collection('targetAudienceHistory').doc(mediaId);
+        const historyDoc = await historyRef.get();
+        
+        if (!historyDoc.exists) {
+          await historyRef.set({
+            mediaId: mediaId,
+            history: [updateData.targetAudience],
+            createdAt: now,
+            updatedAt: now,
+          });
+        } else {
+          const historyData = historyDoc.data();
+          const history = historyData?.history || [];
+          
+          if (!history.includes(updateData.targetAudience)) {
+            const newHistory = [updateData.targetAudience, ...history].slice(0, 20);
+            await historyRef.update({
+              history: newHistory,
+              updatedAt: now,
+            });
+          }
+        }
+        console.log('[API] 想定読者を履歴に追加:', updateData.targetAudience);
+      } catch (error) {
+        console.error('[API] 想定読者履歴追加エラー:', error);
+        // エラーが発生しても記事更新は成功とする
+      }
+    }
+
     // 🚀 公開時の翻訳処理（同期処理）
     // 条件：公開状態（常に翻訳を実行）
     if (body.isPublished === true) {
