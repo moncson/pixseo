@@ -24,11 +24,12 @@ export async function POST(request: NextRequest) {
       writerId,
       writingStyleId,
       imagePromptPatternId,
+      targetAudience,
     } = body;
 
     console.log('[Advanced Generate] Starting 12-step article generation...');
 
-    if (!mediaId || !categoryId || !patternId || !writerId || !imagePromptPatternId) {
+    if (!mediaId || !categoryId || !patternId || !writerId || !imagePromptPatternId || !targetAudience) {
       return NextResponse.json(
         { error: 'All parameters are required' },
         { status: 400 }
@@ -52,7 +53,6 @@ export async function POST(request: NextRequest) {
     const categoryName = categoryDoc.data()!.name;
     const patternData = patternDoc.data()!;
     const imagePatternData = imagePatternDoc.data()!;
-    const targetAudience = patternData.targetAudience || '一般読者';
 
     const grokApiKey = process.env.GROK_API_KEY;
     const openaiApiKey = process.env.OPENAI_API_KEY;

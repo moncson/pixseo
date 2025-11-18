@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import FloatingSelect from './FloatingSelect';
+import FloatingInput from './FloatingInput';
 import { Category } from '@/types/article';
 import { Writer } from '@/types/writer';
 import { ArticlePattern } from '@/types/article-pattern';
@@ -32,7 +33,9 @@ export default function AdvancedArticleGeneratorModal({
     patternId: '',
     writerId: '',
     imagePromptPatternId: '',
+    targetAudience: '',
   });
+  const [generatingAudience, setGeneratingAudience] = useState(false);
 
   useEffect(() => {
     if (isOpen) {
@@ -105,6 +108,43 @@ export default function AdvancedArticleGeneratorModal({
     }
   };
 
+  const handleGenerateTargetAudience = async () => {
+    if (!formData.categoryId) {
+      setError('カテゴリーを先に選択してください');
+      return;
+    }
+
+    setGeneratingAudience(true);
+    setError(null);
+
+    try {
+      const currentTenantId = typeof window !== 'undefined' 
+        ? localStorage.getItem('currentTenantId') 
+        : null;
+
+      const response = await fetch('/api/admin/articles/generate-target-audience', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-media-id': currentTenantId || '',
+        },
+        body: JSON.stringify({ categoryId: formData.categoryId }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to generate target audience');
+      }
+
+      const data = await response.json();
+      setFormData(prev => ({ ...prev, targetAudience: data.targetAudience }));
+    } catch (error) {
+      console.error('Error generating target audience:', error);
+      setError('想定読者の生成に失敗しました');
+    } finally {
+      setGeneratingAudience(false);
+    }
+  };
+
   const handleGenerate = async () => {
     // デバッグ用：選択されている値を出力
     console.log('[Advanced Generate] Form data:', formData);
@@ -115,9 +155,10 @@ export default function AdvancedArticleGeneratorModal({
     if (!formData.patternId) missingFields.push('構成パターン');
     if (!formData.writerId) missingFields.push('ライター');
     if (!formData.imagePromptPatternId) missingFields.push('画像プロンプトパターン');
+    if (!formData.targetAudience) missingFields.push('想定読者');
 
     if (missingFields.length > 0) {
-      setError(`以下の項目を選択してください: ${missingFields.join('、')}`);
+      setError(`以下の項目を入力してください: ${missingFields.join('、')}`);
       return;
     }
 
@@ -230,6 +271,43 @@ export default function AdvancedArticleGeneratorModal({
                 </p>
               </div>
             )}
+
+            <div className="space-y-2">
+              <FloatingInput
+                label="想定読者（ペルソナ）*"
+                value={formData.targetAudience}
+                onChange={(value) => setFormData({ ...formData, targetAudience: value })}
+                required
+                placeholder="例: フリーランスのWebデザイナー、スタートアップの創業者"
+              />
+              <button
+                type="button"
+                onClick={handleGenerateTargetAudience}
+                disabled={!formData.categoryId || generatingAudience}
+                className="w-8 h-8 rounded-full flex items-center justify-center transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                style={{
+                  background: !formData.categoryId || generatingAudience 
+                    ? '#e5e7eb' 
+                    : 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                  color: 'white'
+                }}
+                title="AIで想定読者を自動生成"
+              >
+                {generatingAudience ? (
+                  <svg className="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                ) : (
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                  </svg>
+                )}
+              </button>
+              <p className="text-xs text-gray-500 mt-1">
+                カテゴリーから想定読者をAIで自動生成できます（⚡ボタン）
+              </p>
+            </div>
 
             <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
               <p className="text-sm text-blue-800">

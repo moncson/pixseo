@@ -6,7 +6,6 @@ export interface ArticlePattern {
   id: string;
   name: string; // パターン名（例: レビュー形式、まとめ形式）
   description: string; // パターンの説明
-  targetAudience: string; // 想定読者（ペルソナ）
   prompt: string; // Grok APIに渡すプロンプト文
   mediaId: string; // メディアID
   createdAt: Date;

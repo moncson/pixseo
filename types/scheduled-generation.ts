@@ -10,6 +10,7 @@ export interface ScheduledGeneration {
   writerId: string; // ライターID
   writingStyleId: string; // ライティング特徴ID
   imagePromptPatternId: string; // 画像プロンプトパターンID
+  targetAudience: string; // 想定読者（ペルソナ）
   
   // スケジュール設定
   daysOfWeek: number[]; // 曜日（0=日曜, 1=月曜, ..., 6=土曜）
