@@ -373,41 +373,30 @@ export default function ScheduledGenerationModal({
                 required
               />
 
-              <div className="space-y-2">
-                <FloatingInput
-                  label="想定読者（ペルソナ）*"
-                  value={formData.targetAudience}
-                  onChange={(value) => setFormData({ ...formData, targetAudience: value })}
-                  required
-                  placeholder="例: フリーランスのWebデザイナー、スタートアップの創業者"
-                />
+              <div className="flex gap-2">
+                <div className="flex-1">
+                  <FloatingInput
+                    label="想定読者（ペルソナ）*"
+                    value={formData.targetAudience}
+                    onChange={(value) => setFormData({ ...formData, targetAudience: value })}
+                    required
+                  />
+                </div>
                 <button
                   type="button"
                   onClick={handleGenerateTargetAudience}
                   disabled={!formData.categoryId || generatingAudience}
-                  className="w-8 h-8 rounded-full flex items-center justify-center transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-                  style={{
-                    background: !formData.categoryId || generatingAudience 
-                      ? '#e5e7eb' 
-                      : 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                    color: 'white'
-                  }}
+                  className="w-12 h-12 mb-0.5 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-full hover:from-purple-700 hover:to-blue-700 transition-all shadow-md disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
                   title="AIで想定読者を自動生成"
                 >
                   {generatingAudience ? (
-                    <svg className="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                    </svg>
+                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
                   ) : (
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                    <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456zM16.894 20.567L16.5 22.5l-.394-1.933a2.25 2.25 0 00-1.423-1.423L12.75 18.75l1.933-.394a2.25 2.25 0 001.423-1.423l.394-1.933.394 1.933a2.25 2.25 0 001.423 1.423l1.933.394-1.933.394a2.25 2.25 0 00-1.423 1.423z" />
                     </svg>
                   )}
                 </button>
-                <p className="text-xs text-gray-500 mt-1">
-                  カテゴリーから想定読者をAIで自動生成できます（⚡ボタン）
-                </p>
               </div>
 
               {/* 曜日選択 */}
