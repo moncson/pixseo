@@ -21,6 +21,7 @@ export default function ArticlePatternModal({
   const [formData, setFormData] = useState({
     name: '',
     description: '',
+    targetAudience: '',
     prompt: '',
   });
 
@@ -55,8 +56,8 @@ export default function ArticlePatternModal({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!formData.name || !formData.prompt) {
-      alert('パターン名とプロンプトは必須です');
+    if (!formData.name || !formData.targetAudience || !formData.prompt) {
+      alert('パターン名、想定読者、プロンプトは必須です');
       return;
     }
 
@@ -83,7 +84,7 @@ export default function ArticlePatternModal({
       if (!response.ok) throw new Error('Failed to save pattern');
 
       alert(editingId ? '更新しました' : '作成しました');
-      setFormData({ name: '', description: '', prompt: '' });
+      setFormData({ name: '', description: '', targetAudience: '', prompt: '' });
       setEditingId(null);
       fetchPatterns();
     } catch (error) {
@@ -98,6 +99,7 @@ export default function ArticlePatternModal({
     setFormData({
       name: pattern.name,
       description: pattern.description,
+      targetAudience: pattern.targetAudience || '',
       prompt: pattern.prompt,
     });
     setEditingId(pattern.id);
@@ -164,6 +166,14 @@ export default function ArticlePatternModal({
               />
 
               <FloatingInput
+                label="想定読者（ペルソナ）"
+                value={formData.targetAudience}
+                onChange={(value) => setFormData({ ...formData, targetAudience: value })}
+                required
+                placeholder="例: エンタープライズ企業のUXリーダー、フリーランスのWebデザイナー、スタートアップの創業者"
+              />
+
+              <FloatingInput
                 label="プロンプト（Grok APIに渡す指示文）"
                 value={formData.prompt}
                 onChange={(value) => setFormData({ ...formData, prompt: value })}
@@ -192,7 +202,7 @@ export default function ArticlePatternModal({
                     type="button"
                     onClick={() => {
                       setEditingId(null);
-                      setFormData({ name: '', description: '', prompt: '' });
+                      setFormData({ name: '', description: '', targetAudience: '', prompt: '' });
                     }}
                     className="bg-gray-300 text-gray-700 px-6 py-3 rounded-xl hover:bg-gray-400 transition-colors"
                   >
@@ -225,6 +235,11 @@ export default function ArticlePatternModal({
                       {pattern.description && (
                         <p className="text-sm text-gray-600 mt-1">
                           {pattern.description}
+                        </p>
+                      )}
+                      {pattern.targetAudience && (
+                        <p className="text-sm text-blue-600 mt-1">
+                          想定読者: {pattern.targetAudience}
                         </p>
                       )}
                     </div>
