@@ -20,7 +20,6 @@ export default function ArticlePatternModal({
   const [selectedPatternId, setSelectedPatternId] = useState<string | 'new'>('new');
   const [formData, setFormData] = useState({
     name: '',
-    description: '',
     prompt: '',
   });
 
@@ -33,13 +32,12 @@ export default function ArticlePatternModal({
   useEffect(() => {
     // タブ選択時にフォームデータを更新
     if (selectedPatternId === 'new') {
-      setFormData({ name: '', description: '', prompt: '' });
+      setFormData({ name: '', prompt: '' });
     } else {
       const pattern = patterns.find(p => p.id === selectedPatternId);
       if (pattern) {
         setFormData({
           name: pattern.name,
-          description: pattern.description || '',
           prompt: pattern.prompt,
         });
       }
@@ -104,7 +102,7 @@ export default function ArticlePatternModal({
       
       if (!isEdit) {
         setSelectedPatternId('new');
-        setFormData({ name: '', description: '', prompt: '' });
+        setFormData({ name: '', prompt: '' });
       }
       
       onSuccess();
@@ -160,7 +158,7 @@ export default function ArticlePatternModal({
                   : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
               }`}
             >
-              + 新規作成
+              +
             </button>
             {patterns.map((pattern) => (
               <button
@@ -205,14 +203,6 @@ export default function ArticlePatternModal({
             />
 
             <FloatingInput
-              label="説明（任意）"
-              value={formData.description}
-              onChange={(value) => setFormData({ ...formData, description: value })}
-              multiline
-              rows={2}
-            />
-
-            <FloatingInput
               label="プロンプト（Grok APIに渡す指示文）"
               value={formData.prompt}
               onChange={(value) => setFormData({ ...formData, prompt: value })}
@@ -222,24 +212,24 @@ export default function ArticlePatternModal({
             />
 
             {/* ボタンエリア */}
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full bg-blue-600 text-white px-6 py-4 rounded-xl hover:bg-blue-700 transition-colors disabled:opacity-50 font-medium"
-            >
-              {loading ? '処理中...' : selectedPatternId === 'new' ? '作成' : '更新'}
-            </button>
-          </form>
-        </div>
+            <div className="flex gap-3">
+              <button
+                type="button"
+                onClick={onClose}
+                className="flex-1 bg-gray-500 text-white px-6 py-4 rounded-xl hover:bg-gray-600 transition-colors font-medium"
+              >
+                キャンセル
+              </button>
 
-        {/* フッター */}
-        <div className="p-6 border-t border-gray-200 flex justify-end">
-          <button
-            onClick={onClose}
-            className="bg-gray-300 text-gray-700 px-6 py-3 rounded-xl hover:bg-gray-400 transition-colors"
-          >
-            閉じる
-          </button>
+              <button
+                type="submit"
+                disabled={loading}
+                className="flex-1 bg-blue-600 text-white px-6 py-4 rounded-xl hover:bg-blue-700 transition-colors disabled:opacity-50 font-medium"
+              >
+                {loading ? '処理中...' : selectedPatternId === 'new' ? '作成' : '更新'}
+              </button>
+            </div>
+          </form>
         </div>
       </div>
     </div>

@@ -29,7 +29,6 @@ export default function ImagePromptPatternModal({
   const [sampleImageUrl, setSampleImageUrl] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     name: '',
-    description: '',
     prompt: '',
     size: '1792x1024' as '1024x1024' | '1792x1024' | '1024x1792',
   });
@@ -43,14 +42,13 @@ export default function ImagePromptPatternModal({
   useEffect(() => {
     // タブ選択時にフォームデータを更新
     if (selectedPatternId === 'new') {
-      setFormData({ name: '', description: '', prompt: '', size: '1792x1024' });
+      setFormData({ name: '', prompt: '', size: '1792x1024' });
       setSampleImageUrl(null);
     } else {
       const pattern = patterns.find(p => p.id === selectedPatternId);
       if (pattern) {
         setFormData({
           name: pattern.name,
-          description: pattern.description || '',
           prompt: pattern.prompt,
           size: pattern.size,
         });
@@ -117,7 +115,7 @@ export default function ImagePromptPatternModal({
       
       if (!isEdit) {
         setSelectedPatternId('new');
-        setFormData({ name: '', description: '', prompt: '', size: '1792x1024' });
+        setFormData({ name: '', prompt: '', size: '1792x1024' });
         setSampleImageUrl(null);
       }
       
@@ -209,7 +207,7 @@ export default function ImagePromptPatternModal({
                   : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
               }`}
             >
-              + 新規作成
+              +
             </button>
             {patterns.map((pattern) => (
               <button
@@ -253,14 +251,6 @@ export default function ImagePromptPatternModal({
               required
             />
 
-            <FloatingInput
-              label="説明"
-              value={formData.description}
-              onChange={(value) => setFormData({ ...formData, description: value })}
-              multiline
-              rows={2}
-            />
-
             <FloatingSelect
               label="画像サイズ"
               value={formData.size}
@@ -296,6 +286,14 @@ export default function ImagePromptPatternModal({
             {/* ボタンエリア */}
             <div className="flex gap-3">
               <button
+                type="button"
+                onClick={onClose}
+                className="flex-1 bg-gray-500 text-white px-6 py-4 rounded-xl hover:bg-gray-600 transition-colors font-medium"
+              >
+                キャンセル
+              </button>
+
+              <button
                 type="submit"
                 disabled={loading}
                 className="flex-1 bg-blue-600 text-white px-6 py-4 rounded-xl hover:bg-blue-700 transition-colors disabled:opacity-50 font-medium"
@@ -315,16 +313,6 @@ export default function ImagePromptPatternModal({
               )}
             </div>
           </form>
-        </div>
-
-        {/* フッター */}
-        <div className="p-6 border-t border-gray-200 flex justify-end">
-          <button
-            onClick={onClose}
-            className="bg-gray-300 text-gray-700 px-6 py-3 rounded-xl hover:bg-gray-400 transition-colors"
-          >
-            閉じる
-          </button>
         </div>
       </div>
     </div>
