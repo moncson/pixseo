@@ -159,7 +159,7 @@ export default async function ArticlesPage({ params }: PageProps) {
       <CategoryBar categories={categories} variant="half" lang={lang} />
 
       {/* メインコンテンツエリア以降（背景色付き・前面・カテゴリーパネルの下半分に重なる） */}
-      <div className="relative -mt-24 pt-32" style={{ backgroundColor: rawTheme.backgroundColor, zIndex: 10 }}>
+      <div className="relative -mt-24 pt-16 md:pt-32" style={{ backgroundColor: rawTheme.backgroundColor, zIndex: 10 }}>
         <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex flex-col lg:flex-row gap-8">
           {/* メインカラム（70%） */}
