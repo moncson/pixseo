@@ -158,7 +158,7 @@ export default function HamburgerMenu({ isOpen, onClose, menuSettings, menuBackg
 
           {/* 言語セレクター */}
           <div className="px-8 py-6 border-t" style={{ borderColor: `${menuTextColor}33` }}>
-            <LanguageSelector currentLang={lang} variant="sidebar" />
+            <LanguageSelector currentLang={lang} variant="sidebar" menuTextColor={menuTextColor} />
           </div>
         </div>
       </div>

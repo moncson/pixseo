@@ -7,9 +7,10 @@ import { Lang, SUPPORTED_LANGS, LANG_NAMES } from '@/types/lang';
 interface LanguageSelectorProps {
   currentLang: Lang;
   variant?: 'header' | 'sidebar' | 'footer';
+  menuTextColor?: string;
 }
 
-export default function LanguageSelector({ currentLang, variant = 'header' }: LanguageSelectorProps) {
+export default function LanguageSelector({ currentLang, variant = 'header', menuTextColor }: LanguageSelectorProps) {
   const [isOpen, setIsOpen] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
@@ -60,23 +61,46 @@ export default function LanguageSelector({ currentLang, variant = 'header' }: La
 
   if (variant === 'sidebar') {
     return (
-      <div className="space-y-2">
-        <div className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">
-          Language
-        </div>
-        {SUPPORTED_LANGS.map((lang) => (
-          <button
-            key={lang}
-            onClick={() => handleLanguageChange(lang)}
-            className={`block w-full text-left px-4 py-2 rounded-lg transition-colors ${
-              lang === currentLang
-                ? 'bg-blue-50 text-blue-600 font-semibold'
-                : 'text-gray-700 hover:bg-gray-100'
-            }`}
+      <div className="relative" ref={dropdownRef}>
+        <button
+          onClick={() => setIsOpen(!isOpen)}
+          className="w-full flex items-center justify-between px-4 py-2 rounded-full border transition-colors"
+          style={{
+            borderColor: menuTextColor || '#374151',
+            color: menuTextColor || '#374151',
+          }}
+          aria-label="言語を選択"
+        >
+          <span className="font-medium">{LANG_NAMES[currentLang]}</span>
+          <svg
+            className={`w-4 h-4 transition-transform ${isOpen ? 'rotate-180' : ''}`}
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
           >
-            {LANG_NAMES[lang]}
-          </button>
-        ))}
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+          </svg>
+        </button>
+
+        {isOpen && (
+          <div
+            className="absolute top-full mt-2 left-0 right-0 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50"
+          >
+            {SUPPORTED_LANGS.map((lang) => (
+              <button
+                key={lang}
+                onClick={() => handleLanguageChange(lang)}
+                className={`block w-full text-left px-4 py-2 transition-colors ${
+                  lang === currentLang
+                    ? 'bg-blue-50 text-blue-600 font-semibold'
+                    : 'text-gray-700 hover:bg-gray-100'
+                }`}
+              >
+                {LANG_NAMES[lang]}
+              </button>
+            ))}
+          </div>
+        )}
       </div>
     );
   }
