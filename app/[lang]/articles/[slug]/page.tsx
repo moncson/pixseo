@@ -482,7 +482,7 @@ export default async function ArticlePage({ params }: PageProps) {
       <footer style={{ backgroundColor: rawTheme.footerBackgroundColor }} className="text-white">
         {footerTextLinkSections.length > 0 ? (
           <div className="py-12">
-<FooterTextLinksRenderer sections={footerTextLinkSections} siteInfo={siteInfo} lang={lang} />
+            <FooterTextLinksRenderer sections={footerTextLinkSections} siteInfo={siteInfo} lang={lang} />
 
             {/* コピーライト */}
             <div className="w-full border-t border-gray-700 pt-6">
@@ -490,8 +490,6 @@ export default async function ArticlePage({ params }: PageProps) {
                 © {new Date().getFullYear()} {siteInfo.name}. All rights reserved.
               </p>
             </div>
-          </div>
-
           </div>
         ) : (
           <div className="max-w-7xl mx-auto px-0 py-12">

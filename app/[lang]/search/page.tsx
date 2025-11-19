@@ -197,16 +197,14 @@ export default async function SearchPage({ params }: PageProps) {
         <footer style={{ backgroundColor: rawTheme.footerBackgroundColor }} className="text-white">
           {footerTextLinkSections.length > 0 ? (
             <div className="py-12">
-<FooterTextLinksRenderer sections={footerTextLinkSections} siteInfo={siteInfo} lang={lang} />
+              <FooterTextLinksRenderer sections={footerTextLinkSections} siteInfo={siteInfo} lang={lang} />
 
-            {/* コピーライト */}
-            <div className="w-full border-t border-gray-700 pt-6">
-              <p className="text-gray-400 text-sm text-center">
-                © {new Date().getFullYear()} {siteInfo.name}. All rights reserved.
-              </p>
-            </div>
-          </div>
-
+              {/* コピーライト */}
+              <div className="w-full border-t border-gray-700 pt-6">
+                <p className="text-gray-400 text-sm text-center">
+                  © {new Date().getFullYear()} {siteInfo.name}. All rights reserved.
+                </p>
+              </div>
             </div>
           ) : (
             <div className="max-w-7xl mx-auto px-0 py-12">
