@@ -84,7 +84,7 @@ export default function LanguageSelector({ currentLang, variant = 'header', menu
 
         {isOpen && (
           <div
-            className="absolute top-full mt-2 left-0 right-0 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50"
+            className="absolute bottom-full mb-2 left-0 right-0 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50"
           >
             {SUPPORTED_LANGS.map((lang) => (
               <button
