@@ -25,10 +25,10 @@ export default function FooterTextLinksRenderer({ sections, siteInfo, lang = 'ja
   }
 
   return (
-    <div className={`w-full grid ${validSections.length === 1 ? 'grid-cols-2' : 'grid-cols-3'} pb-8 ${className}`}>
+    <div className={`w-full flex flex-col md:grid ${validSections.length === 1 ? 'md:grid-cols-2' : 'md:grid-cols-3'} gap-8 md:gap-0 pb-8 ${className}`}>
       {/* 左カラム: ロゴとディスクリプション */}
-      <div className="text-left px-8">
-        <div className="flex items-center gap-3 mb-4">
+      <div className="text-center md:text-left px-8">
+        <div className="flex items-center justify-center md:justify-start gap-3 mb-4">
           {siteInfo.faviconUrl && (
             <Image
               src={siteInfo.faviconUrl}
@@ -75,7 +75,7 @@ function LinkSection({ section, lang = 'ja' }: { section: FooterTextLinkSection;
   const validLinks = section.links?.filter(link => link.text && link.url) || [];
 
   return (
-    <div className="text-right border-l border-gray-600 px-8">
+    <div className="text-center md:text-right md:border-l border-gray-600 px-8">
       {/* セクションタイトル */}
       {section.title && (
         <h3 className="text-base font-bold mb-4 uppercase tracking-wider">

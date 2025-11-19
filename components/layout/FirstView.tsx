@@ -83,7 +83,7 @@ export default function FirstView({ settings, customTitle, customSubtitle, showC
               )}
               
             {settings.description && (
-              <p className="text-sm md:text-lg text-center max-w-3xl drop-shadow-md whitespace-pre-line leading-relaxed tracking-wide">
+              <p className="text-xs md:text-lg text-center max-w-3xl drop-shadow-md whitespace-pre-line leading-relaxed tracking-wide">
                 {settings.description}
               </p>
             )}
