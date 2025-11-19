@@ -8,9 +8,10 @@ interface LanguageSelectorProps {
   currentLang: Lang;
   variant?: 'header' | 'sidebar' | 'footer';
   menuTextColor?: string;
+  menuBackgroundColor?: string;
 }
 
-export default function LanguageSelector({ currentLang, variant = 'header', menuTextColor }: LanguageSelectorProps) {
+export default function LanguageSelector({ currentLang, variant = 'header', menuTextColor, menuBackgroundColor }: LanguageSelectorProps) {
   const [isOpen, setIsOpen] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
@@ -84,17 +85,22 @@ export default function LanguageSelector({ currentLang, variant = 'header', menu
 
         {isOpen && (
           <div
-            className="absolute bottom-full mb-2 left-0 right-0 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50"
+            className="absolute bottom-full mb-2 left-0 right-0 rounded-lg shadow-lg border py-2 z-50"
+            style={{
+              backgroundColor: menuBackgroundColor || '#ffffff',
+              borderColor: menuTextColor || '#374151',
+            }}
           >
             {SUPPORTED_LANGS.map((lang) => (
               <button
                 key={lang}
                 onClick={() => handleLanguageChange(lang)}
-                className={`block w-full text-left px-4 py-2 transition-colors ${
-                  lang === currentLang
-                    ? 'bg-blue-50 text-blue-600 font-semibold'
-                    : 'text-gray-700 hover:bg-gray-100'
+                className={`block w-full text-left px-4 py-2 transition-all ${
+                  lang === currentLang ? 'font-bold' : 'font-normal'
                 }`}
+                style={{
+                  color: menuTextColor || '#374151',
+                }}
               >
                 {LANG_NAMES[lang]}
               </button>
