@@ -17,7 +17,7 @@ export default function ArticlePatternModal({
 }: ArticlePatternModalProps) {
   const [patterns, setPatterns] = useState<ArticlePattern[]>([]);
   const [loading, setLoading] = useState(false);
-  const [editingId, setEditingId] = useState<string | null>(null);
+  const [selectedPatternId, setSelectedPatternId] = useState<string | 'new'>('new');
   const [formData, setFormData] = useState({
     name: '',
     description: '',
@@ -29,6 +29,22 @@ export default function ArticlePatternModal({
       fetchPatterns();
     }
   }, [isOpen]);
+
+  useEffect(() => {
+    // タブ選択時にフォームデータを更新
+    if (selectedPatternId === 'new') {
+      setFormData({ name: '', description: '', prompt: '' });
+    } else {
+      const pattern = patterns.find(p => p.id === selectedPatternId);
+      if (pattern) {
+        setFormData({
+          name: pattern.name,
+          description: pattern.description || '',
+          prompt: pattern.prompt,
+        });
+      }
+    }
+  }, [selectedPatternId, patterns]);
 
   const fetchPatterns = async () => {
     try {
@@ -67,12 +83,13 @@ export default function ArticlePatternModal({
         ? localStorage.getItem('currentTenantId') 
         : null;
 
-      const url = editingId
-        ? `/api/admin/article-patterns/${editingId}`
+      const isEdit = selectedPatternId !== 'new';
+      const url = isEdit
+        ? `/api/admin/article-patterns/${selectedPatternId}`
         : '/api/admin/article-patterns';
 
       const response = await fetch(url, {
-        method: editingId ? 'PUT' : 'POST',
+        method: isEdit ? 'PUT' : 'POST',
         headers: {
           'Content-Type': 'application/json',
           'x-media-id': currentTenantId || '',
@@ -82,25 +99,21 @@ export default function ArticlePatternModal({
 
       if (!response.ok) throw new Error('Failed to save pattern');
 
-      alert(editingId ? '更新しました' : '作成しました');
-      setFormData({ name: '', description: '', prompt: '' });
-      setEditingId(null);
-      fetchPatterns();
+      alert(isEdit ? '更新しました' : '作成しました');
+      await fetchPatterns();
+      
+      if (!isEdit) {
+        setSelectedPatternId('new');
+        setFormData({ name: '', description: '', prompt: '' });
+      }
+      
+      onSuccess();
     } catch (error) {
       console.error('Error saving pattern:', error);
       alert('保存に失敗しました');
     } finally {
       setLoading(false);
     }
-  };
-
-  const handleEdit = (pattern: ArticlePattern) => {
-    setFormData({
-      name: pattern.name,
-      description: pattern.description,
-      prompt: pattern.prompt,
-    });
-    setEditingId(pattern.id);
   };
 
   const handleDelete = async (id: string) => {
@@ -121,7 +134,9 @@ export default function ArticlePatternModal({
       if (!response.ok) throw new Error('Failed to delete pattern');
 
       alert('削除しました');
-      fetchPatterns();
+      await fetchPatterns();
+      setSelectedPatternId('new');
+      onSuccess();
     } catch (error) {
       console.error('Error deleting pattern:', error);
       alert('削除に失敗しました');
@@ -132,129 +147,92 @@ export default function ArticlePatternModal({
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-2xl shadow-xl max-w-5xl w-full max-h-[90vh] overflow-hidden">
-        <div className="p-8 border-b border-gray-200">
-          <h2 className="text-2xl font-bold text-gray-900">記事構成パターン管理</h2>
-          <p className="text-sm text-gray-500 mt-1">
-            レビュー形式、まとめ形式、疑問形式などの構成パターンを登録
-          </p>
-        </div>
-
-        <div className="p-8 overflow-y-auto max-h-[calc(90vh-200px)]">
-          {/* 新規作成・編集フォーム */}
-          <form onSubmit={handleSubmit} className="mb-8 p-6 bg-gray-50 rounded-xl">
-            <h3 className="text-lg font-semibold mb-4">
-              {editingId ? 'パターン編集' : '新規パターン作成'}
-            </h3>
-            
-            <div className="space-y-4">
-              <FloatingInput
-                label="パターン名（例: レビュー形式、まとめ形式）"
-                value={formData.name}
-                onChange={(value) => setFormData({ ...formData, name: value })}
-                required
-              />
-
-              <FloatingInput
-                label="説明（任意）"
-                value={formData.description}
-                onChange={(value) => setFormData({ ...formData, description: value })}
-                multiline
-                rows={2}
-              />
-
-              <FloatingInput
-                label="プロンプト（Grok APIに渡す指示文）"
-                value={formData.prompt}
-                onChange={(value) => setFormData({ ...formData, prompt: value })}
-                multiline
-                rows={6}
-                required
-                placeholder="例: 以下の構成で記事を作成してください：
-1. 導入（問題提起）
-2. 課題の深堀り
-3. 解決策の提示
-4. 具体例・事例
-5. まとめ・アクションプラン"
-              />
-
-              <div className="flex gap-3">
-                <button
-                  type="submit"
-                  disabled={loading}
-                  className="bg-blue-600 text-white px-6 py-3 rounded-xl hover:bg-blue-700 transition-colors disabled:opacity-50"
-                >
-                  {loading ? '処理中...' : editingId ? '更新' : '作成'}
-                </button>
-
-                {editingId && (
+      <div className="bg-white rounded-2xl shadow-xl max-w-5xl w-full max-h-[90vh] overflow-hidden flex flex-col">
+        {/* タブナビゲーション */}
+        <div className="border-b border-gray-200 overflow-x-auto">
+          <div className="flex">
+            <button
+              type="button"
+              onClick={() => setSelectedPatternId('new')}
+              className={`px-6 py-4 text-sm font-medium whitespace-nowrap border-b-2 transition-colors ${
+                selectedPatternId === 'new'
+                  ? 'border-blue-600 text-blue-600'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+              }`}
+            >
+              + 新規作成
+            </button>
+            {patterns.map((pattern) => (
+              <button
+                key={pattern.id}
+                type="button"
+                onClick={() => setSelectedPatternId(pattern.id)}
+                className={`px-6 py-4 text-sm font-medium whitespace-nowrap border-b-2 transition-colors flex items-center gap-2 ${
+                  selectedPatternId === pattern.id
+                    ? 'border-blue-600 text-blue-600'
+                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                }`}
+              >
+                {pattern.name}
+                {selectedPatternId === pattern.id && (
                   <button
                     type="button"
-                    onClick={() => {
-                      setEditingId(null);
-                      setFormData({ name: '', description: '', prompt: '' });
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleDelete(pattern.id);
                     }}
-                    className="bg-gray-300 text-gray-700 px-6 py-3 rounded-xl hover:bg-gray-400 transition-colors"
+                    className="w-6 h-6 rounded-full bg-red-100 text-red-600 hover:bg-red-200 flex items-center justify-center transition-colors ml-2"
+                    title="削除"
                   >
-                    キャンセル
+                    <svg className="w-3 h-3 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    </svg>
                   </button>
                 )}
-              </div>
-            </div>
-          </form>
-
-          {/* パターン一覧 */}
-          <div className="space-y-4">
-            <h3 className="text-lg font-semibold">登録済みパターン</h3>
-            
-            {patterns.length === 0 ? (
-              <p className="text-gray-500 text-center py-8">
-                まだ構成パターンが登録されていません
-              </p>
-            ) : (
-              patterns.map((pattern) => (
-                <div
-                  key={pattern.id}
-                  className="p-6 border border-gray-200 rounded-xl hover:shadow-md transition-shadow"
-                >
-                  <div className="flex justify-between items-start mb-3">
-                    <div>
-                      <h4 className="text-lg font-semibold text-gray-900">
-                        {pattern.name}
-                      </h4>
-                      {pattern.description && (
-                        <p className="text-sm text-gray-600 mt-1">
-                          {pattern.description}
-                        </p>
-                      )}
-                    </div>
-                    <div className="flex gap-2">
-                      <button
-                        onClick={() => handleEdit(pattern)}
-                        className="text-blue-600 hover:text-blue-800 px-3 py-1 rounded-lg hover:bg-blue-50"
-                      >
-                        編集
-                      </button>
-                      <button
-                        onClick={() => handleDelete(pattern.id)}
-                        className="text-red-600 hover:text-red-800 px-3 py-1 rounded-lg hover:bg-red-50"
-                      >
-                        削除
-                      </button>
-                    </div>
-                  </div>
-                  <div className="bg-white p-4 rounded-lg border border-gray-100">
-                    <p className="text-xs text-gray-500 mb-2">プロンプト:</p>
-                    <p className="text-sm text-gray-700 whitespace-pre-wrap">
-                      {pattern.prompt}
-                    </p>
-                  </div>
-                </div>
-              ))
-            )}
+              </button>
+            ))}
           </div>
         </div>
 
+        {/* フォームエリア */}
+        <div className="flex-1 overflow-y-auto p-8">
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <FloatingInput
+              label="パターン名（例: レビュー形式、まとめ形式）"
+              value={formData.name}
+              onChange={(value) => setFormData({ ...formData, name: value })}
+              required
+            />
+
+            <FloatingInput
+              label="説明（任意）"
+              value={formData.description}
+              onChange={(value) => setFormData({ ...formData, description: value })}
+              multiline
+              rows={2}
+            />
+
+            <FloatingInput
+              label="プロンプト（Grok APIに渡す指示文）"
+              value={formData.prompt}
+              onChange={(value) => setFormData({ ...formData, prompt: value })}
+              multiline
+              rows={6}
+              required
+            />
+
+            {/* ボタンエリア */}
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full bg-blue-600 text-white px-6 py-4 rounded-xl hover:bg-blue-700 transition-colors disabled:opacity-50 font-medium"
+            >
+              {loading ? '処理中...' : selectedPatternId === 'new' ? '作成' : '更新'}
+            </button>
+          </form>
+        </div>
+
+        {/* フッター */}
         <div className="p-6 border-t border-gray-200 flex justify-end">
           <button
             onClick={onClose}
@@ -267,4 +245,3 @@ export default function ArticlePatternModal({
     </div>
   );
 }
-

@@ -265,7 +265,7 @@ export default function MediaPage() {
             {/* 画像プロンプトパターン管理ボタン */}
             <button
               onClick={() => setIsImagePromptModalOpen(true)}
-              className="bg-purple-600 text-white w-14 h-14 rounded-full hover:bg-purple-700 transition-all hover:scale-110 flex items-center justify-center shadow-lg"
+              className="bg-gray-600 text-white w-14 h-14 rounded-full hover:bg-gray-700 transition-all hover:scale-110 flex items-center justify-center shadow-lg"
               title="画像プロンプトパターン管理"
             >
               <Image src="/prompt.svg" alt="Prompt" width={24} height={24} className="brightness-0 invert" />

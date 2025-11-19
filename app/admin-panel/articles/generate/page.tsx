@@ -246,7 +246,7 @@ function AdvancedArticleGeneratePageContent() {
               <button
                 type="button"
                 onClick={() => setIsPatternModalOpen(true)}
-                className="w-12 h-12 mb-0.5 bg-orange-600 text-white rounded-full hover:bg-orange-700 transition-all shadow-md flex items-center justify-center"
+                className="w-12 h-12 mb-0.5 bg-gray-600 text-white rounded-full hover:bg-gray-700 transition-all shadow-md flex items-center justify-center"
                 title="構成パターン管理"
               >
                 <Image src="/prompt.svg" alt="Prompt" width={20} height={20} className="brightness-0 invert" />
@@ -283,7 +283,7 @@ function AdvancedArticleGeneratePageContent() {
               <button
                 type="button"
                 onClick={() => setIsImagePromptModalOpen(true)}
-                className="w-12 h-12 mb-0.5 bg-purple-600 text-white rounded-full hover:bg-purple-700 transition-all shadow-md flex items-center justify-center"
+                className="w-12 h-12 mb-0.5 bg-gray-600 text-white rounded-full hover:bg-gray-700 transition-all shadow-md flex items-center justify-center"
                 title="画像プロンプトパターン管理"
               >
                 <Image src="/prompt.svg" alt="Prompt" width={20} height={20} className="brightness-0 invert" />
