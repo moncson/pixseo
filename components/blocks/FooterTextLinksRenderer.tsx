@@ -27,7 +27,7 @@ export default function FooterTextLinksRenderer({ sections, siteInfo, lang = 'ja
   return (
     <div className={`w-full flex flex-col md:grid ${validSections.length === 1 ? 'md:grid-cols-2' : 'md:grid-cols-3'} gap-8 md:gap-0 pb-8 ${className}`}>
       {/* 左カラム: ロゴとディスクリプション */}
-      <div className="text-center md:text-left px-8">
+      <div className="text-center md:text-left px-8 pb-8 border-b md:border-b-0 border-gray-600">
         <div className="flex items-center justify-center md:justify-start gap-3 mb-4">
           {siteInfo.faviconUrl && (
             <Image
@@ -61,7 +61,7 @@ export default function FooterTextLinksRenderer({ sections, siteInfo, lang = 'ja
 
       {/* セクション */}
       {validSections.map((section, index) => (
-        <LinkSection key={index} section={section} lang={lang} />
+        <LinkSection key={index} section={section} lang={lang} isLast={index === validSections.length - 1} />
       ))}
     </div>
   );
@@ -70,12 +70,12 @@ export default function FooterTextLinksRenderer({ sections, siteInfo, lang = 'ja
 /**
  * 個別のリンクセクションを表示
  */
-function LinkSection({ section, lang = 'ja' }: { section: FooterTextLinkSection; lang?: Lang }) {
+function LinkSection({ section, lang = 'ja', isLast = false }: { section: FooterTextLinkSection; lang?: Lang; isLast?: boolean }) {
   // 有効なリンク（テキストとURLの両方がある）のみフィルタリング
   const validLinks = section.links?.filter(link => link.text && link.url) || [];
 
   return (
-    <div className="text-center md:text-right md:border-l border-gray-600 px-8">
+    <div className={`text-center md:text-right md:border-l border-gray-600 px-8 ${!isLast ? 'pb-8 border-b md:border-b-0' : ''}`}>
       {/* セクションタイトル */}
       {section.title && (
         <h3 className="text-base font-bold mb-4 uppercase tracking-wider">
