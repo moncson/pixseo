@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import AuthGuard from '@/components/admin/AuthGuard';
 import AdminLayout from '@/components/admin/AdminLayout';
@@ -35,13 +35,7 @@ export default function AccountsPage() {
   const [clients, setClients] = useState<Client[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    if (currentTenant) {
-      fetchData();
-    }
-  }, [currentTenant]);
-
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     if (!currentTenant) return;
 
     try {
@@ -80,7 +74,13 @@ export default function AccountsPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [currentTenant]);
+
+  useEffect(() => {
+    if (currentTenant) {
+      fetchData();
+    }
+  }, [currentTenant, fetchData]);
 
   const handleDelete = async (uid: string, email: string) => {
     if (!confirm(`アカウント「${email}」を削除しますか？\nこの操作は取り消せません。`)) {
@@ -94,7 +94,7 @@ export default function AccountsPage() {
 
       if (response.ok) {
         alert('アカウントを削除しました');
-        fetchAccounts();
+        fetchData();
       } else {
         throw new Error('削除に失敗しました');
       }
