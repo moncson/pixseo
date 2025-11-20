@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import AuthGuard from '@/components/admin/AuthGuard';
 import AdminLayout from '@/components/admin/AdminLayout';
-import FloatingInput from '@/components/admin/FloatingInput';
 import FloatingSelect from '@/components/admin/FloatingSelect';
 import FloatingMultiSelect from '@/components/admin/FloatingMultiSelect';
 import TargetAudienceInput from '@/components/admin/TargetAudienceInput';
@@ -396,13 +395,6 @@ function ScheduledGenerationPageContent() {
                   <p className="text-red-800 text-sm">{error}</p>
                 </div>
               )}
-
-              <FloatingInput
-                label="設定名 *"
-                value={currentSchedule.name}
-                onChange={(value) => updateSchedule(activeScheduleIndex, 'name', value)}
-                required
-              />
 
               <FloatingSelect
                 label="カテゴリー *"
