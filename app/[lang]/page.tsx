@@ -79,7 +79,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       },
     },
     openGraph: {
-      title: pageTitle,
+      title: siteInfo.name,
       description: siteInfo.description || '',
       locale: LANG_REGIONS[lang],
       alternateLocale: SUPPORTED_LANGS.filter(l => l !== lang).map(l => LANG_REGIONS[l]),
