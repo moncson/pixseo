@@ -5,12 +5,14 @@ import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import AuthGuard from '@/components/admin/AuthGuard';
 import AdminLayout from '@/components/admin/AdminLayout';
+import FloatingInput from '@/components/admin/FloatingInput';
 import FloatingSelect from '@/components/admin/FloatingSelect';
 import TargetAudienceInput from '@/components/admin/TargetAudienceInput';
 import { Category } from '@/types/article';
 import { Writer } from '@/types/writer';
 import { ArticlePattern } from '@/types/article-pattern';
 import { ImagePromptPattern } from '@/types/image-prompt-pattern';
+import { WritingStyle } from '@/types/writing-style';
 import { useMediaTenant } from '@/contexts/MediaTenantContext';
 import { apiGet } from '@/lib/api-client';
 
@@ -20,6 +22,7 @@ function ScheduledGenerationPageContent() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [writers, setWriters] = useState<Writer[]>([]);
   const [patterns, setPatterns] = useState<ArticlePattern[]>([]);
+  const [writingStyles, setWritingStyles] = useState<WritingStyle[]>([]);
   const [imagePromptPatterns, setImagePromptPatterns] = useState<ImagePromptPattern[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -27,13 +30,16 @@ function ScheduledGenerationPageContent() {
   const [audienceHistory, setAudienceHistory] = useState<string[]>([]);
 
   const [formData, setFormData] = useState({
+    name: '',
     categoryId: '',
     patternId: '',
     writerId: '',
+    writingStyleId: '',
     imagePromptPatternId: '',
     targetAudience: '',
-    dayOfWeek: '',
-    hour: '',
+    daysOfWeek: [] as string[],
+    timeOfDay: '',
+    timezone: 'Asia/Tokyo',
     isActive: true,
   });
   const [generatingAudience, setGeneratingAudience] = useState(false);
@@ -50,6 +56,9 @@ function ScheduledGenerationPageContent() {
           fetch('/api/admin/article-patterns', {
             headers: { 'x-media-id': currentTenant.id },
           }).then(res => res.json()),
+          fetch('/api/admin/writing-styles', {
+            headers: { 'x-media-id': currentTenant.id },
+          }).then(res => res.json()),
           fetch('/api/admin/image-prompt-patterns', {
             headers: { 'x-media-id': currentTenant.id },
           }).then(res => res.json()),
@@ -64,13 +73,15 @@ function ScheduledGenerationPageContent() {
         const categoriesData = results[0].status === 'fulfilled' && Array.isArray(results[0].value) ? results[0].value : [];
         const writersData = results[1].status === 'fulfilled' && Array.isArray(results[1].value) ? results[1].value : [];
         const patternsResponse = results[2].status === 'fulfilled' ? results[2].value : { patterns: [] };
-        const imagePromptPatternsResponse = results[3].status === 'fulfilled' ? results[3].value : { patterns: [] };
-        const audienceHistoryData = results[4].status === 'fulfilled' ? results[4].value : { history: [] };
-        const schedulesResponse = results[5].status === 'fulfilled' ? results[5].value : { schedules: [] };
+        const writingStylesResponse = results[3].status === 'fulfilled' ? results[3].value : { styles: [] };
+        const imagePromptPatternsResponse = results[4].status === 'fulfilled' ? results[4].value : { patterns: [] };
+        const audienceHistoryData = results[5].status === 'fulfilled' ? results[5].value : { history: [] };
+        const schedulesResponse = results[6].status === 'fulfilled' ? results[6].value : { schedules: [] };
 
         setCategories(categoriesData);
         setWriters(writersData);
         setPatterns(Array.isArray(patternsResponse.patterns) ? patternsResponse.patterns : []);
+        setWritingStyles(Array.isArray(writingStylesResponse.styles) ? writingStylesResponse.styles : []);
         setImagePromptPatterns(Array.isArray(imagePromptPatternsResponse.patterns) ? imagePromptPatternsResponse.patterns : []);
         setAudienceHistory(Array.isArray(audienceHistoryData?.history) ? audienceHistoryData.history : []);
 
@@ -79,32 +90,47 @@ function ScheduledGenerationPageContent() {
         if (existingSchedules.length > 0) {
           const schedule = existingSchedules[0];
           setFormData({
+            name: schedule.name || '',
             categoryId: schedule.categoryId || '',
             patternId: schedule.patternId || '',
             writerId: schedule.writerId || '',
+            writingStyleId: schedule.writingStyleId || '',
             imagePromptPatternId: schedule.imagePromptPatternId || '',
             targetAudience: schedule.targetAudience || '',
-            dayOfWeek: schedule.dayOfWeek || '',
-            hour: schedule.hour || '',
+            daysOfWeek: schedule.daysOfWeek || [],
+            timeOfDay: schedule.timeOfDay || '',
+            timezone: schedule.timezone || 'Asia/Tokyo',
             isActive: schedule.isActive ?? true,
           });
         } else {
+          // デフォルト値を設定
+          const defaultValues: any = {
+            timezone: 'Asia/Tokyo',
+            isActive: true,
+          };
+          
           // カテゴリーが1つしかない場合、自動的に選択
           if (categoriesData.length === 1) {
-            setFormData(prev => ({ ...prev, categoryId: categoriesData[0].id }));
+            defaultValues.categoryId = categoriesData[0].id;
           }
           // ライターが1つしかない場合、自動的に選択
           if (writersData.length === 1) {
-            setFormData(prev => ({ ...prev, writerId: writersData[0].id }));
+            defaultValues.writerId = writersData[0].id;
           }
           // 構成パターンが1つしかない場合、自動的に選択
           if (Array.isArray(patternsResponse.patterns) && patternsResponse.patterns.length === 1) {
-            setFormData(prev => ({ ...prev, patternId: patternsResponse.patterns[0].id }));
+            defaultValues.patternId = patternsResponse.patterns[0].id;
+          }
+          // ライティングスタイルが1つしかない場合、自動的に選択
+          if (Array.isArray(writingStylesResponse.styles) && writingStylesResponse.styles.length === 1) {
+            defaultValues.writingStyleId = writingStylesResponse.styles[0].id;
           }
           // 画像プロンプトパターンが1つしかない場合、自動的に選択
           if (Array.isArray(imagePromptPatternsResponse.patterns) && imagePromptPatternsResponse.patterns.length === 1) {
-            setFormData(prev => ({ ...prev, imagePromptPatternId: imagePromptPatternsResponse.patterns[0].id }));
+            defaultValues.imagePromptPatternId = imagePromptPatternsResponse.patterns[0].id;
           }
+          
+          setFormData(prev => ({ ...prev, ...defaultValues }));
         }
       } catch (err) {
         console.error('Failed to fetch initial data:', err);
@@ -175,13 +201,14 @@ function ScheduledGenerationPageContent() {
 
   const handleSave = async () => {
     const missingFields: string[] = [];
+    if (!formData.name) missingFields.push('設定名');
     if (!formData.categoryId) missingFields.push('カテゴリー');
     if (!formData.patternId) missingFields.push('構成パターン');
     if (!formData.writerId) missingFields.push('ライター');
+    if (!formData.writingStyleId) missingFields.push('ライティングスタイル');
     if (!formData.imagePromptPatternId) missingFields.push('画像プロンプトパターン');
-    if (!formData.targetAudience) missingFields.push('想定読者');
-    if (!formData.dayOfWeek) missingFields.push('曜日');
-    if (!formData.hour) missingFields.push('時刻');
+    if (!formData.daysOfWeek || formData.daysOfWeek.length === 0) missingFields.push('曜日');
+    if (!formData.timeOfDay) missingFields.push('時刻');
 
     if (missingFields.length > 0) {
       setError(`以下の項目を入力してください: ${missingFields.join('、')}`);
@@ -198,13 +225,15 @@ function ScheduledGenerationPageContent() {
     }
 
     try {
+      const { targetAudience, ...requestData } = formData;
+      
       const response = await fetch('/api/admin/scheduled-generations', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'x-media-id': currentTenant.id,
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(requestData),
       });
 
       if (!response.ok) {
@@ -252,7 +281,7 @@ function ScheduledGenerationPageContent() {
   ];
 
   const hourOptions = Array.from({ length: 24 }, (_, i) => ({
-    value: i.toString(),
+    value: `${i.toString().padStart(2, '0')}:00`,
     label: `${i.toString().padStart(2, '0')}:00`,
   }));
 
@@ -266,6 +295,13 @@ function ScheduledGenerationPageContent() {
                 <p className="text-red-800 text-sm">{error}</p>
               </div>
             )}
+
+            <FloatingInput
+              label="設定名 *"
+              value={formData.name}
+              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              required
+            />
 
             <FloatingSelect
               label="カテゴリー *"
@@ -292,6 +328,14 @@ function ScheduledGenerationPageContent() {
             />
 
             <FloatingSelect
+              label="ライティングスタイル *"
+              value={formData.writingStyleId}
+              onChange={(value) => setFormData({ ...formData, writingStyleId: value })}
+              options={writingStyles.map(s => ({ value: s.id, label: s.name }))}
+              required
+            />
+
+            <FloatingSelect
               label="画像プロンプトパターン *"
               value={formData.imagePromptPatternId}
               onChange={(value) => setFormData({ ...formData, imagePromptPatternId: value })}
@@ -306,8 +350,8 @@ function ScheduledGenerationPageContent() {
                   onChange={(value) => setFormData({ ...formData, targetAudience: value })}
                   history={audienceHistory}
                   onDeleteHistory={handleDeleteAudienceHistory}
-                  label="想定読者（ペルソナ）*"
-                  required
+                  label="想定読者（ペルソナ）"
+                  required={false}
                 />
               </div>
               <button
@@ -325,23 +369,36 @@ function ScheduledGenerationPageContent() {
               </button>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              <FloatingSelect
-                label="曜日 *"
-                value={formData.dayOfWeek}
-                onChange={(value) => setFormData({ ...formData, dayOfWeek: value })}
-                options={dayOptions}
-                required
-              />
-
-              <FloatingSelect
-                label="時刻 *"
-                value={formData.hour}
-                onChange={(value) => setFormData({ ...formData, hour: value })}
-                options={hourOptions}
-                required
-              />
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">曜日 *</label>
+              <div className="grid grid-cols-2 gap-2">
+                {dayOptions.map((day) => (
+                  <label key={day.value} className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={formData.daysOfWeek.includes(day.value)}
+                      onChange={(e) => {
+                        if (e.target.checked) {
+                          setFormData({ ...formData, daysOfWeek: [...formData.daysOfWeek, day.value] });
+                        } else {
+                          setFormData({ ...formData, daysOfWeek: formData.daysOfWeek.filter(d => d !== day.value) });
+                        }
+                      }}
+                      className="w-4 h-4 text-blue-600 rounded"
+                    />
+                    <span className="text-sm">{day.label}</span>
+                  </label>
+                ))}
+              </div>
             </div>
+
+            <FloatingSelect
+              label="時刻 *"
+              value={formData.timeOfDay}
+              onChange={(value) => setFormData({ ...formData, timeOfDay: value })}
+              options={hourOptions}
+              required
+            />
           </div>
 
           {/* フローティングボタン */}
