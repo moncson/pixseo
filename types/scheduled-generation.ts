@@ -8,12 +8,11 @@ export interface ScheduledGeneration {
   categoryId: string; // カテゴリーID
   patternId: string; // 構成パターンID
   writerId: string; // ライターID
-  writingStyleId: string; // ライティング特徴ID
   imagePromptPatternId: string; // 画像プロンプトパターンID
   targetAudience: string; // 想定読者（ペルソナ）
   
   // スケジュール設定
-  daysOfWeek: number[]; // 曜日（0=日曜, 1=月曜, ..., 6=土曜）
+  daysOfWeek: string[]; // 曜日（0=日曜, 1=月曜, ..., 6=土曜）
   timeOfDay: string; // 時刻（HH:mm形式、例: "09:00"）
   timezone: string; // タイムゾーン（例: "Asia/Tokyo"）
   
