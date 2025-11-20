@@ -70,7 +70,7 @@ export async function GET(request: NextRequest) {
           const theme = tenant.theme || {};
           
           // FV画像
-          if (theme.fvImage === mediaUrl) {
+          if (theme.firstView?.imageUrl === mediaUrl) {
             themeUsage++;
           }
           
