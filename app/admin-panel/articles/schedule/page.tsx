@@ -56,7 +56,9 @@ function ScheduledGenerationPageContent() {
           fetch('/api/admin/target-audience-history', {
             headers: { 'x-media-id': currentTenant.id },
           }).then(res => res.json()),
-          fetch(`/api/admin/scheduled-generations?mediaId=${currentTenant.id}`).then(res => res.json()),
+          fetch('/api/admin/scheduled-generations', {
+            headers: { 'x-media-id': currentTenant.id },
+          }).then(res => res.json()),
         ]);
 
         const categoriesData = results[0].status === 'fulfilled' && Array.isArray(results[0].value) ? results[0].value : [];
@@ -64,7 +66,7 @@ function ScheduledGenerationPageContent() {
         const patternsResponse = results[2].status === 'fulfilled' ? results[2].value : { patterns: [] };
         const imagePromptPatternsResponse = results[3].status === 'fulfilled' ? results[3].value : { patterns: [] };
         const audienceHistoryData = results[4].status === 'fulfilled' ? results[4].value : { history: [] };
-        const existingSchedule = results[5].status === 'fulfilled' ? results[5].value : null;
+        const schedulesResponse = results[5].status === 'fulfilled' ? results[5].value : { schedules: [] };
 
         setCategories(categoriesData);
         setWriters(writersData);
@@ -73,8 +75,9 @@ function ScheduledGenerationPageContent() {
         setAudienceHistory(Array.isArray(audienceHistoryData?.history) ? audienceHistoryData.history : []);
 
         // 既存の設定があれば読み込む
-        if (existingSchedule && existingSchedule.length > 0) {
-          const schedule = existingSchedule[0];
+        const existingSchedules = Array.isArray(schedulesResponse?.schedules) ? schedulesResponse.schedules : [];
+        if (existingSchedules.length > 0) {
+          const schedule = existingSchedules[0];
           setFormData({
             categoryId: schedule.categoryId || '',
             patternId: schedule.patternId || '',
