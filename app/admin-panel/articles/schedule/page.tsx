@@ -299,7 +299,7 @@ function ScheduledGenerationPageContent() {
             <FloatingInput
               label="設定名 *"
               value={formData.name}
-              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              onChange={(value) => setFormData({ ...formData, name: value })}
               required
             />
 
