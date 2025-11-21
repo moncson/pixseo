@@ -549,11 +549,34 @@ This is a featured image for an article titled "${title}".`;
     // === STEP 9: スラッグ、メタタイトル、メタディスクリプション生成 ===
     console.log('[Step 9] Generating metadata...');
 
-    const slug = title
+    let baseSlug = title
       .toLowerCase()
       .replace(/[^\w\s-]/g, '')
       .replace(/\s+/g, '-')
       .substring(0, 60);
+    
+    // 重複チェック & 一意化
+    let slug = baseSlug;
+    let counter = 1;
+    let isDuplicate = true;
+    
+    while (isDuplicate && counter < 100) {
+      const existingArticles = await adminDb
+        .collection('articles')
+        .where('mediaId', '==', mediaId)
+        .where('slug', '==', slug)
+        .limit(1)
+        .get();
+      
+      if (existingArticles.empty) {
+        isDuplicate = false;
+      } else {
+        slug = `${baseSlug}-${counter}`;
+        counter++;
+      }
+    }
+    
+    console.log('[Step 9] Unique slug generated:', slug);
 
     if (!metaDescription) {
       metaDescription = plainContent.substring(0, 160);

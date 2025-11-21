@@ -154,7 +154,32 @@ function NewArticlePageContent() {
       }
 
       const data = await response.json();
-      setFormData(prev => ({ ...prev, slug: data.slug }));
+      let generatedSlug = data.slug;
+      
+      // 重複チェック & 一意化
+      if (currentTenant) {
+        let counter = 1;
+        let checkSlug = generatedSlug;
+        let isDuplicate = true;
+        
+        while (isDuplicate && counter < 100) {
+          const checkResponse = await fetch(
+            `/api/admin/articles/check-slug?mediaId=${currentTenant.id}&slug=${encodeURIComponent(checkSlug)}`
+          );
+          const checkData = await checkResponse.json();
+          
+          if (!checkData.isDuplicate) {
+            isDuplicate = false;
+            generatedSlug = checkSlug;
+          } else {
+            checkSlug = `${data.slug}-${counter}`;
+            counter++;
+          }
+        }
+      }
+      
+      setFormData(prev => ({ ...prev, slug: generatedSlug }));
+      setSlugError('');
     } catch (error) {
       console.error('Error generating slug:', error);
       // エラー時はフォールバック（簡易的なスラッグ生成）
