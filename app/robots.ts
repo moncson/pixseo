@@ -10,7 +10,7 @@ export default function robots(): MetadataRoute.Robots {
         userAgent: '*',
         allow: '/',
         disallow: [
-          '/admin-panel/',
+          '/admin/',
           '/api/',
           '/_next/',
           '/static/',
@@ -20,47 +20,47 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: 'GPTBot', // OpenAI
         allow: '/',
-        disallow: ['/admin-panel/', '/api/'],
+        disallow: ['/admin/', '/api/'],
       },
       {
         userAgent: 'ChatGPT-User', // ChatGPT
         allow: '/',
-        disallow: ['/admin-panel/', '/api/'],
+        disallow: ['/admin/', '/api/'],
       },
       {
         userAgent: 'Claude-Web', // Anthropic Claude
         allow: '/',
-        disallow: ['/admin-panel/', '/api/'],
+        disallow: ['/admin/', '/api/'],
       },
       {
         userAgent: 'anthropic-ai', // Anthropic AI
         allow: '/',
-        disallow: ['/admin-panel/', '/api/'],
+        disallow: ['/admin/', '/api/'],
       },
       {
         userAgent: 'PerplexityBot', // Perplexity
         allow: '/',
-        disallow: ['/admin-panel/', '/api/'],
+        disallow: ['/admin/', '/api/'],
       },
       {
         userAgent: 'Googlebot', // Google
         allow: '/',
-        disallow: ['/admin-panel/', '/api/'],
+        disallow: ['/admin/', '/api/'],
       },
       {
         userAgent: 'Bingbot', // Bing
         allow: '/',
-        disallow: ['/admin-panel/', '/api/'],
+        disallow: ['/admin/', '/api/'],
       },
       {
         userAgent: 'Slurp', // Yahoo
         allow: '/',
-        disallow: ['/admin-panel/', '/api/'],
+        disallow: ['/admin/', '/api/'],
       },
       {
         userAgent: 'DuckDuckBot', // DuckDuckGo
         allow: '/',
-        disallow: ['/admin-panel/', '/api/'],
+        disallow: ['/admin/', '/api/'],
       },
       {
         userAgent: 'facebookexternalhit', // Facebook

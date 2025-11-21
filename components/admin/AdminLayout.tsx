@@ -21,8 +21,8 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
 
   const isSuperAdmin = userRole === 'super_admin';
   
-  // /admin-panelプレフィックスを削除してサイドバーに渡す
-  const sidebarPathname = pathname.replace(/^\/admin-panel/, '') || '/';
+  // /adminプレフィックスを削除してサイドバーに渡す
+  const sidebarPathname = pathname.replace(/^\/admin/, '') || '/';
 
   // ユーザーのロゴURLを取得（キャッシュ付き）
   useEffect(() => {

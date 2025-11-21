@@ -325,7 +325,7 @@ function ScheduledGenerationPageContent() {
   };
 
   const handleCancel = () => {
-    router.push('/admin-panel/articles');
+    router.push('/admin/articles');
   };
 
   const dayOptions = [

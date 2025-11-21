@@ -181,7 +181,7 @@ function AdvancedArticleGeneratePageContent() {
     setError(null);
 
     // 記事一覧ページに戻る
-    router.push('/admin-panel/articles');
+    router.push('/admin/articles');
     
     // トースト通知を表示
     alert('AI記事生成を開始しました。\n\n数分後に記事一覧に自動的に追加されます。\n他の作業を続けても問題ありません。');
@@ -210,7 +210,7 @@ function AdvancedArticleGeneratePageContent() {
   };
 
   const handleCancel = () => {
-    router.push('/admin-panel/articles');
+    router.push('/admin/articles');
   };
 
   return (
