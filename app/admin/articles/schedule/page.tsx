@@ -345,6 +345,19 @@ function ScheduledGenerationPageContent() {
 
   const currentSchedule = schedules[activeScheduleIndex];
 
+  // 時刻を時間と分に分解
+  const [currentHour, currentMinute] = currentSchedule.timeOfDay ? currentSchedule.timeOfDay.split(':') : ['', ''];
+
+  // 時間または分が変更されたときに timeOfDay を更新
+  const handleTimeChange = (type: 'hour' | 'minute', value: string) => {
+    const hour = type === 'hour' ? value : currentHour;
+    const minute = type === 'minute' ? value : currentMinute;
+    
+    if (hour && minute) {
+      updateSchedule(activeScheduleIndex, 'timeOfDay', `${hour}:${minute}`);
+    }
+  };
+
   return (
     <AdminLayout>
       {loading ? null : (
@@ -505,13 +518,29 @@ function ScheduledGenerationPageContent() {
                 enableSearch={false}
               />
 
-              <FloatingSelect
-                label="時刻 *"
-                value={currentSchedule.timeOfDay}
-                onChange={(value) => updateSchedule(activeScheduleIndex, 'timeOfDay', value)}
-                options={hourOptions}
-                required
-              />
+              {/* 時刻入力（時間と分を分けて表示） */}
+              <div className="flex">
+                <div className="flex-1">
+                  <FloatingSelect
+                    label="時"
+                    value={currentHour}
+                    onChange={(value) => handleTimeChange('hour', value)}
+                    options={hourOptions}
+                    className="rounded-r-none border-r-0"
+                    required
+                  />
+                </div>
+                <div className="flex-1">
+                  <FloatingSelect
+                    label="分"
+                    value={currentMinute}
+                    onChange={(value) => handleTimeChange('minute', value)}
+                    options={minuteOptions}
+                    className="rounded-l-none"
+                    required
+                  />
+                </div>
+              </div>
             </div>
           </div>
 
