@@ -79,11 +79,11 @@ export async function generateAdvancedArticle(
     .get();
 
   const recentKeywords = recentArticles.docs
-    .map(doc => doc.data().selectedKeyword)
+    .map((doc: any) => doc.data().selectedKeyword)
     .filter(Boolean);
 
   const recentKeywordsText = recentKeywords.length > 0
-    ? `\n同カテゴリーの直近5記事のキーワード:\n${recentKeywords.map((kw, i) => `${i + 1}. ${kw}`).join('\n')}\n\n上記のキーワードとは重複しないものを選定してください。`
+    ? `\n同カテゴリーの直近5記事のキーワード:\n${recentKeywords.map((kw: string, i: number) => `${i + 1}. ${kw}`).join('\n')}\n\n上記のキーワードとは重複しないものを選定してください。`
     : '';
 
   const keywordPrompt = `プロのSEOライターとして、記事を書く上で「${categoryName}」にマッチした最近話題のキーワードを選定してください。${recentKeywordsText}
@@ -208,7 +208,7 @@ export async function generateAdvancedArticle(
   const relatedKeywordsText = relatedKeywordsMatch?.[1]?.trim() || '';
   const relatedKeywords = relatedKeywordsText
     .split(/[,、]/)
-    .map(kw => kw.trim())
+    .map((kw: string) => kw.trim())
     .filter(Boolean)
     .slice(0, 4);
 
@@ -425,7 +425,7 @@ ${outline}
     .get();
 
   const existingTagMap = new Map<string, { id: string; name: string }>();
-  existingTags.docs.forEach(doc => {
+  existingTags.docs.forEach((doc: any) => {
     const tagData = doc.data();
     const normalizedName = tagData.name.toLowerCase();
     existingTagMap.set(normalizedName, { id: doc.id, name: tagData.name });
