@@ -407,7 +407,7 @@ ${outline}
   mainContent = mainContent.replace(/<\/h3>\s+<p>/g, '</h3>\n<p>');
 
   // 導入文と本文を結合
-  const content = introduction + '\n' + mainContent;
+  let content = introduction + '\n' + mainContent;
 
   console.log(`[Step 6] Main content created (${content.length} chars)`);
 
