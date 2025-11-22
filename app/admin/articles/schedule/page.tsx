@@ -334,7 +334,6 @@ function ScheduledGenerationPageContent() {
               values={currentSchedule.daysOfWeek}
               onChange={(value) => handleScheduleChange('daysOfWeek', value)}
               options={dayOptions}
-              required
             />
 
             <FloatingSelect
