@@ -58,17 +58,15 @@ export async function POST(request: NextRequest) {
     const {
       name,
       categoryId,
-      patternId,
       writerId,
       imagePromptPatternId,
-      targetAudience,
       daysOfWeek,
       timeOfDay,
       timezone,
       isActive,
     } = body;
 
-    if (!name || !categoryId || !patternId || !writerId || !imagePromptPatternId || !targetAudience || !daysOfWeek || !timeOfDay || !timezone) {
+    if (!name || !categoryId || !writerId || !imagePromptPatternId || !daysOfWeek || !timeOfDay || !timezone) {
       return NextResponse.json(
         { error: 'All required fields must be provided' },
         { status: 400 }
@@ -78,10 +76,8 @@ export async function POST(request: NextRequest) {
     const scheduleData = {
       name,
       categoryId,
-      patternId,
       writerId,
       imagePromptPatternId,
-      targetAudience,
       daysOfWeek,
       timeOfDay,
       timezone,
@@ -102,4 +98,3 @@ export async function POST(request: NextRequest) {
     );
   }
 }
-

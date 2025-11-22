@@ -7,24 +7,18 @@ import AuthGuard from '@/components/admin/AuthGuard';
 import AdminLayout from '@/components/admin/AdminLayout';
 import FloatingSelect from '@/components/admin/FloatingSelect';
 import FloatingMultiSelect from '@/components/admin/FloatingMultiSelect';
-import TargetAudienceInput from '@/components/admin/TargetAudienceInput';
-import ArticlePatternModal from '@/components/admin/ArticlePatternModal';
 import ImagePromptPatternModal from '@/components/admin/ImagePromptPatternModal';
 import { Category } from '@/types/article';
 import { Writer } from '@/types/writer';
-import { ArticlePattern } from '@/types/article-pattern';
 import { ImagePromptPattern } from '@/types/image-prompt-pattern';
-import { ScheduledGeneration } from '@/types/scheduled-generation';
 import { useMediaTenant } from '@/contexts/MediaTenantContext';
 import { apiGet } from '@/lib/api-client';
 
 interface ScheduleFormData {
   name: string;
   categoryId: string;
-  patternId: string;
   writerId: string;
   imagePromptPatternId: string;
-  targetAudience: string;
   daysOfWeek: string[];
   timeOfDay: string;
   timezone: string;
@@ -34,10 +28,8 @@ interface ScheduleFormData {
 const defaultSchedule: ScheduleFormData = {
   name: '',
   categoryId: '',
-  patternId: '',
   writerId: '',
   imagePromptPatternId: '',
-  targetAudience: '',
   daysOfWeek: [],
   timeOfDay: '',
   timezone: 'Asia/Tokyo',
@@ -49,13 +41,10 @@ function ScheduledGenerationPageContent() {
   const { currentTenant } = useMediaTenant();
   const [categories, setCategories] = useState<Category[]>([]);
   const [writers, setWriters] = useState<Writer[]>([]);
-  const [patterns, setPatterns] = useState<ArticlePattern[]>([]);
   const [imagePromptPatterns, setImagePromptPatterns] = useState<ImagePromptPattern[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [audienceHistory, setAudienceHistory] = useState<string[]>([]);
-  const [isPatternModalOpen, setIsPatternModalOpen] = useState(false);
   const [isImagePromptModalOpen, setIsImagePromptModalOpen] = useState(false);
   const [activeScheduleIndex, setActiveScheduleIndex] = useState(0);
   const [scheduleIds, setScheduleIds] = useState<(string | null)[]>([null, null, null, null, null]);
@@ -68,7 +57,6 @@ function ScheduledGenerationPageContent() {
     { ...defaultSchedule },
     { ...defaultSchedule },
   ]);
-  const [generatingAudience, setGeneratingAudience] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -80,13 +68,7 @@ function ScheduledGenerationPageContent() {
         const results = await Promise.allSettled([
           apiGet<Category[]>(`/api/admin/categories`),
           apiGet<Writer[]>(`/api/admin/writers`),
-          fetch('/api/admin/article-patterns', {
-            headers: { 'x-media-id': currentTenant.id },
-          }).then(res => res.json()),
           fetch('/api/admin/image-prompt-patterns', {
-            headers: { 'x-media-id': currentTenant.id },
-          }).then(res => res.json()),
-          fetch('/api/admin/target-audience-history', {
             headers: { 'x-media-id': currentTenant.id },
           }).then(res => res.json()),
           fetch('/api/admin/scheduled-generations', {
@@ -97,16 +79,12 @@ function ScheduledGenerationPageContent() {
         // 結果の処理
         const categoriesData = results[0].status === 'fulfilled' ? results[0].value : [];
         const writersData = results[1].status === 'fulfilled' ? results[1].value : [];
-        const patternsResponse = results[2].status === 'fulfilled' ? results[2].value : { patterns: [] };
-        const imagePromptPatternsResponse = results[3].status === 'fulfilled' ? results[3].value : { patterns: [] };
-        const audienceHistoryData = results[4].status === 'fulfilled' ? results[4].value : { history: [] };
-        const schedulesResponse = results[5].status === 'fulfilled' ? results[5].value : { schedules: [] };
+        const imagePromptPatternsResponse = results[2].status === 'fulfilled' ? results[2].value : { patterns: [] };
+        const schedulesResponse = results[3].status === 'fulfilled' ? results[3].value : { schedules: [] };
 
         setCategories(Array.isArray(categoriesData) ? categoriesData : []);
         setWriters(Array.isArray(writersData) ? writersData : []);
-        setPatterns(Array.isArray(patternsResponse.patterns) ? patternsResponse.patterns : []);
         setImagePromptPatterns(Array.isArray(imagePromptPatternsResponse.patterns) ? imagePromptPatternsResponse.patterns : []);
-        setAudienceHistory(Array.isArray(audienceHistoryData?.history) ? audienceHistoryData.history : []);
 
         // 既存の設定を各スロットに読み込む
         const existingSchedules = Array.isArray(schedulesResponse?.schedules) ? schedulesResponse.schedules : [];
@@ -118,10 +96,8 @@ function ScheduledGenerationPageContent() {
           newSchedules[index] = {
             name: schedule.name || `設定 ${String(index + 1).padStart(2, '0')}`,
             categoryId: schedule.categoryId || '',
-            patternId: schedule.patternId || '',
             writerId: schedule.writerId || '',
             imagePromptPatternId: schedule.imagePromptPatternId || '',
-            targetAudience: schedule.targetAudience || '',
             daysOfWeek: schedule.daysOfWeek || [],
             timeOfDay: schedule.timeOfDay || '',
             timezone: schedule.timezone || 'Asia/Tokyo',
@@ -148,10 +124,6 @@ function ScheduledGenerationPageContent() {
             if (Array.isArray(writersData) && writersData.length === 1) {
               newSchedules[i].writerId = writersData[0].id;
             }
-            // 構成パターンが1つしかない場合、自動的に選択
-            if (Array.isArray(patternsResponse.patterns) && patternsResponse.patterns.length === 1) {
-              newSchedules[i].patternId = patternsResponse.patterns[0].id;
-            }
             // 画像プロンプトパターンが1つしかない場合、自動的に選択
             if (Array.isArray(imagePromptPatternsResponse.patterns) && imagePromptPatternsResponse.patterns.length === 1) {
               newSchedules[i].imagePromptPatternId = imagePromptPatternsResponse.patterns[0].id;
@@ -165,69 +137,13 @@ function ScheduledGenerationPageContent() {
         setError('データの読み込みに失敗しました。');
         setCategories([]);
         setWriters([]);
-        setPatterns([]);
         setImagePromptPatterns([]);
-        setAudienceHistory([]);
       } finally {
         setLoading(false);
       }
     };
     fetchData();
   }, [currentTenant?.id]);
-
-  const handleDeleteAudienceHistory = async (audience: string) => {
-    if (!currentTenant?.id) return;
-    try {
-      const response = await fetch(`/api/admin/target-audience-history?targetAudience=${encodeURIComponent(audience)}`, {
-        method: 'DELETE',
-        headers: { 'x-media-id': currentTenant.id },
-      });
-      if (!response.ok) throw new Error('履歴の削除に失敗しました');
-      const data = await response.json();
-      setAudienceHistory(data.history || []);
-    } catch (error) {
-      console.error('Failed to delete audience history:', error);
-      setError('履歴の削除に失敗しました。');
-    }
-  };
-
-  const handleGenerateTargetAudience = async () => {
-    const currentSchedule = schedules[activeScheduleIndex];
-    if (!currentSchedule.categoryId) {
-      alert('カテゴリーを先に選択してください');
-      return;
-    }
-    setGeneratingAudience(true);
-    setError(null);
-    try {
-      const response = await fetch('/api/admin/articles/generate-target-audience', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'x-media-id': currentTenant?.id || '' },
-        body: JSON.stringify({
-          categoryId: currentSchedule.categoryId,
-          excludeHistory: audienceHistory,
-        }),
-      });
-      if (!response.ok) throw new Error('想定読者の生成に失敗しました');
-      const data = await response.json();
-      
-      updateSchedule(activeScheduleIndex, 'targetAudience', data.targetAudience);
-
-      if (!audienceHistory.includes(data.targetAudience)) {
-        setAudienceHistory(prev => [data.targetAudience, ...prev].slice(0, 20));
-        fetch('/api/admin/target-audience-history', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'x-media-id': currentTenant?.id || '' },
-          body: JSON.stringify({ targetAudience: data.targetAudience }),
-        }).catch(err => console.error('Failed to save target audience history:', err));
-      }
-    } catch (err: any) {
-      console.error('Error generating target audience:', err);
-      setError(err.message || '想定読者の生成中にエラーが発生しました。');
-    } finally {
-      setGeneratingAudience(false);
-    }
-  };
 
   const updateSchedule = (index: number, field: keyof ScheduleFormData, value: any) => {
     setSchedules(prev => {
@@ -259,10 +175,8 @@ function ScheduledGenerationPageContent() {
         const requestData = {
           name: schedule.name,
           categoryId: schedule.categoryId,
-          patternId: schedule.patternId,
           writerId: schedule.writerId,
           imagePromptPatternId: schedule.imagePromptPatternId,
-          targetAudience: schedule.targetAudience,
           daysOfWeek: schedule.daysOfWeek,
           timeOfDay: schedule.timeOfDay,
           timezone: schedule.timezone,
@@ -285,7 +199,7 @@ function ScheduledGenerationPageContent() {
           return response.json();
         } else {
           // 新規作成（フィールドが入力されている場合のみ）
-          if (schedule.categoryId && schedule.patternId && schedule.writerId && schedule.imagePromptPatternId) {
+          if (schedule.categoryId && schedule.writerId && schedule.imagePromptPatternId) {
             const response = await fetch('/api/admin/scheduled-generations', {
               method: 'POST',
               headers: {
@@ -298,26 +212,21 @@ function ScheduledGenerationPageContent() {
               throw new Error(`設定 ${String(index + 1).padStart(2, '0')} の作成に失敗しました`);
             }
             const data = await response.json();
+            setScheduleIds(prev => {
+              const newIds = [...prev];
+              newIds[index] = data.id;
+              return newIds;
+            });
             return data;
           }
-        }
-        return null;
-      });
-
-      const results = await Promise.all(savePromises);
-      
-      // 新規作成されたIDを保存
-      const newScheduleIds = [...scheduleIds];
-      results.forEach((result, index) => {
-        if (result && result.id && !newScheduleIds[index]) {
-          newScheduleIds[index] = result.id;
+          return null;
         }
       });
-      setScheduleIds(newScheduleIds);
 
-      alert('すべての定期生成設定を保存しました！');
+      await Promise.all(savePromises);
+      alert('全ての設定を保存しました');
     } catch (err: any) {
-      console.error('Error saving scheduled generations:', err);
+      console.error('Error saving schedules:', err);
       setError(err.message || '設定の保存中にエラーが発生しました。');
     } finally {
       setSaving(false);
@@ -328,6 +237,7 @@ function ScheduledGenerationPageContent() {
     router.push('/admin/articles');
   };
 
+  // 曜日のオプション
   const dayOptions = [
     { value: '0', label: '日曜日' },
     { value: '1', label: '月曜日' },
@@ -423,35 +333,6 @@ function ScheduledGenerationPageContent() {
                 required
               />
 
-              <div className="flex gap-2">
-                <div className="flex-1">
-                  <FloatingSelect
-                    label="構成パターン *"
-                    value={currentSchedule.patternId}
-                    onChange={(value) => updateSchedule(activeScheduleIndex, 'patternId', value)}
-                    options={patterns.map(p => ({ value: p.id, label: p.name }))}
-                    required
-                  />
-                </div>
-                <button
-                  type="button"
-                  onClick={() => setIsPatternModalOpen(true)}
-                  className="w-12 h-12 mb-0.5 bg-gray-600 text-white rounded-full hover:bg-gray-700 transition-all shadow-md flex items-center justify-center"
-                  title="構成パターン管理"
-                >
-                  <Image src="/prompt.svg" alt="Prompt" width={20} height={20} className="brightness-0 invert" />
-                </button>
-              </div>
-              {patterns.length === 0 && (
-                <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3 -mt-2">
-                  <p className="text-sm text-yellow-800">
-                    ⚠️ 構成パターンが登録されていません。
-                    <br />
-                    「構成パターン管理」ボタンから登録してください。
-                  </p>
-                </div>
-              )}
-
               <FloatingSelect
                 label="ライター *"
                 value={currentSchedule.writerId}
@@ -489,51 +370,22 @@ function ScheduledGenerationPageContent() {
                 </div>
               )}
 
-              <div className="flex gap-2">
-                <div className="flex-1">
-                  <TargetAudienceInput
-                    value={currentSchedule.targetAudience}
-                    onChange={(value) => updateSchedule(activeScheduleIndex, 'targetAudience', value)}
-                    history={audienceHistory}
-                    onDeleteHistory={handleDeleteAudienceHistory}
-                    label="想定読者（ペルソナ）*"
-                    required
-                  />
-                </div>
-                <button
-                  type="button"
-                  onClick={handleGenerateTargetAudience}
-                  disabled={!currentSchedule.categoryId || generatingAudience}
-                  className="w-12 h-12 mb-0.5 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-full hover:from-purple-700 hover:to-blue-700 transition-all shadow-md disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
-                  title="AIで想定読者を自動生成"
-                >
-                  {generatingAudience ? (
-                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                  ) : (
-                    <Image src="/ai.svg" alt="AI" width={20} height={20} className="brightness-0 invert" />
-                  )}
-                </button>
-              </div>
-
               <FloatingMultiSelect
                 label="曜日 *"
                 values={currentSchedule.daysOfWeek}
-                onChange={(values) => updateSchedule(activeScheduleIndex, 'daysOfWeek', values)}
+                onChange={(value) => updateSchedule(activeScheduleIndex, 'daysOfWeek', value)}
                 options={dayOptions}
-                badgeColor="purple"
-                enableSearch={false}
               />
 
-              {/* 時刻入力（時間と分を分けて表示） */}
-              <div className="flex">
+              {/* 時刻選択（時/分の2フィールド） */}
+              <div className="flex gap-2">
                 <div className="flex-1">
                   <FloatingSelect
                     label="時"
                     value={currentHour}
                     onChange={(value) => handleTimeChange('hour', value)}
                     options={hourOptions}
-                    className="rounded-r-none border-r-0"
-                    required
+                    className="rounded-r-none"
                   />
                 </div>
                 <div className="flex-1">
@@ -543,14 +395,13 @@ function ScheduledGenerationPageContent() {
                     onChange={(value) => handleTimeChange('minute', value)}
                     options={minuteOptions}
                     className="rounded-l-none"
-                    required
                   />
                 </div>
               </div>
             </div>
           </div>
 
-          {/* フローティングボタン */}
+          {/* フローティングボタン（/new/ と同じデザイン） */}
           <div className="fixed bottom-8 right-8 flex items-center gap-4 z-50">
             {/* キャンセルボタン */}
             <button
@@ -570,7 +421,7 @@ function ScheduledGenerationPageContent() {
               onClick={handleSave}
               disabled={saving}
               className="bg-blue-600 text-white w-14 h-14 rounded-full hover:bg-blue-700 transition-all hover:scale-110 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
-              title="すべての設定を保存"
+              title="保存"
             >
               {saving ? (
                 <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
@@ -581,26 +432,6 @@ function ScheduledGenerationPageContent() {
               )}
             </button>
           </div>
-
-          {/* 構成パターン管理モーダル */}
-          <ArticlePatternModal
-            isOpen={isPatternModalOpen}
-            onClose={() => setIsPatternModalOpen(false)}
-            onSuccess={() => {
-              setIsPatternModalOpen(false);
-              // パターンを再読み込み
-              if (currentTenant?.id) {
-                fetch('/api/admin/article-patterns', {
-                  headers: { 'x-media-id': currentTenant.id },
-                })
-                  .then(res => res.json())
-                  .then(data => {
-                    setPatterns(Array.isArray(data.patterns) ? data.patterns : []);
-                  })
-                  .catch(err => console.error('Failed to reload patterns:', err));
-              }
-            }}
-          />
 
           {/* 画像プロンプトパターン管理モーダル */}
           <ImagePromptPatternModal
