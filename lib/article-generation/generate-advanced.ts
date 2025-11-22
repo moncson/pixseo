@@ -692,11 +692,11 @@ A: [回答]
     console.log(`[Step 12] Generating ${maxImages} images`);
 
     for (let i = targetPositions.length - 1; i >= 0; i--) {
+      const position = targetPositions[i];
+      const headingMatch = headingMatches[position];
+      const headingContext = headingTexts[position];
+      
       try {
-        const position = targetPositions[i];
-        const headingMatch = headingMatches[position];
-        const headingContext = headingTexts[position];
-        
         console.log(`[Step 12] Generating image for h2 #${position + 1}: "${headingContext}"`);
 
         const inlineImagePrompt = `${imagePatternData.prompt}
