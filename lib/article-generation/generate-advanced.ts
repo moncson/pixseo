@@ -120,7 +120,7 @@ export async function generateAdvancedArticle(
 
   const keywordPrompt = `プロのSEOライターとして、記事を書く上で「${categoryName}」にマッチした最近話題のキーワードを選定してください。
 
-【重要】現在は${currentDateInfo}です。必ず${currentYear}年の最新トレンドに基づいてキーワードを選定してください。過去の年（${currentYear - 1}年以前）のキーワードは選ばないでください。
+【重要】現在は${currentDateInfo}です。最新のトレンドに基づいてキーワードを選定してください。
 
 ${recentKeywordsText}
 
@@ -147,7 +147,7 @@ ${recentKeywordsText}
         messages: [
           {
             role: 'system',
-            content: `あなたはプロのSEOライターです。現在は${currentDateInfo}（${currentYear}年）です。必ず最新の情報に基づいてキーワードを選定してください。Web検索機能を使用して、${currentYear}年の最新トレンドを確認してください。`,
+            content: `あなたはプロのSEOライターです。現在は${currentDateInfo}です。必ず最新の情報に基づいてキーワードを選定してください。Web検索機能を使用して、最新トレンドを確認してください。`,
           },
           {
             role: 'user',
@@ -189,9 +189,9 @@ ${recentKeywordsText}
 
   const researchPrompt = `プロのSEOライターとして、「${selectedKeyword}」を分析して、SEO記事の指示書を作成してください。
 
-【重要】現在は${currentDateInfo}（${currentYear}年）です。必ず${currentYear}年の最新情報に基づいて分析してください。
+【重要】現在は${currentDateInfo}です。最新情報に基づいて分析してください。
 
-手順1: 「${selectedKeyword}」をWebで検索し、${currentYear}年の最新トレンドとユーザーが知りたいニーズを分析してください。
+手順1: 「${selectedKeyword}」をWebで検索し、最新トレンドとユーザーが知りたいニーズを分析してください。
 
 手順2: ニーズを基に、以下のフォーマットに沿って箇条書きで指示書を出力してください。
 
@@ -214,7 +214,7 @@ ${recentKeywordsText}
       messages: [
         {
           role: 'system',
-          content: `あなたはプロのSEOライターです。現在は${currentDateInfo}（${currentYear}年）です。Web検索機能を使用して、${currentYear}年の最新情報のみを調査してください。過去の年（${currentYear - 1}年以前）の情報は参考程度にし、必ず${currentYear}年の最新トレンドに焦点を当ててください。`,
+          content: `あなたはプロのSEOライターです。現在は${currentDateInfo}です。Web検索機能を使用して、最新情報を調査してください。常に現在時点での最新トレンドに焦点を当ててください。`,
         },
         {
           role: 'user',
@@ -263,15 +263,11 @@ ${recentKeywordsText}
 
   const titlePrompt = `プロのSEOライターとして回答してください。
 
-【重要】現在は${currentDateInfo}（${currentYear}年）です。
-
 「${targetAudience}」をターゲットにした記事を書きたいです。
 
 キーワードは「${selectedKeyword}」です。
 
 キーワードを含めた、ユーザーが読みたくなるようなタイトルを25-32文字で作成してください。
-
-もしキーワードに古い年（${currentYear - 1}年以前）が含まれている場合は、必ず${currentYear}年に更新してください。
 
 出力形式:
 タイトル: [タイトル]`;
@@ -281,7 +277,7 @@ ${recentKeywordsText}
     messages: [
       {
         role: 'system',
-        content: `あなたはプロのSEOライターです。現在は${currentDateInfo}（${currentYear}年）です。タイトルには必ず${currentYear}年の情報であることを反映させてください。`,
+        content: `あなたはプロのSEOライターです。現在は${currentDateInfo}です。最新の情報に基づいて魅力的なタイトルを作成してください。`,
       },
       {
         role: 'user',
@@ -302,8 +298,6 @@ ${recentKeywordsText}
   console.log('[Step 4] Creating outline...');
 
   const outlinePrompt = `プロのSEOライターとして回答してください。
-
-【重要】現在は${currentDateInfo}（${currentYear}年）です。記事は${currentYear}年の最新情報に基づいてください。
 
 以下の情報を考慮して、ユーザーが読み進めたくなるようなブログ記事のアウトライン（構成）を考えてください。
 
@@ -345,7 +339,7 @@ ${contentRequirements}
     messages: [
       {
         role: 'system',
-        content: `あなたはプロのSEOライターです。現在は${currentDateInfo}（${currentYear}年）です。必ず${currentYear}年の最新情報とトレンドに基づいてアウトラインを作成してください。`,
+        content: `あなたはプロのSEOライターです。現在は${currentDateInfo}です。最新情報とトレンドに基づいてアウトラインを作成してください。`,
       },
       {
         role: 'user',
@@ -364,8 +358,6 @@ ${contentRequirements}
   console.log('[Step 5] Creating introduction...');
 
   const introPrompt = `プロのSEOライターとして回答してください。
-
-【重要】現在は${currentDateInfo}（${currentYear}年）です。導入文は${currentYear}年の最新情報に基づいてください。
 
 以下の情報を考慮して、ユーザーが読み進めたくなるようなブログ記事の導入文を200-300文字以内で考えてください。
 
@@ -391,7 +383,7 @@ ${latentNeeds}
     messages: [
       {
         role: 'system',
-        content: `あなたはプロのSEOライターです。現在は${currentDateInfo}（${currentYear}年）です。必ず${currentYear}年の最新情報とトレンドに基づいて導入文を作成してください。`,
+        content: `あなたはプロのSEOライターです。現在は${currentDateInfo}です。最新情報とトレンドに基づいて導入文を作成してください。`,
       },
       {
         role: 'user',
@@ -410,8 +402,6 @@ ${latentNeeds}
   console.log('[Step 6] Creating main content...');
 
   const bodyPrompt = `プロのSEOライターとして、以下のキーワードと構成案に沿って、本文をHTMLにて執筆してください。
-
-【重要】現在は${currentDateInfo}（${currentYear}年）です。本文は${currentYear}年の最新情報、トレンド、事例に基づいてください。
 
 必要があれば表も用いてください。
 
@@ -437,7 +427,7 @@ ${outline}
     messages: [
       {
         role: 'system',
-        content: `あなたはプロのSEOライターです。現在は${currentDateInfo}（${currentYear}年）です。必ず${currentYear}年の最新情報、トレンド、事例、技術に基づいて本文を執筆してください。過去の年（${currentYear - 1}年以前）の情報は文脈上必要な場合のみ簡潔に触れ、主に${currentYear}年の内容に焦点を当ててください。`,
+        content: `あなたはプロのSEOライターです。現在は${currentDateInfo}です。最新情報、トレンド、事例、技術に基づいて本文を執筆してください。常に現在時点での最新の内容に焦点を当ててください。`,
       },
       {
         role: 'user',
