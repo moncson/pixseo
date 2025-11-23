@@ -10,8 +10,10 @@ import FloatingInput from '@/components/admin/FloatingInput';
 import FeaturedImageUpload from '@/components/admin/FeaturedImageUpload';
 import { updatePage, getPageById } from '@/lib/firebase/pages-admin';
 import { Page } from '@/types/page';
+import { Block } from '@/types/block';
 import { useMediaTenant } from '@/contexts/MediaTenantContext';
 import { apiGet } from '@/lib/api-client';
+import BlockBuilder from '@/components/admin/BlockBuilder';
 
 export default function EditPagePage() {
   const router = useRouter();
@@ -26,6 +28,8 @@ export default function EditPagePage() {
   const [generatingSlug, setGeneratingSlug] = useState(false);
   const [generatingMetaTitle, setGeneratingMetaTitle] = useState(false);
   const [pages, setPages] = useState<Page[]>([]);
+  const [useBlockBuilder, setUseBlockBuilder] = useState(false); // ブロックビルダー使用フラグ
+  const [blocks, setBlocks] = useState<Block[]>([]); // ブロックデータ
   
   const [formData, setFormData] = useState({
     title: '',
@@ -67,6 +71,11 @@ export default function EditPagePage() {
       
       setFeaturedImageUrl(page.featuredImage || '');
       setFeaturedImageAlt(page.featuredImageAlt || '');
+      
+      // ブロックビルダーデータを読み込み
+      setUseBlockBuilder(page.useBlockBuilder || false);
+      setBlocks(page.blocks || []);
+      
       setFetchLoading(false);
     } catch (error) {
       console.error('Error fetching page:', error);
@@ -161,8 +170,19 @@ export default function EditPagePage() {
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     
-    if (!formData.title || !formData.content || !formData.slug) {
-      alert('タイトル、本文、スラッグは必須です');
+    // ブロックビルダー使用時は blocks が必須、従来エディター使用時は content が必須
+    if (!formData.title || !formData.slug) {
+      alert('タイトルとスラッグは必須です');
+      return;
+    }
+    
+    if (useBlockBuilder && blocks.length === 0) {
+      alert('ブロックを少なくとも1つ追加してください');
+      return;
+    }
+    
+    if (!useBlockBuilder && !formData.content) {
+      alert('本文は必須です');
       return;
     }
 
@@ -173,12 +193,22 @@ export default function EditPagePage() {
 
     setLoading(true);
     try {
-      await updatePage(pageId, {
+      const updateData: any = {
         ...formData,
         featuredImage: featuredImageUrl,
         featuredImageAlt: featuredImageAlt,
         parentId: formData.parentId || undefined,
-      });
+        useBlockBuilder,
+      };
+      
+      // ブロックビルダー使用時は blocks を保存
+      if (useBlockBuilder) {
+        updateData.blocks = blocks;
+        // 後方互換性のため、contentも生成して保存
+        updateData.content = '<!-- Block Builder Content -->';
+      }
+      
+      await updatePage(pageId, updateData);
       
       alert('固定ページを更新しました');
       router.push('/pages');
@@ -298,12 +328,34 @@ export default function EditPagePage() {
                 rows={3}
               />
 
-              {/* 本文 */}
+              {/* 編集モード切り替え */}
+              <div className="flex items-center justify-between bg-gray-50 p-4 rounded-lg border border-gray-200">
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={useBlockBuilder}
+                    onChange={(e) => setUseBlockBuilder(e.target.checked)}
+                    className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                  />
+                  <span className="text-sm font-medium text-gray-700">
+                    ブロックビルダーを使用
+                  </span>
+                </label>
+                <span className="text-xs text-gray-500">
+                  {useBlockBuilder ? '🧩 ブロックを組み合わせて構築' : '📝 従来のエディター'}
+                </span>
+              </div>
+
+              {/* 本文 or ブロックビルダー */}
               <div>
-                <RichTextEditor
-                  value={formData.content}
-                  onChange={(content) => setFormData({ ...formData, content })}
-                />
+                {useBlockBuilder ? (
+                  <BlockBuilder blocks={blocks} onChange={setBlocks} />
+                ) : (
+                  <RichTextEditor
+                    value={formData.content}
+                    onChange={(content) => setFormData({ ...formData, content })}
+                  />
+                )}
               </div>
 
               {/* メタタイトル */}
