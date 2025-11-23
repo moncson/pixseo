@@ -121,11 +121,12 @@ export async function POST(request: Request) {
       width,
       height,
       alt: alt || file.name.replace(/\.[^.]+$/, ''), // altが空の場合、ファイル名（拡張子なし）を使用
+      usageContext: 'general', // 使用状況（画像ブロック、記事アイキャッチなど）
       createdAt: FieldValue.serverTimestamp(),
       updatedAt: FieldValue.serverTimestamp(),
     };
 
-    const docRef = await adminDb.collection('media').add(mediaData);
+    const docRef = await adminDb.collection('mediaLibrary').add(mediaData);
     console.log('[API Media Upload] アップロード成功:', docRef.id);
 
     return NextResponse.json({ 
