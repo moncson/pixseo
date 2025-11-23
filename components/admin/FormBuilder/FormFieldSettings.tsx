@@ -61,7 +61,7 @@ export default function FormFieldSettings({ field, onUpdate, onClose }: FormFiel
         <FloatingInput
           label="ラベル *"
           value={field.label}
-          onChange={(e) => onUpdate({ label: e.target.value })}
+          onChange={(value) => onUpdate({ label: value })}
           required
         />
 
@@ -86,7 +86,7 @@ export default function FormFieldSettings({ field, onUpdate, onClose }: FormFiel
           <FloatingInput
             label="プレースホルダー"
             value={field.config?.placeholder || ''}
-            onChange={(e) => updateConfig({ placeholder: e.target.value })}
+            onChange={(value) => updateConfig({ placeholder: value })}
           />
         )}
 
@@ -95,13 +95,13 @@ export default function FormFieldSettings({ field, onUpdate, onClose }: FormFiel
             <FloatingInput
               label="プレースホルダー"
               value={field.config?.placeholder || ''}
-              onChange={(e) => updateConfig({ placeholder: e.target.value })}
+              onChange={(value) => updateConfig({ placeholder: value })}
             />
             <FloatingInput
               label="行数"
               type="number"
               value={(field.config?.rows || 4).toString()}
-              onChange={(e) => updateConfig({ rows: parseInt(e.target.value) || 4 })}
+              onChange={(value) => updateConfig({ rows: parseInt(value) || 4 })}
             />
           </>
         )}
@@ -112,19 +112,19 @@ export default function FormFieldSettings({ field, onUpdate, onClose }: FormFiel
               label="最小値"
               type="number"
               value={(field.config?.min || 0).toString()}
-              onChange={(e) => updateConfig({ min: parseInt(e.target.value) || 0 })}
+              onChange={(value) => updateConfig({ min: parseInt(value) || 0 })}
             />
             <FloatingInput
               label="最大値"
               type="number"
               value={(field.config?.max || 100).toString()}
-              onChange={(e) => updateConfig({ max: parseInt(e.target.value) || 100 })}
+              onChange={(value) => updateConfig({ max: parseInt(value) || 100 })}
             />
             <FloatingInput
               label="ステップ"
               type="number"
               value={(field.config?.step || 1).toString()}
-              onChange={(e) => updateConfig({ step: parseInt(e.target.value) || 1 })}
+              onChange={(value) => updateConfig({ step: parseInt(value) || 1 })}
             />
           </>
         )}
@@ -147,7 +147,7 @@ export default function FormFieldSettings({ field, onUpdate, onClose }: FormFiel
           <FloatingInput
             label="同意テキスト"
             value={field.config?.text || ''}
-            onChange={(e) => updateConfig({ text: e.target.value })}
+            onChange={(value) => updateConfig({ text: value })}
             multiline
             rows={3}
           />
@@ -157,7 +157,7 @@ export default function FormFieldSettings({ field, onUpdate, onClose }: FormFiel
           <FloatingInput
             label="表示テキスト"
             value={field.config?.content || ''}
-            onChange={(e) => updateConfig({ content: e.target.value })}
+            onChange={(value) => updateConfig({ content: value })}
             multiline
             rows={5}
           />

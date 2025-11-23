@@ -25,7 +25,7 @@ export default function CTABlockSettings({ block, onUpdate }: CTABlockSettingsPr
       <FloatingInput
         label="ボタンテキスト *"
         value={config.text}
-        onChange={(e) => updateConfig({ text: e.target.value })}
+        onChange={(value) => updateConfig({ text: value })}
         required
       />
 
@@ -33,7 +33,7 @@ export default function CTABlockSettings({ block, onUpdate }: CTABlockSettingsPr
       <FloatingInput
         label="リンク先URL *"
         value={config.url}
-        onChange={(e) => updateConfig({ url: e.target.value })}
+        onChange={(value) => updateConfig({ url: value })}
         placeholder="https://example.com"
         required
       />

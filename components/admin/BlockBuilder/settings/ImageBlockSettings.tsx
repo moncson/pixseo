@@ -39,14 +39,14 @@ export default function ImageBlockSettings({ block, onUpdate }: ImageBlockSettin
       <FloatingInput
         label="キャプション（オプション）"
         value={config.caption || ''}
-        onChange={(e) => updateConfig({ caption: e.target.value })}
+        onChange={(value) => updateConfig({ caption: value })}
       />
 
       {/* リンク先 */}
       <FloatingInput
         label="リンク先URL（オプション）"
         value={config.link || ''}
-        onChange={(e) => updateConfig({ link: e.target.value })}
+        onChange={(value) => updateConfig({ link: value })}
         placeholder="https://example.com"
       />
 
