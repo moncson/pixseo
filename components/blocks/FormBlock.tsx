@@ -158,19 +158,19 @@ interface FormFieldRendererProps {
 
 function FormFieldRenderer({ field, value, onChange }: FormFieldRendererProps) {
   // 表示専用フィールド
-  if (field.type === 'text_display') {
+  if (field.type === 'display-text') {
     return (
       <div className="py-2">
-        <p className="text-gray-700 whitespace-pre-wrap">{field.config?.content}</p>
+        <p className="text-gray-700 whitespace-pre-wrap">{(field as any).config?.content}</p>
       </div>
     );
   }
 
-  if (field.type === 'html_display') {
+  if (field.type === 'display-html') {
     return (
       <div 
         className="py-2"
-        dangerouslySetInnerHTML={{ __html: field.config?.html || '' }}
+        dangerouslySetInnerHTML={{ __html: (field as any).config?.html || '' }}
       />
     );
   }
@@ -188,7 +188,7 @@ function FormFieldRenderer({ field, value, onChange }: FormFieldRendererProps) {
           type={field.type === 'email' ? 'email' : field.type === 'tel' ? 'tel' : 'text'}
           value={value || ''}
           onChange={(e) => onChange(e.target.value)}
-          placeholder={field.config?.placeholder}
+          placeholder={(field as any).config?.placeholder}
           required={field.required}
           className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
         />
@@ -198,9 +198,9 @@ function FormFieldRenderer({ field, value, onChange }: FormFieldRendererProps) {
         <textarea
           value={value || ''}
           onChange={(e) => onChange(e.target.value)}
-          placeholder={field.config?.placeholder}
+          placeholder={(field as any).config?.placeholder}
           required={field.required}
-          rows={field.config?.rows || 4}
+          rows={(field as any).config?.rows || 4}
           className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
         />
       )}
@@ -211,9 +211,9 @@ function FormFieldRenderer({ field, value, onChange }: FormFieldRendererProps) {
           value={value || ''}
           onChange={(e) => onChange(e.target.value)}
           required={field.required}
-          min={field.config?.min}
-          max={field.config?.max}
-          step={field.config?.step}
+          min={(field as any).config?.min}
+          max={(field as any).config?.max}
+          step={(field as any).config?.step}
           className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
         />
       )}
@@ -226,7 +226,7 @@ function FormFieldRenderer({ field, value, onChange }: FormFieldRendererProps) {
           className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
         >
           <option value="">選択してください</option>
-          {(field.config?.options || []).map((option: string) => (
+          {((field as any).config?.options || []).map((option: string) => (
             <option key={option} value={option}>{option}</option>
           ))}
         </select>
@@ -234,7 +234,7 @@ function FormFieldRenderer({ field, value, onChange }: FormFieldRendererProps) {
 
       {field.type === 'radio' && (
         <div className="space-y-2">
-          {(field.config?.options || []).map((option: string) => (
+          {((field as any).config?.options || []).map((option: string) => (
             <label key={option} className="flex items-center gap-2">
               <input
                 type="radio"
@@ -252,7 +252,7 @@ function FormFieldRenderer({ field, value, onChange }: FormFieldRendererProps) {
 
       {field.type === 'checkbox' && (
         <div className="space-y-2">
-          {(field.config?.options || []).map((option: string) => (
+          {((field as any).config?.options || []).map((option: string) => (
             <label key={option} className="flex items-center gap-2">
               <input
                 type="checkbox"
@@ -273,7 +273,7 @@ function FormFieldRenderer({ field, value, onChange }: FormFieldRendererProps) {
         </div>
       )}
 
-      {field.type === 'consent' && (
+      {field.type === 'agreement' && (
         <label className="flex items-start gap-2">
           <input
             type="checkbox"
@@ -282,7 +282,7 @@ function FormFieldRenderer({ field, value, onChange }: FormFieldRendererProps) {
             required={field.required}
             className="mt-1 w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
           />
-          <span className="text-sm text-gray-700">{field.config?.text}</span>
+          <span className="text-sm text-gray-700">{(field as any).config?.text}</span>
         </label>
       )}
     </div>
