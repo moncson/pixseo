@@ -28,10 +28,10 @@ export default function ImageBlockSettings({ block, onUpdate }: ImageBlockSettin
           画像
         </label>
         <FeaturedImageUpload
-          imageUrl={config.imageUrl}
-          altText={config.alt}
-          onImageChange={(url) => updateConfig({ imageUrl: url })}
-          onAltTextChange={(alt) => updateConfig({ alt })}
+          value={config.imageUrl}
+          alt={config.alt}
+          onChange={(url) => updateConfig({ imageUrl: url })}
+          onAltChange={(alt) => updateConfig({ alt })}
         />
       </div>
 
