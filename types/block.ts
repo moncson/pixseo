@@ -1,0 +1,188 @@
+/**
+ * ブロックビルダー用の型定義
+ */
+
+// ブロックの基本タイプ
+export type BlockType = 
+  | 'text'      // テキスト表示
+  | 'image'     // 画像表示
+  | 'cta'       // CTA（コールトゥアクション）
+  | 'form'      // フォーム埋め込み
+  | 'html';     // カスタムHTML
+
+// テキストブロックの設定
+export interface TextBlockConfig {
+  content: string;           // HTML形式のテキスト
+  alignment?: 'left' | 'center' | 'right';
+  fontSize?: 'small' | 'medium' | 'large';
+  fontWeight?: 'normal' | 'bold';
+}
+
+// 画像ブロックの設定
+export interface ImageBlockConfig {
+  imageUrl: string;
+  alt: string;
+  caption?: string;
+  width?: number;           // %指定
+  alignment?: 'left' | 'center' | 'right';
+  link?: string;            // クリック時のリンク先
+}
+
+// CTAブロックの設定
+export interface CTABlockConfig {
+  text: string;             // ボタンテキスト
+  url: string;              // リンク先URL
+  style?: 'primary' | 'secondary' | 'outline';
+  size?: 'small' | 'medium' | 'large';
+  alignment?: 'left' | 'center' | 'right';
+  openInNewTab?: boolean;
+}
+
+// フォームブロックの設定
+export interface FormBlockConfig {
+  formId: string;           // 選択したフォームのID
+  showTitle?: boolean;      // フォームタイトルを表示するか
+}
+
+// HTMLブロックの設定
+export interface HTMLBlockConfig {
+  html: string;             // カスタムHTML
+}
+
+// ブロックの共通インターフェース
+export interface Block {
+  id: string;
+  type: BlockType;
+  order: number;
+  config: TextBlockConfig | ImageBlockConfig | CTABlockConfig | FormBlockConfig | HTMLBlockConfig;
+  
+  // レスポンシブ設定（将来の拡張用）
+  showOnMobile?: boolean;
+  showOnDesktop?: boolean;
+  mobileOrder?: number;
+}
+
+// フォームフィールドのタイプ
+export type FormFieldType =
+  | 'text'              // テキスト入力
+  | 'textarea'          // テキストエリア
+  | 'email'             // メールアドレス
+  | 'tel'               // 電話番号
+  | 'number'            // 数値
+  | 'name'              // 姓名（姓・名を分離）
+  | 'address'           // 住所（郵便番号・都道府県・市区町村・番地）
+  | 'select'            // 単一プルダウン
+  | 'cascade'           // カスケード（連動プルダウン）
+  | 'radio'             // ラジオボタン
+  | 'checkbox'          // チェックボックス
+  | 'agreement'         // 同意確認
+  | 'display-text'      // テキスト表示
+  | 'display-image'     // 画像表示
+  | 'display-html';     // HTML表示
+
+// フォームフィールドの共通設定
+export interface FormFieldBase {
+  id: string;
+  type: FormFieldType;
+  order: number;
+  label?: string;           // フィールドのラベル
+  placeholder?: string;     // プレースホルダー
+  required?: boolean;       // 必須入力
+  helpText?: string;        // ヘルプテキスト
+}
+
+// テキスト系フィールド
+export interface TextFormField extends FormFieldBase {
+  type: 'text' | 'textarea' | 'email' | 'tel' | 'number';
+  defaultValue?: string;
+  minLength?: number;
+  maxLength?: number;
+  pattern?: string;         // 正規表現パターン
+}
+
+// 姓名フィールド
+export interface NameFormField extends FormFieldBase {
+  type: 'name';
+  showLastNameFirst?: boolean;  // 姓を先に表示
+}
+
+// 住所フィールド
+export interface AddressFormField extends FormFieldBase {
+  type: 'address';
+  includePostalCode?: boolean;
+  includeBuilding?: boolean;    // 建物名を含む
+}
+
+// 選択系フィールド
+export interface SelectFormField extends FormFieldBase {
+  type: 'select' | 'radio' | 'checkbox';
+  options: Array<{
+    value: string;
+    label: string;
+  }>;
+  defaultValue?: string | string[];
+}
+
+// カスケードフィールド
+export interface CascadeFormField extends FormFieldBase {
+  type: 'cascade';
+  cascadeType: 'prefecture-city';  // 都道府県→市区町村
+  // 将来的に他のカスケードタイプを追加可能
+}
+
+// 同意確認フィールド
+export interface AgreementFormField extends FormFieldBase {
+  type: 'agreement';
+  agreementText: string;    // 同意文（例: プライバシーポリシーに同意する）
+  linkUrl?: string;         // リンク先URL
+}
+
+// 表示系フィールド
+export interface DisplayFormField extends FormFieldBase {
+  type: 'display-text' | 'display-image' | 'display-html';
+  content: string;          // テキスト、画像URL、またはHTML
+  alignment?: 'left' | 'center' | 'right';
+}
+
+// すべてのフォームフィールドタイプのユニオン型
+export type FormField =
+  | TextFormField
+  | NameFormField
+  | AddressFormField
+  | SelectFormField
+  | CascadeFormField
+  | AgreementFormField
+  | DisplayFormField;
+
+// フォームの定義
+export interface Form {
+  id: string;
+  mediaId: string;
+  name: string;             // フォーム名（管理用）
+  description?: string;     // フォームの説明
+  fields: FormField[];      // フォームフィールドの配列
+  
+  // 送信設定
+  submitButtonText?: string;    // 送信ボタンのテキスト
+  successMessage?: string;      // 送信完了メッセージ
+  errorMessage?: string;        // エラーメッセージ
+  redirectUrl?: string;         // 送信後のリダイレクト先
+  
+  // 通知設定（将来の拡張用）
+  notificationEmail?: string;   // 通知先メールアドレス
+  
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+// フォーム送信データ
+export interface FormSubmission {
+  id: string;
+  formId: string;
+  mediaId: string;
+  data: Record<string, any>;    // フィールドID: 値
+  submittedAt: Date;
+  userAgent?: string;
+  ipAddress?: string;
+}
+

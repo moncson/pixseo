@@ -11,6 +11,7 @@ import MediaHeader from '@/components/layout/MediaHeader';
 import FooterContentRenderer from '@/components/blocks/FooterContentRenderer';
 import FooterTextLinksRenderer from '@/components/blocks/FooterTextLinksRenderer';
 import ScrollToTopButton from '@/components/common/ScrollToTopButton';
+import BlockRenderer from '@/components/blocks/BlockRenderer';
 
 interface PageProps {
   params: {
@@ -138,10 +139,16 @@ export default async function FixedPage({ params }: PageProps) {
         <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <article className="bg-white rounded-lg shadow-md p-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-6">{page.title}</h1>
-          <div 
-            className="prose prose-lg max-w-none"
-            dangerouslySetInnerHTML={{ __html: page.content }}
-          />
+          
+          {/* ブロックビルダー使用時はBlockRendererで表示 */}
+          {rawPage.useBlockBuilder && rawPage.blocks ? (
+            <BlockRenderer blocks={rawPage.blocks} />
+          ) : (
+            <div 
+              className="prose prose-lg max-w-none"
+              dangerouslySetInnerHTML={{ __html: page.content }}
+            />
+          )}
         </article>
       </main>
 

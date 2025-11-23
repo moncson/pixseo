@@ -23,6 +23,9 @@
     "vercel:prod": "vercel --prod"
   },
   "dependencies": {
+    "@dnd-kit/core": "^6.3.1",
+    "@dnd-kit/sortable": "^10.0.0",
+    "@dnd-kit/utilities": "^3.2.2",
     "@hookform/resolvers": "^3.3.4",
     "algoliasearch": "^5.44.0",
     "firebase": "^10.12.2",

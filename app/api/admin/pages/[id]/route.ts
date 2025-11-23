@@ -74,31 +74,44 @@ export async function PUT(
         updateData.metaDescription_ja = body.metaDescription;
       }
       
-      // 他の言語への翻訳
-      const otherLangs = SUPPORTED_LANGS.filter(lang => lang !== 'ja');
-      for (const lang of otherLangs) {
-        try {
-          const translated = await translateArticle({
-            title: body.title || '',
-            content: body.content || '',
-            excerpt: body.excerpt || '',
-            metaTitle: body.metaTitle || body.title || '',
-            metaDescription: body.metaDescription || body.excerpt || '',
-          }, lang);
-          
-          if (body.title) updateData[`title_${lang}`] = translated.title;
-          if (body.content) updateData[`content_${lang}`] = translated.content;
-          if (body.excerpt) updateData[`excerpt_${lang}`] = translated.excerpt;
-          if (body.metaTitle) updateData[`metaTitle_${lang}`] = translated.metaTitle;
-          if (body.metaDescription) updateData[`metaDescription_${lang}`] = translated.metaDescription;
-        } catch (error) {
-          console.error(`[API] 翻訳エラー（${lang}）:`, error);
-          // エラーの場合は日本語をコピー
+      // ブロックビルダー使用時は翻訳をスキップ（Phase 3で実装予定）
+      if (body.useBlockBuilder) {
+        console.log('[API] ブロックビルダー使用のため翻訳をスキップ');
+        const otherLangs = SUPPORTED_LANGS.filter(lang => lang !== 'ja');
+        for (const lang of otherLangs) {
           if (body.title) updateData[`title_${lang}`] = body.title;
           if (body.content) updateData[`content_${lang}`] = body.content;
           if (body.excerpt) updateData[`excerpt_${lang}`] = body.excerpt;
           if (body.metaTitle) updateData[`metaTitle_${lang}`] = body.metaTitle || body.title;
           if (body.metaDescription) updateData[`metaDescription_${lang}`] = body.metaDescription || body.excerpt;
+        }
+      } else {
+        // 従来のエディター使用時は翻訳を実行
+        const otherLangs = SUPPORTED_LANGS.filter(lang => lang !== 'ja');
+        for (const lang of otherLangs) {
+          try {
+            const translated = await translateArticle({
+              title: body.title || '',
+              content: body.content || '',
+              excerpt: body.excerpt || '',
+              metaTitle: body.metaTitle || body.title || '',
+              metaDescription: body.metaDescription || body.excerpt || '',
+            }, lang);
+            
+            if (body.title) updateData[`title_${lang}`] = translated.title;
+            if (body.content) updateData[`content_${lang}`] = translated.content;
+            if (body.excerpt) updateData[`excerpt_${lang}`] = translated.excerpt;
+            if (body.metaTitle) updateData[`metaTitle_${lang}`] = translated.metaTitle;
+            if (body.metaDescription) updateData[`metaDescription_${lang}`] = translated.metaDescription;
+          } catch (error) {
+            console.error(`[API] 翻訳エラー（${lang}）:`, error);
+            // エラーの場合は日本語をコピー
+            if (body.title) updateData[`title_${lang}`] = body.title;
+            if (body.content) updateData[`content_${lang}`] = body.content;
+            if (body.excerpt) updateData[`excerpt_${lang}`] = body.excerpt;
+            if (body.metaTitle) updateData[`metaTitle_${lang}`] = body.metaTitle || body.title;
+            if (body.metaDescription) updateData[`metaDescription_${lang}`] = body.metaDescription || body.excerpt;
+          }
         }
       }
     }

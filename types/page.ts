@@ -1,9 +1,11 @@
+import { Block } from './block';
+
 export interface Page {
   id: string;
   mediaId: string;           // 所属メディアID
   // 後方互換性のため既存フィールドを保持
   title: string;
-  content: string;
+  content: string;           // HTML形式（後方互換性のため保持）
   excerpt?: string;
   slug: string;
   publishedAt: Date;
@@ -38,5 +40,9 @@ export interface Page {
   // 固定ページ専用
   parentId?: string;         // 親ページID（階層構造用）
   order: number;             // 表示順
+  
+  // ブロックビルダー（新機能）
+  blocks?: Block[];          // ブロックの配列
+  useBlockBuilder?: boolean; // ブロックビルダーを使用するか（後方互換性のため）
 }
 
