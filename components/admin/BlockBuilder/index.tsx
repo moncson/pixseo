@@ -5,7 +5,7 @@
  * ドラッグ&ドロップでブロックを組み立てるUI
  */
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { DndContext, DragEndEvent, DragStartEvent, DragOverlay, closestCenter } from '@dnd-kit/core';
 import { SortableContext, verticalListSortingStrategy, arrayMove } from '@dnd-kit/sortable';
 import { Block, BlockType } from '@/types/block';
@@ -22,26 +22,35 @@ interface BlockBuilderProps {
 export default function BlockBuilder({ blocks, onChange }: BlockBuilderProps) {
   const [selectedBlockId, setSelectedBlockId] = useState<string | null>(null);
   const [activeId, setActiveId] = useState<string | null>(null);
+  const [localBlocks, setLocalBlocks] = useState<Block[]>(blocks);
 
-  const selectedBlock = blocks.find(b => b.id === selectedBlockId);
+  // propsのblocksが変更されたら同期
+  useEffect(() => {
+    setLocalBlocks(blocks);
+  }, [blocks]);
+
+  const selectedBlock = localBlocks.find(b => b.id === selectedBlockId);
 
   // ブロック追加
   const handleAddBlock = (type: BlockType) => {
     const newBlock: Block = {
       id: uuidv4(),
       type,
-      order: blocks.length,
+      order: localBlocks.length,
       config: getDefaultConfig(type),
     };
-    onChange([...blocks, newBlock]);
+    const newBlocks = [...localBlocks, newBlock];
+    setLocalBlocks(newBlocks);
+    onChange(newBlocks);
     setSelectedBlockId(newBlock.id);
   };
 
   // ブロック削除
   const handleDeleteBlock = (id: string) => {
-    const newBlocks = blocks.filter(b => b.id !== id);
+    const newBlocks = localBlocks.filter(b => b.id !== id);
     // orderを再計算
     const reorderedBlocks = newBlocks.map((b, index) => ({ ...b, order: index }));
+    setLocalBlocks(reorderedBlocks);
     onChange(reorderedBlocks);
     if (selectedBlockId === id) {
       setSelectedBlockId(null);
@@ -50,9 +59,10 @@ export default function BlockBuilder({ blocks, onChange }: BlockBuilderProps) {
 
   // ブロック更新
   const handleUpdateBlock = (id: string, updates: Partial<Block>) => {
-    const newBlocks = blocks.map(b => 
+    const newBlocks = localBlocks.map(b => 
       b.id === id ? { ...b, ...updates } : b
     );
+    setLocalBlocks(newBlocks);
     onChange(newBlocks);
   };
 
@@ -66,14 +76,15 @@ export default function BlockBuilder({ blocks, onChange }: BlockBuilderProps) {
     const { active, over } = event;
     
     if (over && active.id !== over.id) {
-      const oldIndex = blocks.findIndex(b => b.id === active.id);
-      const newIndex = blocks.findIndex(b => b.id === over.id);
+      const oldIndex = localBlocks.findIndex(b => b.id === active.id);
+      const newIndex = localBlocks.findIndex(b => b.id === over.id);
       
-      const reorderedBlocks = arrayMove(blocks, oldIndex, newIndex).map((b, index) => ({
+      const reorderedBlocks = arrayMove(localBlocks, oldIndex, newIndex).map((b, index) => ({
         ...b,
         order: index,
       }));
       
+      setLocalBlocks(reorderedBlocks);
       onChange(reorderedBlocks);
     }
     
@@ -81,22 +92,33 @@ export default function BlockBuilder({ blocks, onChange }: BlockBuilderProps) {
   };
 
   return (
-    <div className="flex gap-6 h-[calc(100vh-200px)]">
-      {/* 左サイドバー: ブロックパレット */}
-      <div className="w-64 flex-shrink-0">
+    <div className="relative flex gap-6 h-[calc(100vh-200px)]">
+      {/* 左パネル: ブロックパレット（50%） */}
+      <div className="w-1/2 flex-shrink-0 relative">
         <BlockPalette onAddBlock={handleAddBlock} />
+        
+        {/* ブロック設定（左パネルに重ねる） */}
+        {selectedBlock && (
+          <div className="absolute inset-0 z-10">
+            <BlockSettings
+              block={selectedBlock}
+              onUpdate={(updates) => handleUpdateBlock(selectedBlock.id, updates)}
+              onClose={() => setSelectedBlockId(null)}
+            />
+          </div>
+        )}
       </div>
 
-      {/* 中央: キャンバス */}
-      <div className="flex-1 overflow-y-auto">
+      {/* 右パネル: キャンバス（50%） */}
+      <div className="w-1/2 overflow-y-auto">
         <DndContext
           collisionDetection={closestCenter}
           onDragStart={handleDragStart}
           onDragEnd={handleDragEnd}
         >
-          <SortableContext items={blocks.map(b => b.id)} strategy={verticalListSortingStrategy}>
+          <SortableContext items={localBlocks.map(b => b.id)} strategy={verticalListSortingStrategy}>
             <BuilderCanvas
-              blocks={blocks}
+              blocks={localBlocks}
               selectedBlockId={selectedBlockId}
               onSelectBlock={setSelectedBlockId}
               onDeleteBlock={handleDeleteBlock}
@@ -111,17 +133,6 @@ export default function BlockBuilder({ blocks, onChange }: BlockBuilderProps) {
           </DragOverlay>
         </DndContext>
       </div>
-
-      {/* 右サイドバー: ブロック設定 */}
-      {selectedBlock && (
-        <div className="w-80 flex-shrink-0">
-          <BlockSettings
-            block={selectedBlock}
-            onUpdate={(updates) => handleUpdateBlock(selectedBlock.id, updates)}
-            onClose={() => setSelectedBlockId(null)}
-          />
-        </div>
-      )}
     </div>
   );
 }

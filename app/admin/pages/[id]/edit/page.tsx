@@ -223,10 +223,10 @@ export default function EditPagePage() {
   return (
     <AuthGuard>
       <AdminLayout>
-        <div className="max-w-full px-4 pb-32 animate-fadeIn">
+        <div className="px-4 pb-32 animate-fadeIn">
           <form id="page-edit-form" onSubmit={handleSubmit}>
             {/* すべてのフィールドを1つのパネル内に表示 */}
-            <div className="bg-white rounded-xl p-6 space-y-6 max-w-4xl">
+            <div className="bg-white rounded-xl p-6 space-y-6">
               {/* タイトル */}
               <FloatingInput
                 label="タイトル"
